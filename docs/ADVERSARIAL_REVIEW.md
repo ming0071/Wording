@@ -32,11 +32,11 @@
 
 ### 已取得的驗證證據
 
-- 最新 GitHub Windows CI 對應 `c5937f4d95948e1387a81eb3e8ea2c327a79cd83`，建置、63／63 個測試與 self-contained 發布成功：[執行紀錄 36230789797](https://github.com/ming0071/WordTrail/actions/runs/36230789797)。先前 `40a21e9` 的 [41 個測試紀錄](https://github.com/ming0071/WordTrail/actions/runs/36228994567) 保留供追溯。
+- 最新 GitHub Windows CI 對應 `48ade1940c6171305dc28ac4a765336ad04bb1d8`，建置、63／63 個測試與 self-contained 發布成功：[執行紀錄 36231731867](https://github.com/ming0071/WordTrail/actions/runs/36231731867)。先前 `40a21e9` 的 [41 個測試紀錄](https://github.com/ming0071/WordTrail/actions/runs/36228994567) 保留供追溯。
 - FSRS 以共同明示的參數、固定權重與關閉 fuzz 對照官方 Python 參考實作。58 個案例已用實際 C# 執行環境驗證；審查也找出套件與參考實作對經過天數的處理差異，並加入整天計算適配。細節見 [FSRS_VERIFICATION.md](FSRS_VERIFICATION.md)。
 - 教材結構檢查通過 300 筆。根 agent 另逐筆檢查 300 筆詞義、英中例句與搭配詞，修正語意或詞義一致性問題。這是 AI 交叉審查，不是辭典授權、教師認證或教材絕對正確的保證。
 - Codex 程序執行器的 7 個實際程序案例已通過。正式 C# 生成路徑也已透過 CLI `0.158.0-alpha.2.1` 的 ChatGPT 登入成功產生 `invoice` 的 2 組搭配詞與 2 組英中例句；只記錄 1 次請求，暫存 schema 清理完成，沒有 API key 或付費 fallback。
-- Computer Use 授權後來恢復，較早發布包已完成分類／詞義新增、翻卡、鍵盤評分、Undo、播放停止與備份匯出操作。最新版已下載、核對雜湊並啟動，沿用資料保留 301 筆詞義。使用者曾按 Escape 停止 UI 控制，後來已授權繼續，但工具仍回報停止狀態；尚未取得後續畫面證據，詳見 [VALIDATION.md](VALIDATION.md)。
+- Computer Use 授權後來恢復，較早發布包已完成分類／詞義新增、翻卡、鍵盤評分、Undo、播放停止與備份匯出操作。`c5937f4` 包已下載、核對雜湊並啟動，沿用資料保留 301 筆詞義。使用者曾按 Escape 停止 UI 控制，後來已授權繼續，但工具仍回報停止狀態；尚未取得後續畫面證據，詳見 [VALIDATION.md](VALIDATION.md)。
 - Windows 語音服務實際呼叫無例外，且生成可解析的非靜音 PCM 語音；尚未人工聆聽評估發音品質。
 
 ### 實作審查發現與處置
@@ -71,3 +71,9 @@
 3. 人工聆聽語音品質；目前只驗證服務呼叫與非靜音語音輸出。
 
 詳細版本、ZIP 雜湊與實測範圍見 [VALIDATION.md](VALIDATION.md)。短文測驗、聽力理解練習及關聯圖仍是後續功能。
+
+### 單字庫美化後的交叉審查
+
+依使用者要求改善搜尋區、字詞層次、列間距、選取配色與狀態標籤，保留原有 DataGrid、操作綁定及虛擬化。另一名 agent 發現範本欄位會失去預設的複製綁定，以及狀態標籤與底層 Enrollment 排序不一致；已補回單字／詞性、詞義、優先級的複製內容，停用狀態欄排序。
+
+還原檔案選擇器也已納入 `.wtbackup`，因此可以選到程式在整庫還原前自動保存的復原備份。最終程式版本 `48ade1940c6171305dc28ac4a765336ad04bb1d8` 已於 [CI 36231731867](https://github.com/ming0071/WordTrail/actions/runs/36231731867) 通過建置、63 個測試與打包。以上不替代尚未完成的新版實機畫面驗收。

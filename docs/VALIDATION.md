@@ -5,9 +5,9 @@
 ## 建置、測試與成品
 
 - 私有 repository：[ming0071/WordTrail](https://github.com/ming0071/WordTrail)。本機沒有安裝 Visual Studio 或 .NET SDK，建置與打包由 Windows GitHub Actions 執行。
-- 最新已通過程式版本：`c5937f4d95948e1387a81eb3e8ea2c327a79cd83`，對應 [CI 36230789797](https://github.com/ming0071/WordTrail/actions/runs/36230789797)。建置、測試、self-contained 發布全部成功；TRX 記錄 **63 個執行、63 個通過、0 個失敗**。
+- 最新已通過程式版本：`48ade1940c6171305dc28ac4a765336ad04bb1d8`，對應 [CI 36231731867](https://github.com/ming0071/WordTrail/actions/runs/36231731867)。包含單字庫美化、列表複製與備份選擇器修正；建置、測試、self-contained 發布全部成功，TRX 記錄 **63 個執行、63 個通過、0 個失敗**。
 - 較早的 [CI 36228994567](https://github.com/ming0071/WordTrail/actions/runs/36228994567) 對應 `40a21e9`，通過 41 個測試。後續審查新增的測試與修正已納入上述最新 CI。
-- 最新 ZIP 已下載、核對 SHA-256 並解壓至獨立目錄 `.local/final-preview`。雜湊為 `78b50f37e3e740ba836f8bc7a054d88ad38e439c03f0ff27dba243bbd1f26977`。
+- 較早 `c5937f4` 的 ZIP 已下載、核對 SHA-256 並解壓至獨立目錄 `.local/final-preview`。該包雜湊為 `78b50f37e3e740ba836f8bc7a054d88ad38e439c03f0ff27dba243bbd1f26977`；其他版本請使用各自隨附的 `.sha256` 檔核對。
 
 ## 排程、資料與教材
 
@@ -39,7 +39,7 @@ Computer Use 的應用程式授權先前逾時，後來恢復。以下操作使�
 
 ## 尚未完成或保留的限制
 
-- `c5937f4` 的按鈕對比修正已通過建置；畫面截圖複查未完成。後續單字庫外觀調整仍需新的 CI 與畫面驗證，不包含在本紀錄的已通過版本中。
+- 最新按鈕與單字庫外觀已通過編譯測試，包括搜尋篩選區、列樣式、狀態標籤及複製操作綁定；尚未取得最新版的實機畫面複查證據。
 - GUI 的封存還原、完整 AI 生成與整庫還原操作未完成；相應自動測試已通過，但不能替代 UI 操作證據。
 - 最小視窗、不同 DPI 與長文字內容的完整版面驗收。
 - Codex 的唯讀與功能限制不是經證明的零檔案讀取隔離；CLI 變更、管理員設定、登入狀態與訂閱額度仍可能影響使用。
