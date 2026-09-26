@@ -4,6 +4,12 @@
 
 教材以約 TOEIC 450 的學習者為出發點；不是官方必考詞表，也不提供分數保證。AI 編写的內容有來源標示，可以修改。
 
+## 直接使用
+
+從 [GitHub Releases](https://github.com/ming0071/WordTrail/releases) 下載 Windows x64 ZIP，完整解壓後開啟 `WordTrail.exe`。這是自足程式包，使用時不必安裝 Visual Studio 或 .NET SDK；Codex AI 功能仍需要另外設定 CLI 登入。
+
+自動建置的程式包與測試報告也在 [GitHub Actions](https://github.com/ming0071/WordTrail/actions)。私人專案的下載需要使用可存取此 repository 的 GitHub 帳號登入。
+
 ## 開發環境
 
 - Windows 11 x64。
@@ -41,7 +47,7 @@ codex login
 codex login status
 ```
 
-如果找不到 `codex`，在設定中指定 `codex.exe` 完整路徑。模型名稱留空使用 CLI 的預設模型；填入名稱前需確認訂閱可用。本次相容性基準為 CLI 0.153.4；較舊版本可能不支援必要 flags，應更新官方 CLI。
+如果找不到 `codex`，在設定中指定 `codex.exe` 完整路徑。模型名稱留空使用 CLI 的預設模型；填入名稱前需確認訂閱可用。CLI 0.153.4 已通過最小生成測試，0.158.0-alpha.2.1 已通過產品 C# 生成路徑實測；其他版本的必要 flags 相容性仍需檢查。
 
 每次生成會使用 Codex 訂閱額度，與你平時的 Codex 工作共用限制。預設每天最多 10 次生成請求，失敗請求可能也消耗額度，因此不自動重試。登入失效、額度不足、沒有網路或沒有 CLI 時，原有詞庫與複習照常運作。程式不購買額度，不讀取／匯出 token，不轉用付費 API。
 

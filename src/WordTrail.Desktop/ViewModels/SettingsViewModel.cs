@@ -86,7 +86,7 @@ public sealed class SettingsViewModel : PageViewModel
 
     private async Task RestoreAsync(CancellationToken token)
     {
-        var dialog = new OpenFileDialog { Title = "選擇要還原的 WordTrail 備份", Filter = "WordTrail 備份 (*.zip)|*.zip" };
+        var dialog = new OpenFileDialog { Title = "選擇要還原的 WordTrail 備份", Filter = "WordTrail 備份 (*.zip;*.wtbackup)|*.zip;*.wtbackup" };
         if (dialog.ShowDialog() != true) return;
         if (MessageBox.Show($"將用以下備份替換目前整個單字庫與複習紀錄：\n{dialog.FileName}\n\n程式會先保存現有資料的復原備份。確定還原？",
             "還原整個單字庫", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes) return;

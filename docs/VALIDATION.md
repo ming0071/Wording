@@ -1,14 +1,47 @@
 # 驗收紀錄
 
-更新：2026-09-26。開發進行中，以下只記錄已實際觀察的證據。
+更新：2026-09-26。以下區分自動測試、真實服務呼叫與桌面操作；未完成的項目列在文末。
 
-- 私人 repository 已建立：https://github.com/ming0071/WordTrail 。
-- GitHub /user 認證成功，現有 repo／workflow scopes 可用；未輸出憑證。
-- 在正常使用者環境，Codex CLI 顯示 ChatGPT 登入。
-- 一次最小訂閱生成成功，退出碼 0；JSONL 為 thread.started、turn.started、item.completed:agent_message、turn.completed，沒有工具事件。未使用 API key。
-- 首次參數試驗發現本機 CLI 不接受 `tools.view_image`；已移除不相容選項。不能以官方某版本設定表代替實際 CLI 相容性測試。
-- Windows 語音列舉找到 Microsoft Zira Desktop（en-US）；尚未對成品驗收發音。
-- Computer Use 原生視窗列舉成功；尚未對成品 UI 驗收。
-- 此電腦不安裝 Visual Studio／.NET SDK；建置、測試與打包交給 Windows GitHub Actions。
+## 建置、測試與成品
 
-待完成：CI build／tests、全部教材 QA、FSRS oracle、備份故障測試、成品 UI／ZIP 啟動、程式內 Codex 生成、實作後獨立審查。未通過的 gate 不會改寫成成功。
+- 私有 repository：[ming0071/WordTrail](https://github.com/ming0071/WordTrail)。本機沒有安裝 Visual Studio 或 .NET SDK，建置與打包由 Windows GitHub Actions 執行。
+- 最新已通過程式版本：`c5937f4d95948e1387a81eb3e8ea2c327a79cd83`，對應 [CI 36230789797](https://github.com/ming0071/WordTrail/actions/runs/36230789797)。建置、測試、self-contained 發布全部成功；TRX 記錄 **63 個執行、63 個通過、0 個失敗**。
+- 較早的 [CI 36228994567](https://github.com/ming0071/WordTrail/actions/runs/36228994567) 對應 `40a21e9`，通過 41 個測試。後續審查新增的測試與修正已納入上述最新 CI。
+- 最新 ZIP 已下載、核對 SHA-256 並解壓至獨立目錄 `.local/final-preview`。雜湊為 `78b50f37e3e740ba836f8bc7a054d88ad38e439c03f0ff27dba243bbd1f26977`。
+
+## 排程、資料與教材
+
+- FSRS 測試包含 58 個參考案例，使用實際 C# 排程結果對照 Python 參考實作的共同參數結果；這 58 個案例由一個測試迴圈執行，不能另加到 63 個測試總數。詳見 [FSRS_VERIFICATION.md](FSRS_VERIFICATION.md)。
+- 已通過資料交易、重複操作、舊版本衝突、每日配額、Undo、封存還原、備份還原與失敗回退測試。封存還原保留同一卡片、排程、歷史、學習選擇及暫停狀態。
+- 桌面流程測試涵蓋完整評分重試、AI 預覽／套用／保存、來源標記與封存操作。延遲保存的 dirty 競態修正有 4 個案例，已在最新 CI 通過。
+- 300 筆教材通過結構檢查。根 agent 另逐筆檢查詞義、英中例句與搭配詞並修正一致性問題；這是 AI 交叉審查，不是官方詞表或教師認證。
+
+## Codex 訂閱與語音
+
+- 目前產品的 C# `CodexContentGenerator` 與 `CodexProcessRunner` 原始碼，透過既有 PowerShell 的 .NET 10 執行環境直接編譯並實際呼叫成功。CLI 版本為 `0.158.0-alpha.2.1`，登入方式為 ChatGPT。
+- 單次 `invoice` 名詞／「發票」請求回傳符合詞義的 2 組搭配詞與 2 組英中例句，通過產品輸出驗證。額度記錄為 1 次，暫存 schema 清理後剩餘 0 個；未使用 API key、自動重試或付費 API fallback。這驗證了正式 C# 生成路徑，尚不代表 GUI 內完整生成流程已操作驗收。
+- 較早另以 CLI `0.153.4` 完成最小訂閱生成測試。曾發現本機 CLI 不接受 `tools.view_image` 參數，已移除；其他版本仍需實際檢查相容性。
+- 程序執行器 7 個實際程序案例通過，涵蓋輸出與取消清理。AI 回應允許清單、重複內容拒絕及安全錯誤分類測試也已在最新 CI 通過。
+- Windows 發音服務的 Speak／Stop／Dispose 實際執行無例外。Microsoft Zira Desktop 輸出經檢查為 RIFF PCM、16 kHz、單聲道、16 bit；122,606 bytes、3.83 秒，含 35,332 個非零樣本。已證明語音可產生，未經人工聆聽評估發音品質。
+- 本機實測細節保留在忽略上傳的 `.local/e2e-ai/evidence.json` 與 `.local/speech-evidence.json`，不含登入憑證。
+
+## 已完成的桌面操作
+
+Computer Use 的應用程式授權先前逾時，後來恢復。以下操作使用較早 `40a21e9` 發布包與獨立測試資料目錄，不能直接視為最新版畫面已全數驗收：
+
+- 啟動程式，確認 300 筆候選詞可見。
+- 建立「驗收分類」，新增 `dispatch`、詞性 `verb`、詞義「寄送；派送」，加入兩個分類與英中例句並保存。
+- 複習時用 Space 翻卡，看到對應詞義與例句；按 `3` 提交評分並顯示下一次到期時間。
+- 撤銷最後評分成功，今日新詞名額不被重設。
+- 點選語音播放與停止沒有錯誤；設定畫面已開啟檢查。
+- 備份 GUI 匯出成功：ZIP 為 106,315 bytes，內含 520,192 bytes 的 `study.sqlite` 與 manifest。
+- 最新 `c5937f4` 發布包已啟動，沿用同一測試資料目錄後保留 301 筆詞義。使用者曾按 Escape 停止 Computer Use，之後已授權繼續，但工具仍回報停止狀態，因此沒有取得後續 UI 操作證據。
+
+## 尚未完成或保留的限制
+
+- `c5937f4` 的按鈕對比修正已通過建置；畫面截圖複查未完成。後續單字庫外觀調整仍需新的 CI 與畫面驗證，不包含在本紀錄的已通過版本中。
+- GUI 的封存還原、完整 AI 生成與整庫還原操作未完成；相應自動測試已通過，但不能替代 UI 操作證據。
+- 最小視窗、不同 DPI 與長文字內容的完整版面驗收。
+- Codex 的唯讀與功能限制不是經證明的零檔案讀取隔離；CLI 變更、管理員設定、登入狀態與訂閱額度仍可能影響使用。
+
+第一版不包含短文測驗、聽力理解練習或關聯圖。後續擴充規劃不視為現有功能。

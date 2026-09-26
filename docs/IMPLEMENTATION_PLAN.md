@@ -140,7 +140,7 @@ Git／ZIP／備份排除個人 DB、複習歷史、Codex 認證、API keys、.en
 
 建議路徑 C:\Users\ASUS\Desktop\Codex\WordTrail，獨立 Git repository；不操作上層既有 repository，也不修改 global safe.directory。初期先提交規格與審查，實作使用 codex/initial-implementation 分支，依可檢查的里程碑提交。最終乾淨工作樹、標記 v0.1.0。
 
-建議 GitHub ming0071/WordTrail，private；repo 名稱／建立目標等使用者回覆，若已存在不覆寫，不 force-push。不把既有專案帶入新 repo。推送前檢查 staged 檔案與常見秘密模式；核對遠端與 commit SHA。
+GitHub 採 ming0071/WordTrail，private，已依後續「建立專案並推上 GitHub」指示建立；不覆寫既有 repository，不 force-push。不把其他專案帶入新 repo。推送前檢查 staged 檔案與常見秘密模式；核對遠端與 commit SHA。
 
 GitHub Actions 採 Windows、最小 contents:read、無 AI 憑證的還原／建置／測試／打包；固定測試輸出與 ZIP artifact。private repo 的 Actions 有帳號配額與設定限制；無額度／被停用時保留本機完整證據，註明雲端 gate 未通過，不買額度或擅改付款設定。
 
@@ -198,7 +198,7 @@ release ZIP 採 win-x64 self-contained、先不 trimming／NativeAOT／單檔壓
 
 PATH 與標準安裝路徑尚未找到 dotnet SDK、gh CLI。使用者後續明確選擇這台不需 Visual Studio，先建立專案推 GitHub，另台拉下來編譯；因此不在這台安裝 Visual Studio 或 SDK，以 Windows GitHub Actions 執行建置／測試／打包，再下載自足包驗收。GitHub 使用現有 Git credential 配合官方 REST，gh 不是必要依賴。SDK允許 .NET 10 穩定服務更新，實際版本記錄於 CI。實作期工具下載／native測試仍依當時沙箱核准流程。
 
-離席前仍應完成：確認第一版是否加短文、GitHub repo 名稱／private 目標、Codex 最小生成試驗。需要 GUI 驗收時保持 Windows 桌面可用；電腦關機／睡眠／鎖定或帳號要求重新登入可能阻礙對應部分。不得自動調低系統安全設定。
+後續執行採已告知的核心第一版與私人 repository；短文、聽力理解練習及關聯圖留待後續。Codex 最小試驗與正式 C# 生成均已成功，具體版本與驗證邊界見 VALIDATION.md。需要 GUI 驗收時保持 Windows 桌面可用；電腦關機／睡眠／鎖定或帳號要求重新登入可能阻礙對應部分。不得自動調低系統安全設定；使用者停止 Computer Use 後停止視窗操作。
 
 ## 參考依據
 
