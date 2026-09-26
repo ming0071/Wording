@@ -196,7 +196,7 @@ release ZIP 採 win-x64 self-contained、先不 trimming／NativeAOT／單檔壓
 
 已確認 Microsoft Zira Desktop（en-US）可被 System.Speech 列出；Computer Use 初始化與原生視窗列舉成功。這些只證明前置能力，尚未證明成品 UI／音訊驗收通過。
 
-PATH 與標準安裝路徑尚未找到 dotnet SDK、gh CLI。SDK 可從 Microsoft 官方來源解壓至忽略的工具目錄並驗雜湊，不需全域 PATH／管理員安装；GitHub 可用現有 Git credential 配合官方 REST，因此 gh 不是必要依賴。實作期若工具下載／native測試需要沙箱外執行，須依當時工具核准流程，無法預先保證所有未知指令都不再出現核准。
+PATH 與標準安裝路徑尚未找到 dotnet SDK、gh CLI。使用者後續明確選擇這台不需 Visual Studio，先建立專案推 GitHub，另台拉下來編譯；因此不在這台安裝 Visual Studio 或 SDK，以 Windows GitHub Actions 執行建置／測試／打包，再下載自足包驗收。GitHub 使用現有 Git credential 配合官方 REST，gh 不是必要依賴。SDK允許 .NET 10 穩定服務更新，實際版本記錄於 CI。實作期工具下載／native測試仍依當時沙箱核准流程。
 
 離席前仍應完成：確認第一版是否加短文、GitHub repo 名稱／private 目標、Codex 最小生成試驗。需要 GUI 驗收時保持 Windows 桌面可用；電腦關機／睡眠／鎖定或帳號要求重新登入可能阻礙對應部分。不得自動調低系統安全設定。
 

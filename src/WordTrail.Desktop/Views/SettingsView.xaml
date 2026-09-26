@@ -1,0 +1,38 @@
+<UserControl x:Class="WordTrail.Desktop.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:WordTrail.Desktop.Views">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="配合自己的步調" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="調整每日學習量，照顧好你的單字與進度。" Style="{StaticResource MutedText}" Margin="0,0,0,22"/>
+            <views:StatusBanner/>
+            <Border Style="{StaticResource Panel}" Margin="0,0,0,18"><StackPanel>
+                <TextBlock Text="每日學習" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="每天最多開始幾個新詞（0–10）" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding DailyNewLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" MaxLength="2" AutomationProperties.Name="每日新詞上限" AutomationProperties.AutomationId="DailyNewLimit"/>
+                <TextBlock Text="到期少於 10 張時最多 5 個新詞，10–19 張時最多 2 個，20 張以上先不加新詞；仍受你設定的上限限制。0 代表只複習已開始的卡。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0"/>
+            </StackPanel></Border>
+            <Border Style="{StaticResource Panel}" Margin="0,0,0,18"><StackPanel>
+                <TextBlock Text="本機 Codex 訂閱" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="使用官方 CLI 的既有 ChatGPT 登入。程式不要求 API key，也不會切換到付費 API。" Style="{StaticResource MutedText}"/>
+                <TextBlock Text="Codex 執行檔路徑" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding CodexPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 執行檔路徑" AutomationProperties.AutomationId="CodexPath"/>
+                <TextBlock Text="如果 codex 不在 PATH，填入 codex.exe 的完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0"/>
+                <TextBlock Text="模型（留空使用 CLI 預設）" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding CodexModel, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 模型"/>
+                <TextBlock Text="每日 AI 生成上限（0–10）" Style="{StaticResource FieldLabel}"/>
+                <TextBox Text="{Binding DailyGenerationLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" MaxLength="2" AutomationProperties.Name="每日 AI 生成上限"/>
+                <WrapPanel Margin="0,20,0,0"><Button Content="保存設定" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" AutomationProperties.AutomationId="SaveSettings"/><Button Content="檢查已保存的 Codex 設定" Command="{Binding CheckAiCommand}"/></WrapPanel>
+                <TextBlock Text="請在終端機使用 codex login 完成正常登入；本程式不讀取或顯示登入 token。訂閱額度或登入失效會顯示原因，離線學習不受影響。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+            </StackPanel></Border>
+            <Border Style="{StaticResource Panel}" Margin="0,0,0,18"><StackPanel>
+                <TextBlock Text="資料與備份" Style="{StaticResource SectionTitle}"/>
+                <TextBlock Text="備份包含單字、分類與複習進度。還原會替換整個單字庫，並先保存目前資料；不會合併兩份內容。" Style="{StaticResource MutedText}"/>
+                <WrapPanel Margin="0,18,0,0"><Button Content="匯出備份 ZIP" Command="{Binding BackupCommand}" AutomationProperties.AutomationId="CreateBackup"/><Button Content="從備份還原…" Command="{Binding RestoreCommand}" AutomationProperties.AutomationId="RestoreBackup"/><Button Content="開啟資料目錄" Command="{Binding OpenFolderCommand}"/></WrapPanel>
+                <TextBlock Text="{Binding DataDirectory}" Style="{StaticResource MutedText}" FontSize="11" Margin="0,10,0,0"/>
+                <TextBlock Text="建議另存一份到其他磁碟。換程式版本不會刪除這裡的資料。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0"/>
+            </StackPanel></Border>
+            <Border Style="{StaticResource Panel}"><StackPanel><TextBlock Text="Windows 英文合成語音" Style="{StaticResource SectionTitle}"/><TextBlock Text="{Binding SpeechStatus}" Style="{StaticResource MutedText}"/><TextBlock Text="使用電腦實際提供的英文 voice。若無可用語音，仍可從單字卡開啟外部辭典查閱發音。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0"/></StackPanel></Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

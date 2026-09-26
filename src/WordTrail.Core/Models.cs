@@ -3,7 +3,7 @@ namespace WordTrail.Core;
 public enum Enrollment { Candidate, Selected, Skipped }
 public enum ReviewRating { Again = 1, Hard = 2, Good = 3, Easy = 4 }
 
-public sealed record ExampleSentence(string English, string Chinese);
+public sealed record ExampleSentence(string English, string Chinese, ContentOrigin? Origin = null);
 public sealed record ContentOrigin(string Kind, string Note, string? Model = null,
     DateTimeOffset? GeneratedAt = null, string? PromptVersion = null);
 
@@ -20,6 +20,8 @@ public sealed record VocabularyItem
     public string[] Collocations { get; init; } = [];
     public ExampleSentence[] Examples { get; init; } = [];
     public ContentOrigin Origin { get; init; } = new("user", "使用者編寫");
+    public ContentOrigin? MeaningOrigin { get; init; }
+    public ContentOrigin? CollocationsOrigin { get; init; }
     public Enrollment Enrollment { get; init; }
     public bool IsArchived { get; init; }
     public bool IsPaused { get; init; }
@@ -54,6 +56,7 @@ public interface IStudyStore
         CancellationToken cancellationToken = default);
     Task<ReviewResult> SubmitReviewAsync(ReviewSubmission submission, CancellationToken cancellationToken = default);
     Task UndoReviewAsync(Guid operationId, CancellationToken cancellationToken = default);
+    Task EndReviewSessionAsync(CancellationToken cancellationToken = default);
 }
 
 public interface IBackupService

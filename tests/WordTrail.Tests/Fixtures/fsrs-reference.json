@@ -1,0 +1,1433 @@
+{
+  "generator": "official py-fsrs",
+  "version": "6.3.1",
+  "parameters": [
+    0.2172,
+    1.1771,
+    3.2602,
+    16.1507,
+    7.0114,
+    0.57,
+    2.0966,
+    0.0069,
+    1.5261,
+    0.112,
+    1.0178,
+    1.849,
+    0.1133,
+    0.3127,
+    2.2934,
+    0.2191,
+    3.0004,
+    0.7536,
+    0.3332,
+    0.1437,
+    0.2
+  ],
+  "desiredRetention": 0.9,
+  "learningStepsSeconds": [
+    60,
+    600
+  ],
+  "relearningStepsSeconds": [
+    600
+  ],
+  "enableFuzzing": false,
+  "floatAbsoluteTolerance": 1e-10,
+  "floatRelativeTolerance": 1e-10,
+  "timestampToleranceMilliseconds": 1,
+  "cases": [
+    {
+      "name": "new-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-01T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": null,
+        "difficulty": null,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": null
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.2172,
+        "difficulty": 7.0114,
+        "dueAt": "2026-01-01T08:01:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      }
+    },
+    {
+      "name": "Learning-step0-0:01:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-01T08:01:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.5155306351362566,
+        "difficulty": 7.296110448026617,
+        "dueAt": "2026-01-01T08:02:00Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      }
+    },
+    {
+      "name": "Learning-step1-1 day, 8:00:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-02T16:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.7211381370127169,
+        "difficulty": 7.296110448026617,
+        "dueAt": "2026-01-02T16:01:00Z",
+        "lastReviewAt": "2026-01-02T16:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-30 days, 12:00:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-31T20:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 3.227669230721555,
+        "difficulty": 7.296110448026617,
+        "dueAt": "2026-01-31T20:10:00Z",
+        "lastReviewAt": "2026-01-31T20:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-0:30:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-01T08:30:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 3.3835479770043717,
+        "difficulty": 7.296110448026617,
+        "dueAt": "2026-01-01T08:40:00Z",
+        "lastReviewAt": "2026-01-01T08:30:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-0:10:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-01T08:10:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.40296695902526347,
+        "difficulty": 8.356917799137728,
+        "dueAt": "2026-01-01T08:20:00Z",
+        "lastReviewAt": "2026-01-01T08:10:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-45 days, 20:00:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-02-16T04:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.1669174199379024,
+        "difficulty": 8.356917799137728,
+        "dueAt": "2026-02-16T04:10:00Z",
+        "lastReviewAt": "2026-02-16T04:00:00Z"
+      }
+    },
+    {
+      "name": "new-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-01T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": null,
+        "difficulty": null,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": null
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 1.1771,
+        "difficulty": 6.243132948566265,
+        "dueAt": "2026-01-01T08:05:30Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      }
+    },
+    {
+      "name": "Learning-step0-0:01:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-01T08:01:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 1.0953144058811248,
+        "difficulty": 6.1393696369155055,
+        "dueAt": "2026-01-01T08:06:30Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      }
+    },
+    {
+      "name": "Learning-step1-1 day, 8:00:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-02T16:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.6781497296113868,
+        "difficulty": 6.1393696369155055,
+        "dueAt": "2026-01-02T16:10:00Z",
+        "lastReviewAt": "2026-01-02T16:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-30 days, 12:00:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-31T20:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30.283762557243236,
+        "difficulty": 6.1393696369155055,
+        "dueAt": "2026-03-02T20:00:00Z",
+        "lastReviewAt": "2026-01-31T20:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-0:30:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-01T08:30:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 7.188804291375047,
+        "difficulty": 6.1393696369155055,
+        "dueAt": "2026-01-08T08:30:00Z",
+        "lastReviewAt": "2026-01-01T08:30:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-0:10:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-01T08:10:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.8561576853678596,
+        "difficulty": 7.662873312471061,
+        "dueAt": "2026-01-01T08:25:00Z",
+        "lastReviewAt": "2026-01-01T08:10:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-45 days, 20:00:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-02-16T04:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 4.951829968547528,
+        "difficulty": 7.662873312471061,
+        "dueAt": "2026-02-16T04:15:00Z",
+        "lastReviewAt": "2026-02-16T04:00:00Z"
+      }
+    },
+    {
+      "name": "new-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": null,
+        "difficulty": null,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": null
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 3.2602,
+        "difficulty": 4.884631634813845,
+        "dueAt": "2026-01-01T08:10:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      }
+    },
+    {
+      "name": "Learning-step0-0:01:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:01:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.3271432694075163,
+        "difficulty": 4.982628825804394,
+        "dueAt": "2026-01-01T08:11:00Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      }
+    },
+    {
+      "name": "Learning-step1-1 day, 8:00:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-02T16:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 5.095160792384239,
+        "difficulty": 4.982628825804394,
+        "dueAt": "2026-01-07T16:00:00Z",
+        "lastReviewAt": "2026-01-02T16:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-30 days, 12:00:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-31T20:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 74.0646396953137,
+        "difficulty": 4.982628825804394,
+        "dueAt": "2026-04-15T20:00:00Z",
+        "lastReviewAt": "2026-01-31T20:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-0:30:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:30:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 4.982628825804394,
+        "dueAt": "2026-01-19T08:30:00Z",
+        "lastReviewAt": "2026-01-01T08:30:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-0:10:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:10:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 1.8190225421645456,
+        "difficulty": 6.968828825804394,
+        "dueAt": "2026-01-03T08:10:00Z",
+        "lastReviewAt": "2026-01-01T08:10:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-45 days, 20:00:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-02-16T04:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 17.254586803046685,
+        "difficulty": 6.968828825804394,
+        "dueAt": "2026-03-05T04:00:00Z",
+        "lastReviewAt": "2026-02-16T04:00:00Z"
+      }
+    },
+    {
+      "name": "new-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-01T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": null,
+        "difficulty": null,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": null
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 16.1507,
+        "difficulty": 2.482438522375997,
+        "dueAt": "2026-01-17T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      }
+    },
+    {
+      "name": "Learning-step0-0:01:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-01T08:01:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.9443299268871845,
+        "difficulty": 3.8258880146932825,
+        "dueAt": "2026-01-06T08:01:00Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      }
+    },
+    {
+      "name": "Learning-step1-1 day, 8:00:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-02T16:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 2.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 11.28672044146967,
+        "difficulty": 3.8258880146932825,
+        "dueAt": "2026-01-13T16:00:00Z",
+        "lastReviewAt": "2026-01-02T16:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-30 days, 12:00:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-31T20:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 186.21634494181927,
+        "difficulty": 3.8258880146932825,
+        "dueAt": "2026-08-05T20:00:00Z",
+        "lastReviewAt": "2026-01-31T20:00:00Z"
+      }
+    },
+    {
+      "name": "Review-stepNone-0:30:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-01T08:30:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 18.0,
+        "difficulty": 5.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 32.450792215945945,
+        "difficulty": 3.8258880146932825,
+        "dueAt": "2026-02-02T08:30:00Z",
+        "lastReviewAt": "2026-01-01T08:30:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-0:10:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-01T08:10:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 3.864758870302117,
+        "difficulty": 6.274784339137728,
+        "dueAt": "2026-01-05T08:10:00Z",
+        "lastReviewAt": "2026-01-01T08:10:00Z"
+      }
+    },
+    {
+      "name": "Relearning-step0-45 days, 20:00:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-02-16T04:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.5,
+        "difficulty": 7.0,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 48.77006224386127,
+        "difficulty": 6.274784339137728,
+        "dueAt": "2026-04-06T04:00:00Z",
+        "lastReviewAt": "2026-02-16T04:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 0:00:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-02T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 2.9382175168234754,
+        "difficulty": 7.8265141235821725,
+        "dueAt": "2026-01-02T08:10:00Z",
+        "lastReviewAt": "2026-01-02T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 0:00:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-02T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30.48055162848785,
+        "difficulty": 6.901121474693283,
+        "dueAt": "2026-02-01T08:00:00Z",
+        "lastReviewAt": "2026-01-02T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 0:00:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-02T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 32.19329816744797,
+        "difficulty": 5.975728825804394,
+        "dueAt": "2026-02-03T08:00:00Z",
+        "lastReviewAt": "2026-01-02T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 0:00:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-02T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 36.58077182161088,
+        "difficulty": 5.050336176915505,
+        "dueAt": "2026-02-08T08:00:00Z",
+        "lastReviewAt": "2026-01-02T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 23:59:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-03T07:59:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 2.9382175168234754,
+        "difficulty": 7.8265141235821725,
+        "dueAt": "2026-01-03T08:09:00Z",
+        "lastReviewAt": "2026-01-03T07:59:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 23:59:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-03T07:59:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30.48055162848785,
+        "difficulty": 6.901121474693283,
+        "dueAt": "2026-02-02T07:59:00Z",
+        "lastReviewAt": "2026-01-03T07:59:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 23:59:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-03T07:59:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 32.19329816744797,
+        "difficulty": 5.975728825804394,
+        "dueAt": "2026-02-04T07:59:00Z",
+        "lastReviewAt": "2026-01-03T07:59:00Z"
+      }
+    },
+    {
+      "name": "elapsed-1 day, 23:59:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-03T07:59:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 36.58077182161088,
+        "difficulty": 5.050336176915505,
+        "dueAt": "2026-02-09T07:59:00Z",
+        "lastReviewAt": "2026-01-03T07:59:00Z"
+      }
+    },
+    {
+      "name": "elapsed-3650 days, 0:00:00-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2035-12-30T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 11.227830256504346,
+        "difficulty": 7.8265141235821725,
+        "dueAt": "2035-12-30T08:10:00Z",
+        "lastReviewAt": "2035-12-30T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-3650 days, 0:00:00-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2035-12-30T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 114.84235979980323,
+        "difficulty": 6.901121474693283,
+        "dueAt": "2036-04-23T08:00:00Z",
+        "lastReviewAt": "2035-12-30T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-3650 days, 0:00:00-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2035-12-30T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 417.2312177079107,
+        "difficulty": 5.975728825804394,
+        "dueAt": "2037-02-19T08:00:00Z",
+        "lastReviewAt": "2035-12-30T08:00:00Z"
+      }
+    },
+    {
+      "name": "elapsed-3650 days, 0:00:00-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2035-12-30T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 30,
+        "difficulty": 6,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 1191.8485456108153,
+        "difficulty": 5.050336176915505,
+        "dueAt": "2039-04-05T08:00:00Z",
+        "lastReviewAt": "2035-12-30T08:00:00Z"
+      }
+    },
+    {
+      "name": "maximum-interval-Again",
+      "maximumInterval": 30,
+      "rating": 1,
+      "reviewedAt": "2026-04-11T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10000,
+        "difficulty": 2,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 28.83581649499219,
+        "difficulty": 5.70489942135995,
+        "dueAt": "2026-04-11T08:10:00Z",
+        "lastReviewAt": "2026-04-11T08:00:00Z"
+      }
+    },
+    {
+      "name": "maximum-interval-Hard",
+      "maximumInterval": 30,
+      "rating": 2,
+      "reviewedAt": "2026-04-11T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10000,
+        "difficulty": 2,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10045.48934700215,
+        "difficulty": 3.854114123582172,
+        "dueAt": "2026-05-11T08:00:00Z",
+        "lastReviewAt": "2026-04-11T08:00:00Z"
+      }
+    },
+    {
+      "name": "maximum-interval-Good",
+      "maximumInterval": 30,
+      "rating": 3,
+      "reviewedAt": "2026-04-11T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10000,
+        "difficulty": 2,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10207.619110005246,
+        "difficulty": 2.0033288258043944,
+        "dueAt": "2026-05-11T08:00:00Z",
+        "lastReviewAt": "2026-04-11T08:00:00Z"
+      }
+    },
+    {
+      "name": "maximum-interval-Easy",
+      "maximumInterval": 30,
+      "rating": 4,
+      "reviewedAt": "2026-04-11T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10000,
+        "difficulty": 2,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 10622.94037765974,
+        "difficulty": 1.0,
+        "dueAt": "2026-05-11T08:00:00Z",
+        "lastReviewAt": "2026-04-11T08:00:00Z"
+      }
+    },
+    {
+      "name": "sequence-0-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-01T08:00:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": null,
+        "difficulty": null,
+        "dueAt": "2026-01-01T08:00:00Z",
+        "lastReviewAt": null
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.2172,
+        "difficulty": 7.0114,
+        "dueAt": "2026-01-01T08:01:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      }
+    },
+    {
+      "name": "sequence-1-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-01T08:01:00Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.2172,
+        "difficulty": 7.0114,
+        "dueAt": "2026-01-01T08:01:00Z",
+        "lastReviewAt": "2026-01-01T08:00:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.16365145806222992,
+        "difficulty": 7.671557283421727,
+        "dueAt": "2026-01-01T08:06:30Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      }
+    },
+    {
+      "name": "sequence-2-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:06:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 0,
+        "stability": 0.16365145806222992,
+        "difficulty": 7.671557283421727,
+        "dueAt": "2026-01-01T08:06:30Z",
+        "lastReviewAt": "2026-01-01T08:01:00Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 0.2728542535074799,
+        "difficulty": 7.635752363970511,
+        "dueAt": "2026-01-01T08:16:30Z",
+        "lastReviewAt": "2026-01-01T08:06:30Z"
+      }
+    },
+    {
+      "name": "sequence-3-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-01T08:16:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 1,
+        "step": 1,
+        "stability": 0.2728542535074799,
+        "difficulty": 7.635752363970511,
+        "dueAt": "2026-01-01T08:16:30Z",
+        "lastReviewAt": "2026-01-01T08:06:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 0.42270620077303556,
+        "difficulty": 7.600194498463508,
+        "dueAt": "2026-01-02T08:16:30Z",
+        "lastReviewAt": "2026-01-01T08:16:30Z"
+      }
+    },
+    {
+      "name": "sequence-4-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-02T21:16:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 0.42270620077303556,
+        "difficulty": 7.600194498463508,
+        "dueAt": "2026-01-02T08:16:30Z",
+        "lastReviewAt": "2026-01-01T08:16:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.721630241946485,
+        "difficulty": 7.009691389757259,
+        "dueAt": "2026-01-07T21:16:30Z",
+        "lastReviewAt": "2026-01-02T21:16:30Z"
+      }
+    },
+    {
+      "name": "sequence-5-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-08T10:16:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.721630241946485,
+        "difficulty": 7.009691389757259,
+        "dueAt": "2026-01-07T21:16:30Z",
+        "lastReviewAt": "2026-01-02T21:16:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.366258671017644,
+        "difficulty": 8.36205814788622,
+        "dueAt": "2026-01-08T10:26:30Z",
+        "lastReviewAt": "2026-01-08T10:16:30Z"
+      }
+    },
+    {
+      "name": "sequence-6-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-08T23:26:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 1.366258671017644,
+        "difficulty": 8.36205814788622,
+        "dueAt": "2026-01-08T10:26:30Z",
+        "lastReviewAt": "2026-01-08T10:16:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.7903576538996143,
+        "difficulty": 8.700423609783586,
+        "dueAt": "2026-01-08T23:41:30Z",
+        "lastReviewAt": "2026-01-08T23:26:30Z"
+      }
+    },
+    {
+      "name": "sequence-7-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-09T12:41:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.7903576538996143,
+        "difficulty": 8.700423609783586,
+        "dueAt": "2026-01-08T23:41:30Z",
+        "lastReviewAt": "2026-01-08T23:26:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 1.0508906763014574,
+        "difficulty": 8.657519512680475,
+        "dueAt": "2026-01-10T12:41:30Z",
+        "lastReviewAt": "2026-01-09T12:41:30Z"
+      }
+    },
+    {
+      "name": "sequence-8-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-11T01:41:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 1.0508906763014574,
+        "difficulty": 8.657519512680475,
+        "dueAt": "2026-01-10T12:41:30Z",
+        "lastReviewAt": "2026-01-09T12:41:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 2.211684667838892,
+        "difficulty": 8.614911453847375,
+        "dueAt": "2026-01-13T01:41:30Z",
+        "lastReviewAt": "2026-01-11T01:41:30Z"
+      }
+    },
+    {
+      "name": "sequence-9-Again",
+      "maximumInterval": 36500,
+      "rating": 1,
+      "reviewedAt": "2026-01-13T14:41:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 2.211684667838892,
+        "difficulty": 8.614911453847375,
+        "dueAt": "2026-01-13T01:41:30Z",
+        "lastReviewAt": "2026-01-11T01:41:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.7891027669991978,
+        "difficulty": 9.21347276995514,
+        "dueAt": "2026-01-13T14:51:30Z",
+        "lastReviewAt": "2026-01-13T14:41:30Z"
+      }
+    },
+    {
+      "name": "sequence-10-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-14T03:51:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 3,
+        "step": 0,
+        "stability": 0.7891027669991978,
+        "difficulty": 9.21347276995514,
+        "dueAt": "2026-01-13T14:51:30Z",
+        "lastReviewAt": "2026-01-13T14:41:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 2.2297230851258307,
+        "difficulty": 8.985067004438234,
+        "dueAt": "2026-01-16T03:51:30Z",
+        "lastReviewAt": "2026-01-14T03:51:30Z"
+      }
+    },
+    {
+      "name": "sequence-11-Good",
+      "maximumInterval": 36500,
+      "rating": 3,
+      "reviewedAt": "2026-01-16T16:51:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 2.2297230851258307,
+        "difficulty": 8.985067004438234,
+        "dueAt": "2026-01-16T03:51:30Z",
+        "lastReviewAt": "2026-01-14T03:51:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.0885974994000325,
+        "difficulty": 8.940198867912004,
+        "dueAt": "2026-01-20T16:51:30Z",
+        "lastReviewAt": "2026-01-16T16:51:30Z"
+      }
+    },
+    {
+      "name": "sequence-12-Hard",
+      "maximumInterval": 36500,
+      "rating": 2,
+      "reviewedAt": "2026-01-21T05:51:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.0885974994000325,
+        "difficulty": 8.940198867912004,
+        "dueAt": "2026-01-20T16:51:30Z",
+        "lastReviewAt": "2026-01-16T16:51:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.852225823707259,
+        "difficulty": 9.140823365757393,
+        "dueAt": "2026-01-26T05:51:30Z",
+        "lastReviewAt": "2026-01-21T05:51:30Z"
+      }
+    },
+    {
+      "name": "sequence-13-Easy",
+      "maximumInterval": 36500,
+      "rating": 4,
+      "reviewedAt": "2026-01-26T18:51:30Z",
+      "before": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 4.852225823707259,
+        "difficulty": 9.140823365757393,
+        "dueAt": "2026-01-26T05:51:30Z",
+        "lastReviewAt": "2026-01-21T05:51:30Z"
+      },
+      "after": {
+        "cardId": "00000000-0000-0000-0000-000000000001",
+        "state": 2,
+        "step": null,
+        "stability": 16.291939787713485,
+        "difficulty": 8.896111574981761,
+        "dueAt": "2026-02-11T18:51:30Z",
+        "lastReviewAt": "2026-01-26T18:51:30Z"
+      }
+    }
+  ]
+}

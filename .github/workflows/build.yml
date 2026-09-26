@@ -1,0 +1,46 @@
+name: Windows build and tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate all vocabulary content
+        run: python scripts/validate-content.py
+      - name: Build and test
+        shell: pwsh
+        run: ./scripts/build.ps1
+      - name: Publish Windows package
+        shell: pwsh
+        run: ./scripts/publish.ps1
+      - name: Upload Windows package
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordTrail-win-x64
+          path: |
+            artifacts/*.zip
+            artifacts/*.sha256
+          if-no-files-found: error
+      - name: Upload test reports and dependency locks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-evidence
+          path: |
+            artifacts/test-results/**
+            **/packages.lock.json
+          if-no-files-found: warn

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>WordTrail</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WordTrail.Core\WordTrail.Core.csproj" />
+    <ProjectReference Include="..\WordTrail.Infrastructure\WordTrail.Infrastructure.csproj" />
+    <Content Include="..\..\content\toeic-starter.json" Link="content\toeic-starter.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

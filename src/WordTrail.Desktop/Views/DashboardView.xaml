@@ -1,0 +1,28 @@
+<UserControl x:Class="WordTrail.Desktop.Views.DashboardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="clr-namespace:WordTrail.Desktop.Views">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <TextBlock Text="{Binding Greeting}" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="先複習到期的詞，再用一點餘裕認識新詞。每天 10–15 分鐘就好。" Style="{StaticResource MutedText}" Margin="0,0,0,26"/>
+            <views:StatusBanner/>
+            <UniformGrid Columns="3" Margin="0,0,0,24">
+                <Border Style="{StaticResource Panel}" Margin="0,0,12,0"><StackPanel><TextBlock Text="已學且到期" Style="{StaticResource MutedText}"/><TextBlock Text="{Binding Summary.DueCount}" FontSize="42" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" Margin="0,12,0,4" AutomationProperties.AutomationId="DueCount"/><TextBlock Text="優先複習" Foreground="#8893A5" FontSize="12"/></StackPanel></Border>
+                <Border Style="{StaticResource Panel}" Margin="0,0,12,0"><StackPanel><TextBlock Text="已選入的新詞" Style="{StaticResource MutedText}"/><TextBlock Text="{Binding Summary.SelectedNewCount}" FontSize="42" FontWeight="SemiBold" Margin="0,12,0,4"/><TextBlock Text="依每日名額開始" Foreground="#8893A5" FontSize="12"/></StackPanel></Border>
+                <Border Style="{StaticResource Panel}"><StackPanel><TextBlock Text="今日已複習" Style="{StaticResource MutedText}"/><TextBlock Text="{Binding Summary.ReviewedToday}" FontSize="42" FontWeight="SemiBold" Margin="0,12,0,4"/><TextBlock Text="每一次回想都算數" Foreground="#8893A5" FontSize="12"/></StackPanel></Border>
+            </UniformGrid>
+            <Border Style="{StaticResource Panel}" Padding="30" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="把記憶慢慢留下來" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <TextBlock Text="看見單字，先在心中回想意思，再翻面核對。誠實選擇難度，下一次複習就會依你的記憶調整。" Style="{StaticResource MutedText}" MaxWidth="650" HorizontalAlignment="Left"/>
+                    <WrapPanel Margin="0,22,0,4"><Button Content="開始今天的複習 →" Style="{StaticResource PrimaryButton}" Command="{Binding StartReviewCommand}" AutomationProperties.AutomationId="StartReview"/><Button Content="挑選想學的單字" Command="{Binding BrowseCommand}"/></WrapPanel>
+                    <TextBlock Text="{Binding NextDueText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Border>
+            <Border Background="#EDF0FA" CornerRadius="12" Padding="22">
+                <StackPanel><TextBlock Text="新詞不用一次全部加入" FontWeight="SemiBold" Margin="0,0,0,6"/><TextBlock Text="候選教材不會自動排進複習。到單字庫選入需要的詞義，已熟悉的先略過；每天新詞預設最多 5 個，到期較多時會自動降低。" Style="{StaticResource MutedText}"/></StackPanel>
+            </Border>
+            <Button Content="重新整理" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" Margin="0,18,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
