@@ -7,7 +7,7 @@
         <!-- 保留 DataGrid 的鍵盤操作與虛擬化，只調整表頭、列與儲存格外觀。 -->
         <Style x:Key="LibraryHeader" TargetType="DataGridColumnHeader">
             <Setter Property="Background" Value="#F7F9FC" />
-            <Setter Property="Foreground" Value="#718096" />
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Padding" Value="16,12" />
@@ -46,7 +46,7 @@
         </Style>
         <Style x:Key="EnrollmentLabel" TargetType="TextBlock">
             <Setter Property="Text" Value="待篩選" />
-            <Setter Property="Foreground" Value="#65738A" />
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Style.Triggers>
@@ -63,7 +63,7 @@
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsArchived}" Value="True">
                     <Setter Property="Text" Value="已封存" />
-                    <Setter Property="Foreground" Value="#737C8D" />
+                    <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -92,7 +92,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Margin="0,0,12,0">
-                    <TextBlock Text="搜尋詞條或意思" Foreground="#718096" FontSize="11" Margin="0,0,0,7" />
+                    <TextBlock Text="搜尋詞條或意思" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
                     <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" ToolTip="搜尋英文詞條、搭配或中文詞義" AutomationProperties.Name="搜尋詞條或中文詞義" AutomationProperties.AutomationId="VocabularySearch">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
@@ -100,11 +100,11 @@
                     </TextBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                    <TextBlock Text="主題分類" Foreground="#718096" FontSize="11" Margin="0,0,0,7" />
+                    <TextBlock Text="主題分類" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
                     <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" AutomationProperties.Name="分類篩選" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                    <TextBlock Text="學習狀態" Foreground="#718096" FontSize="11" Margin="0,0,0,7" />
+                    <TextBlock Text="學習狀態" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
                     <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" AutomationProperties.Name="學習狀態篩選" AutomationProperties.AutomationId="EnrollmentFilter" />
                 </StackPanel>
                 <Button Grid.Column="3" Content="套用篩選" Command="{Binding SearchCommand}" Margin="0" VerticalAlignment="Bottom" AutomationProperties.AutomationId="SearchWords" />
@@ -140,7 +140,18 @@
                                     <DataTemplate>
                                         <StackPanel Margin="16,12" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Headword}" FontSize="17" FontWeight="SemiBold" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Headword}" />
-                                            <TextBlock Text="{Binding PartOfSpeech}" Foreground="#8490A3" FontSize="11" Margin="0,5,0,0" />
+                                            <TextBlock Text="{Binding PartOfSpeech}" FontSize="11" Margin="0,5,0,0">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=DataGridRow}}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -165,7 +176,7 @@
                             <DataGridTemplateColumn Header="狀態" CanUserSort="False" Width="94">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border Background="#F1F4F8" CornerRadius="6" Padding="9,5" Margin="12,0" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                        <Border Background="#F7F9FC" CornerRadius="6" Padding="9,5" Margin="12,0" HorizontalAlignment="Left" VerticalAlignment="Center">
                                             <TextBlock Style="{StaticResource EnrollmentLabel}" />
                                         </Border>
                                     </DataTemplate>
