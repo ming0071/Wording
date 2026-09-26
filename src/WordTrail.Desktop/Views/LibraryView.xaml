@@ -130,6 +130,12 @@
                               AutomationProperties.AutomationId="VocabularyGrid">
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" Width="1.15*" MinWidth="150">
+                                <DataGridTemplateColumn.ClipboardContentBinding>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Headword" />
+                                        <Binding Path="PartOfSpeech" />
+                                    </MultiBinding>
+                                </DataGridTemplateColumn.ClipboardContentBinding>
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="16,12" VerticalAlignment="Center">
@@ -139,7 +145,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="這個詞義" SortMemberPath="Meaning" Width="1.7*" MinWidth="170">
+                            <DataGridTemplateColumn Header="這個詞義" SortMemberPath="Meaning" ClipboardContentBinding="{Binding Meaning}" Width="1.7*" MinWidth="170">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Meaning}" Margin="16,12" VerticalAlignment="Center" TextWrapping="Wrap"
@@ -147,7 +153,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="優先級" SortMemberPath="Level" Width="86">
+                            <DataGridTemplateColumn Header="優先級" SortMemberPath="Level" ClipboardContentBinding="{Binding Level}" Width="86">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Background="#F0EEFC" CornerRadius="6" Padding="9,5" Margin="12,0" HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -156,7 +162,7 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="狀態" SortMemberPath="Enrollment" Width="94">
+                            <DataGridTemplateColumn Header="狀態" CanUserSort="False" Width="94">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Background="#F1F4F8" CornerRadius="6" Padding="9,5" Margin="12,0" HorizontalAlignment="Left" VerticalAlignment="Center">
