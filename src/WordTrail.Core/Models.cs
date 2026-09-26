@@ -44,7 +44,7 @@ public interface IStudyStore
     Task InitializeAsync(CancellationToken cancellationToken = default);
     Task ImportSeedPackAsync(SeedPack pack, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<VocabularyItem>> GetVocabularyAsync(string? search = null,
-        string? category = null, CancellationToken cancellationToken = default);
+        string? category = null, CancellationToken cancellationToken = default, bool includeArchived = false);
     Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task AddCategoryAsync(string name, CancellationToken cancellationToken = default);
     Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default);

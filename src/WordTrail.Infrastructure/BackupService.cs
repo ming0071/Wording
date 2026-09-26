@@ -70,7 +70,15 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
                 {
                     try
                     {
-                        // 回退前沒有存活連線；只替換本次生成、同目錄的 rollback 檔。
+                        // 若驗證期間曾啟用 WAL，必須先收妥新庫的 sidecar，再放回舊庫。
+                        if (File.Exists(store.DatabasePath + "-wal") || File.Exists(store.DatabasePath + "-shm"))
+                        {
+                            using var connection = store.OpenConnection();
+                            var mode = SqliteStudyStore.Scalar(connection, null, "PRAGMA journal_mode=DELETE;") as string;
+                            if (!string.Equals(mode, "delete", StringComparison.OrdinalIgnoreCase))
+                                throw new StudyDataException("新庫仍被占用，已保留 rollback 舊庫供手動復原。");
+                        }
+                        // 只替換本次生成、同目錄的 rollback 檔。
                         File.Replace(rollback, store.DatabasePath, null);
                     }
                     catch (Exception rollbackFailure)
@@ -95,7 +103,8 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(destination);
         destination = Path.GetFullPath(destination);
-        if (string.Equals(destination, store.DatabasePath, StringComparison.OrdinalIgnoreCase))
+        if (new[] { store.DatabasePath, store.DatabasePath + "-wal", store.DatabasePath + "-shm" }
+            .Contains(destination, StringComparer.OrdinalIgnoreCase))
             throw new ArgumentException("備份位置不能是目前資料庫。");
         var targetDirectory = Path.GetDirectoryName(destination)!;
         Directory.CreateDirectory(targetDirectory);

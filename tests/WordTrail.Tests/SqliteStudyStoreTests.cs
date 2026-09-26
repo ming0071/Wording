@@ -68,6 +68,46 @@ public sealed class SqliteStudyStoreTests
     }
 
     [Fact]
+    public async Task ArchivedWordsCanBeFoundAndRestoredWithoutResettingProgress()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        var word = await data.AddWordAsync();
+        var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!;
+        var result = await data.Store.SubmitReviewAsync(
+            new(word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        await data.Store.SetPausedAsync(word.Id, true);
+        var cardId = data.Scalar("SELECT card_id FROM cards;");
+        var stability = data.Scalar("SELECT stability FROM cards;");
+        var difficulty = data.Scalar("SELECT difficulty FROM cards;");
+
+        await data.Store.ArchiveAsync(word.Id);
+        Assert.Empty(await data.Store.GetVocabularyAsync());
+        var archived = Assert.Single(await data.Store.GetVocabularyAsync(
+            search: "appointment", category: "商業", includeArchived: true));
+        Assert.True(archived.IsArchived);
+        Assert.Empty(await data.Store.GetVocabularyAsync(search: "missing", includeArchived: true));
+        Assert.Empty(await data.Store.GetVocabularyAsync(category: "missing", includeArchived: true));
+
+        await data.Store.SaveVocabularyAsync(archived with { IsArchived = false });
+        var restored = Assert.Single(await data.NewStore().GetVocabularyAsync());
+        Assert.False(restored.IsArchived);
+        Assert.True(restored.IsPaused);
+        Assert.Equal(Enrollment.Selected, restored.Enrollment);
+        Assert.Equal(cardId, data.Scalar("SELECT card_id FROM cards;"));
+        Assert.Equal(stability, data.Scalar("SELECT stability FROM cards;"));
+        Assert.Equal(difficulty, data.Scalar("SELECT difficulty FROM cards;"));
+        Assert.Equal(result.DueAt.ToUnixTimeMilliseconds(), data.Scalar("SELECT due_ms FROM cards;"));
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        Assert.Null(await data.Store.GetNextReviewAsync(result.DueAt, 5));
+
+        await data.Store.SetPausedAsync(word.Id, false);
+        var due = (await data.Store.GetNextReviewAsync(result.DueAt, 5))!;
+        Assert.Equal(word.Id, due.Word.Id);
+        Assert.False(due.IsNew);
+    }
+
+    [Fact]
     public async Task SameSenseInTwoCategoriesHasOnlyOneCardAndDifferentMeaningsAreIndependent()
     {
         using var data = new StudyTestData();

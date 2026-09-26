@@ -104,12 +104,12 @@ public sealed class SqliteStudyStore : IStudyStore
         }, cancellationToken);
 
     public Task<IReadOnlyList<VocabularyItem>> GetVocabularyAsync(string? search = null,
-        string? category = null, CancellationToken cancellationToken = default) =>
+        string? category = null, CancellationToken cancellationToken = default, bool includeArchived = false) =>
         WithMaintenanceAsync<IReadOnlyList<VocabularyItem>>(() =>
         {
             using var connection = OpenConnection();
             var items = ReadWords(connection, null);
-            var query = items.Where(x => !x.IsArchived);
+            var query = items.Where(x => includeArchived || !x.IsArchived);
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var text = search.Trim();
@@ -390,6 +390,23 @@ public sealed class SqliteStudyStore : IStudyStore
         Scalar(connection, null, "SELECT COUNT(*) FROM new_starts WHERE first_day IS NOT NULL;");
         Scalar(connection, null, "SELECT COUNT(*) FROM sense_categories;");
         Scalar(connection, null, "SELECT COUNT(*) FROM content_packs WHERE version>0;");
+        if (Count(connection, null, "SELECT COUNT(*) FROM senses s LEFT JOIN cards c ON c.sense_id=s.id WHERE c.sense_id IS NULL;") != 0)
+            throw new StudyDataException("部分詞義缺少卡片排程。");
+        if (Count(connection, null, "SELECT COUNT(*) FROM sqlite_master WHERE type IN('trigger','view');") != 0)
+            throw new StudyDataException("資料庫含有非 WordTrail 建立的規則。");
+        foreach (var word in ReadWords(connection, null))
+        {
+            ValidateVocabulary(word);
+            var (schedule, _) = ReadSchedule(connection, null, word.Id);
+            var invalid = schedule.CardId == Guid.Empty || !Enum.IsDefined(schedule.State) ||
+                (schedule.State == LearningState.Review ? schedule.Step is not null : schedule.Step is null or < 0) ||
+                (schedule.LastReviewAt is null && (schedule.State != LearningState.Learning ||
+                    schedule.Stability is not null || schedule.Difficulty is not null)) ||
+                (schedule.LastReviewAt is not null &&
+                    (schedule.Stability is not { } stability || !double.IsFinite(stability) || stability <= 0 ||
+                     schedule.Difficulty is not { } difficulty || !double.IsFinite(difficulty) || difficulty is < 1 or > 10));
+            if (invalid) throw new StudyDataException("資料庫含有不完整的卡片排程。");
+        }
     }
 
     private void InsertWord(SqliteConnection connection, SqliteTransaction transaction, VocabularyItem item, string? packId)

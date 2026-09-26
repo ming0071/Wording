@@ -61,21 +61,21 @@ public sealed class MainViewModel : ObservableObject
         isNavigating = true;
         try
         {
-        if (CurrentPage == Review)
-        {
-            await Review.EndSessionAsync();
-        }
-        var page = section switch
-        {
-            "library" => (PageViewModel)Library,
-            "review" => Review,
-            "settings" => Settings,
-            _ => Dashboard
-        };
-        CurrentSection = section switch { "library" => "單字庫", "review" => "複習", "settings" => "設定與備份", _ => "今日學習" };
-        if (page == Review) Review.BeginSession();
-        CurrentPage = page;
-        await page.LoadAsync();
+            if (CurrentPage == Review) await Review.EndSessionAsync();
+            var page = section switch
+            {
+                "library" => (PageViewModel)Library,
+                "review" => Review,
+                "settings" => Settings,
+                _ => Dashboard
+            };
+            CurrentSection = section switch
+            {
+                "library" => "單字庫", "review" => "複習", "settings" => "設定與備份", _ => "今日學習"
+            };
+            if (page == Review) Review.BeginSession();
+            CurrentPage = page;
+            await page.LoadAsync();
         }
         catch (Exception exception) { CurrentPage.Error = exception.Message; }
         finally { isNavigating = false; }

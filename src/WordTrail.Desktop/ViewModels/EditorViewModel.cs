@@ -33,6 +33,7 @@ public sealed class EditorViewModel : PageViewModel
     private AiEnrichment? preview;
     private ContentOrigin origin;
     private bool isDirty;
+    private long editRevision;
     private VocabularyItem? previewInput;
     private string? generatedMeaning;
     private string[]? generatedCollocations;
@@ -40,16 +41,16 @@ public sealed class EditorViewModel : PageViewModel
 
     public string Title { get; }
     public bool IsDirty { get => isDirty; private set => SetProperty(ref isDirty, value); }
-    public string Headword { get => headword; set { if (SetProperty(ref headword, value)) IsDirty = true; } }
-    public string PartOfSpeech { get => partOfSpeech; set { if (SetProperty(ref partOfSpeech, value)) IsDirty = true; } }
-    public string Meaning { get => meaning; set { if (SetProperty(ref meaning, value)) IsDirty = true; } }
-    public string Cue { get => cue; set { if (SetProperty(ref cue, value)) IsDirty = true; } }
-    public string CategoriesText { get => categoriesText; set { if (SetProperty(ref categoriesText, value)) IsDirty = true; } }
-    public string CollocationsText { get => collocationsText; set { if (SetProperty(ref collocationsText, value)) IsDirty = true; } }
-    public string Level { get => level; set { if (SetProperty(ref level, value)) IsDirty = true; } }
+    public string Headword { get => headword; set { if (SetProperty(ref headword, value)) MarkEdited(); } }
+    public string PartOfSpeech { get => partOfSpeech; set { if (SetProperty(ref partOfSpeech, value)) MarkEdited(); } }
+    public string Meaning { get => meaning; set { if (SetProperty(ref meaning, value)) MarkEdited(); } }
+    public string Cue { get => cue; set { if (SetProperty(ref cue, value)) MarkEdited(); } }
+    public string CategoriesText { get => categoriesText; set { if (SetProperty(ref categoriesText, value)) MarkEdited(); } }
+    public string CollocationsText { get => collocationsText; set { if (SetProperty(ref collocationsText, value)) MarkEdited(); } }
+    public string Level { get => level; set { if (SetProperty(ref level, value)) MarkEdited(); } }
     public string[] Levels { get; } = ["基礎", "優先", "延伸"];
-    public bool SelectedForStudy { get => selectedForStudy; set { if (SetProperty(ref selectedForStudy, value)) IsDirty = true; } }
-    public bool IsArchived { get => isArchived; set { if (SetProperty(ref isArchived, value)) IsDirty = true; } }
+    public bool SelectedForStudy { get => selectedForStudy; set { if (SetProperty(ref selectedForStudy, value)) MarkEdited(); } }
+    public bool IsArchived { get => isArchived; set { if (SetProperty(ref isArchived, value)) MarkEdited(); } }
     public bool AiConsent { get => aiConsent; set { SetProperty(ref aiConsent, value); GenerateCommand.NotifyCanExecuteChanged(); } }
     public ObservableCollection<ExampleEditor> Examples { get; } = [];
     public ObservableCollection<string> AvailableCategories { get; } = [];
@@ -83,14 +84,15 @@ public sealed class EditorViewModel : PageViewModel
         isArchived = original.IsArchived;
         origin = original.Origin;
         SetExamples(original.Examples);
+        Examples.CollectionChanged += (_, _) => MarkEdited();
         SaveCommand = Command(SaveAsync, () => !GenerateCommand.IsRunning);
         GenerateCommand = Command(GenerateAsync, () => AiConsent && !SaveCommand.IsRunning);
-        GenerateCommand.PropertyChanged += (_, _) => SaveCommand.NotifyCanExecuteChanged();
+        GenerateCommand.PropertyChanged += (_, _) => { SaveCommand.NotifyCanExecuteChanged(); ApplyPreviewCommand?.NotifyCanExecuteChanged(); };
         SaveCommand.PropertyChanged += (_, _) => GenerateCommand.NotifyCanExecuteChanged();
         CancelGenerationCommand = new(_ => GenerateCommand.Cancel());
         ApplyPreviewCommand = new(_ => ApplyPreview(), _ => Preview is not null && !GenerateCommand.IsRunning);
         DiscardPreviewCommand = new(_ => Preview = null);
-        AddExampleCommand = new(_ => { AddExample(new ExampleSentence("", "")); IsDirty = true; });
+        AddExampleCommand = new(_ => AddExample(new ExampleSentence("", "")));
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Headword, message => Error = message));
     }
 
@@ -134,7 +136,14 @@ public sealed class EditorViewModel : PageViewModel
     private async Task SaveAsync(CancellationToken token)
     {
         var item = BuildItem();
+        var savedRevision = editRevision;
         await store.SaveVocabularyAsync(item, token);
+        // 寫入期間仍可編輯；舊快照成功不能抹掉後來的修改，也不能通知外層離開編輯頁。
+        if (editRevision != savedRevision)
+        {
+            Notice = "已保存按下按鈕時的內容；保存期間新增的修改尚未保存，請再按一次「保存詞義」。";
+            return;
+        }
         IsDirty = false;
         Notice = "已保存。修改內容不會重設既有複習進度。";
         saved(item);
@@ -169,7 +178,7 @@ public sealed class EditorViewModel : PageViewModel
         generatedMeaning = result.Meaning;
         generatedCollocations = result.Collocations;
         generatedOrigin = result.Origin;
-        IsDirty = true;
+        MarkEdited();
         OnPropertyChanged(nameof(OriginText));
         Preview = null;
         Notice = "已套用到欄位，尚未保存。你可以調整內容後再保存。";
@@ -186,7 +195,13 @@ public sealed class EditorViewModel : PageViewModel
     {
         var editor = new ExampleEditor { English = example.English, Chinese = example.Chinese,
             OriginalEnglish = example.English, OriginalChinese = example.Chinese, Origin = example.Origin };
-        editor.PropertyChanged += (_, _) => IsDirty = true;
+        editor.PropertyChanged += (_, _) => MarkEdited();
         Examples.Add(editor);
+    }
+
+    private void MarkEdited()
+    {
+        editRevision++;
+        IsDirty = true;
     }
 }

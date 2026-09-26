@@ -39,9 +39,10 @@ public sealed class LibraryViewModel : PageViewModel
     public AsyncCommand SkipCommand { get; }
     public AsyncCommand PauseCommand { get; }
     public AsyncCommand ArchiveCommand { get; }
+    public AsyncCommand RestoreCommand { get; }
     public RelayCommand NewCommand { get; }
     public RelayCommand EditCommand { get; }
-    private AsyncCommand[] SelectionCommands => [SelectCommand, SkipCommand, PauseCommand, ArchiveCommand];
+    private AsyncCommand[] SelectionCommands => [SelectCommand, SkipCommand, PauseCommand, ArchiveCommand, RestoreCommand];
 
     public LibraryViewModel(IStudyStore store, Action<VocabularyItem?> edit)
     {
@@ -53,6 +54,7 @@ public sealed class LibraryViewModel : PageViewModel
         SkipCommand = Command(token => ChangeEnrollmentAsync(Enrollment.Skipped, token), () => SelectedItem is { IsArchived: false });
         PauseCommand = Command(TogglePauseAsync, () => SelectedItem is { IsArchived: false });
         ArchiveCommand = Command(ArchiveAsync, () => SelectedItem is { IsArchived: false });
+        RestoreCommand = Command(RestoreAsync, () => SelectedItem is { IsArchived: true });
         NewCommand = new(_ => edit(null));
         EditCommand = new(_ => edit(SelectedItem), _ => SelectedItem is not null);
     }
@@ -66,7 +68,9 @@ public sealed class LibraryViewModel : PageViewModel
         Categories.Add("全部分類");
         foreach (var category in categories) Categories.Add(category);
         SelectedCategory = Categories.Contains(currentCategory) ? currentCategory : "全部分類";
-        var vocabulary = await store.GetVocabularyAsync(SearchText, SelectedCategory == "全部分類" ? null : SelectedCategory, cancellationToken);
+        var vocabulary = await store.GetVocabularyAsync(SearchText,
+            SelectedCategory == "全部分類" ? null : SelectedCategory, cancellationToken,
+            includeArchived: SelectedFilter is "已封存" or "全部");
         var filtered = vocabulary.Where(item => SelectedFilter switch
         {
             "待篩選" => !item.IsArchived && item.Enrollment == Enrollment.Candidate,
@@ -113,6 +117,14 @@ public sealed class LibraryViewModel : PageViewModel
         if (SelectedItem is not { } item) return;
         await store.ArchiveAsync(item.Id, token);
         await LoadAsync(token);
-        Notice = "已封存詞義並保留學習歷史，可從「已封存」篩選查看。";
+        Notice = "已封存詞義並保留學習歷史，可從「已封存」篩選查看與還原。";
+    }
+
+    private async Task RestoreAsync(CancellationToken token)
+    {
+        if (SelectedItem is not { IsArchived: true } item) return;
+        await store.SaveVocabularyAsync(item with { IsArchived = false }, token);
+        await LoadAsync(token);
+        Notice = "已還原詞義，原有學習進度與暫停狀態保留。";
     }
 }

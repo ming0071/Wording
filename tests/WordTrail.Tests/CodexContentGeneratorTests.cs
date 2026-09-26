@@ -36,6 +36,8 @@ public sealed class CodexContentGeneratorTests : IDisposable
     [InlineData("mcp_tool_call")]
     [InlineData("web_search")]
     [InlineData("file_change")]
+    [InlineData("view_image")]
+    [InlineData("unknown_future_tool")]
     public void UnexpectedToolActivityInvalidatesContent(string toolType)
     {
         var tool = JsonSerializer.Serialize(new { type = "item.completed", item = new { type = toolType } });
@@ -46,6 +48,21 @@ public sealed class CodexContentGeneratorTests : IDisposable
     public void MissingExampleIsRejected()
     {
         Assert.Throws<InvalidDataException>(() => CodexContentGenerator.ParseResponse(Response(SenseId, 1), SenseId, "", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void DuplicateExamplesAreRejected()
+    {
+        var response = Response(SenseId).Replace("The invoice includes the delivery fee.", "Please send the invoice today.");
+        Assert.Throws<InvalidDataException>(() => CodexContentGenerator.ParseResponse(response, SenseId, "", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void FailureSummaryDoesNotExposeRawDiagnostics()
+    {
+        var result = CodexContentGenerator.DescribeFailure("unknown configuration field; secret-from-child-output");
+        Assert.Contains("不支援必要參數", result);
+        Assert.DoesNotContain("secret-from-child-output", result);
     }
 
     [Fact]
@@ -90,7 +107,9 @@ public sealed class CodexContentGeneratorTests : IDisposable
     {
         var payload = JsonSerializer.Serialize(new {
             senseId, meaning = "發票；帳單", collocations = new[] { "send an invoice", "pay an invoice" },
-            examples = Enumerable.Range(0, exampleCount).Select(_ => new { english = "Please send the invoice today.", chinese = "請今天寄送帳單。" })
+            examples = Enumerable.Range(0, exampleCount).Select(index => new {
+                english = index == 0 ? "Please send the invoice today." : "The invoice includes the delivery fee.",
+                chinese = index == 0 ? "請今天寄送帳單。" : "帳單包含運費。" })
         });
         return JsonSerializer.Serialize(new { type = "item.completed", item = new { type = "agent_message", text = payload } }) +
             "\n" + JsonSerializer.Serialize(new { type = "turn.completed" });

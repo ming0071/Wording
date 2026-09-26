@@ -63,7 +63,7 @@ public sealed class CodexContentGenerator : IContentGenerator
                 TimeSpan.FromSeconds(Math.Clamp(settings.TimeoutSeconds, 10, 300)), cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             if (response.ExitCode != 0)
-                throw new InvalidOperationException("Codex 未完成生成。請檢查登入、訂閱額度、網路及 CLI 版本；本次不會自動重試或改走付費 API。");
+                throw new InvalidOperationException(DescribeFailure(response.StandardError));
             return ParseResponse(response.StandardOutput, word.Id, settings.Model, clock.GetUtcNow());
         }
         finally
@@ -121,7 +121,7 @@ public sealed class CodexContentGenerator : IContentGenerator
             if (type.GetString() == "turn.completed") completed = true;
             if (!root.TryGetProperty("item", out var item) || !item.TryGetProperty("type", out var itemType)) continue;
             var kind = itemType.GetString();
-            if (kind is "command_execution" or "mcp_tool_call" or "web_search" or "file_change" or "collab_tool_call")
+            if (kind is not ("agent_message" or "reasoning"))
                 throw new InvalidDataException("本次出現預期外的工具活動，已拒絕採用回應；請檢查 Codex 設定相容性。");
             if (type.GetString() == "item.completed" && kind == "agent_message") final = item.GetProperty("text").GetString();
         }
@@ -135,7 +135,9 @@ public sealed class CodexContentGenerator : IContentGenerator
         var collocations = value.GetProperty("collocations").EnumerateArray().Select(x => x.GetString() ?? "").ToArray();
         var examples = value.GetProperty("examples").EnumerateArray()
             .Select(x => new ExampleSentence(RequiredString(x, "english", 1000), RequiredString(x, "chinese", 1000))).ToArray();
-        if (collocations.Length != 2 || collocations.Any(x => string.IsNullOrWhiteSpace(x) || x.Length > 200) || examples.Length != 2)
+        if (collocations.Length != 2 || collocations.Any(x => string.IsNullOrWhiteSpace(x) || x.Length > 200) || examples.Length != 2
+            || collocations.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Count() != 2
+            || examples.Select(x => x.English.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Count() != 2)
             throw new InvalidDataException("回應必須包含兩個有效搭配與兩個例句。");
         return new(meaning, collocations, examples, new("ai", "Codex 生成；請確認內容後保存", 
             string.IsNullOrWhiteSpace(model) ? "Codex CLI default" : model, now, PromptVersion));
@@ -147,6 +149,22 @@ public sealed class CodexContentGenerator : IContentGenerator
         if (string.IsNullOrWhiteSpace(text) || text.Length > maximumLength)
             throw new InvalidDataException($"AI 回應欄位 {property} 為空或過長。");
         return text.Trim();
+    }
+
+    public static string DescribeFailure(string diagnostic)
+    {
+        // Classify known errors, never expose raw CLI diagnostics or account details in the UI.
+        var text = diagnostic.ToLowerInvariant();
+        var reason = text.Contains("unknown configuration") || text.Contains("unexpected argument") || text.Contains("unrecognized")
+            ? "目前 Codex CLI 不支援必要參數，請更新官方 CLI 或檢查設定的執行檔路徑。"
+            : text.Contains("usage limit") || text.Contains("rate limit") || text.Contains("quota")
+                ? "Codex 訂閱目前已達使用限制，請稍後再試。"
+                : text.Contains("not logged in") || text.Contains("unauthorized") || text.Contains("authentication")
+                    ? "Codex 登入已失效，請重新使用 ChatGPT 登入。"
+                    : text.Contains("network") || text.Contains("connection") || text.Contains("dns")
+                        ? "Codex 無法連線，請檢查網路後再試。"
+                        : "Codex 未完成生成，請先在設定頁檢查登入與 CLI 版本。";
+        return reason + " 本次不會自動重試或改走付費 API。";
     }
 
     private static string BuildSchema(Guid id) => """

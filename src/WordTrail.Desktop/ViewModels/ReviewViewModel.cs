@@ -12,6 +12,7 @@ public sealed class ReviewViewModel : PageViewModel
     private bool isAnswerVisible;
     private bool isSubmitting;
     private Guid operationId = Guid.NewGuid();
+    private ReviewSubmission? pendingSubmission;
     private Guid? lastOperationId;
     private int completed;
     private string emptyText = "正在準備學習卡…";
@@ -49,6 +50,7 @@ public sealed class ReviewViewModel : PageViewModel
     public RelayCommand FlipCommand { get; }
     public RelayCommand SpeakCommand { get; }
     public RelayCommand StopSpeechCommand { get; }
+    public RelayCommand SpeakExampleCommand { get; }
     public RelayCommand DictionaryCommand { get; }
     private AsyncCommand[] RatingCommands => [AgainCommand, HardCommand, GoodCommand, EasyCommand];
 
@@ -61,11 +63,17 @@ public sealed class ReviewViewModel : PageViewModel
         HardCommand = Command(token => RateAsync(ReviewRating.Hard, token), CanRate);
         GoodCommand = Command(token => RateAsync(ReviewRating.Good, token), CanRate);
         EasyCommand = Command(token => RateAsync(ReviewRating.Easy, token), CanRate);
-        RefreshCommand = Command(LoadAsync, () => !isSubmitting);
-        UndoCommand = Command(UndoAsync, () => lastOperationId.HasValue && !isSubmitting);
+        RefreshCommand = Command(async token =>
+        {
+            if (pendingSubmission is not null) lastOperationId = null;
+            await LoadAsync(token);
+        }, () => !isSubmitting);
+        UndoCommand = Command(UndoAsync, () => lastOperationId.HasValue && !isSubmitting && pendingSubmission is null);
         FlipCommand = new(_ => IsAnswerVisible = true, _ => Current is not null && !IsAnswerVisible && !isSubmitting);
         SpeakCommand = new(_ => Speak(), _ => Current is not null);
         StopSpeechCommand = new(_ => speech.Stop());
+        SpeakExampleCommand = new(_ => SpeakText(Current?.Word.Examples.FirstOrDefault()?.English),
+            _ => Current?.Word.Examples.Length > 0 && IsAnswerVisible);
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Current?.Word.Headword, message => Error = message), _ => Current is not null);
     }
 
@@ -99,6 +107,8 @@ public sealed class ReviewViewModel : PageViewModel
         Current = next;
         IsAnswerVisible = false;
         operationId = Guid.NewGuid();
+        pendingSubmission = null;
+        NotifyCommands();
         if (next is null)
         {
             var summary = await store.GetDashboardAsync(DateTimeOffset.UtcNow, cancellationToken);
@@ -113,13 +123,16 @@ public sealed class ReviewViewModel : PageViewModel
     private async Task RateAsync(ReviewRating rating, CancellationToken token)
     {
         if (!CanRate() || Current is not { } card) return;
+        if (pendingSubmission is { } pending && pending.Rating != rating)
+            throw new InvalidOperationException("上次評分尚未確認保存。請重按同一個評分以重試，或按「重新取卡」確認目前資料；不要改用另一個評分重送。");
         isSubmitting = true;
         NotifyCommands();
         try
         {
-            // 此 operationId 保留到成功保存，失敗重試不製造重複評分。
-            var result = await store.SubmitReviewAsync(new(card.Word.Id, rating, DateTimeOffset.UtcNow,
-                operationId, card.ScheduleVersion), token);
+            // 結果不確定時重送同一份 payload，包含評分、時間與版本，不只保留 ID。
+            pendingSubmission ??= new(card.Word.Id, rating, DateTimeOffset.UtcNow, operationId, card.ScheduleVersion);
+            var result = await store.SubmitReviewAsync(pendingSubmission, token);
+            pendingSubmission = null;
             lastOperationId = result.OperationId;
             completed++;
             OnPropertyChanged(nameof(ProgressText));
@@ -150,8 +163,13 @@ public sealed class ReviewViewModel : PageViewModel
 
     private void Speak()
     {
-        if (Current is null) return;
-        try { speech.Speak(Current.Word.Headword); }
+        SpeakText(Current?.Word.Headword);
+    }
+
+    private void SpeakText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+        try { speech.Speak(text); }
         catch (Exception exception) { Error = exception.Message; }
     }
 
@@ -162,6 +180,7 @@ public sealed class ReviewViewModel : PageViewModel
         RefreshCommand?.NotifyCanExecuteChanged();
         FlipCommand?.NotifyCanExecuteChanged();
         SpeakCommand?.NotifyCanExecuteChanged();
+        SpeakExampleCommand?.NotifyCanExecuteChanged();
         DictionaryCommand?.NotifyCanExecuteChanged();
     }
 }
