@@ -5,7 +5,6 @@
         <SolidColorBrush x:Key="AccentBrush" Color="#4F46E5" />
         <BooleanToVisibilityConverter x:Key="BoolVisibility" />
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
         </Style>
         <Style x:Key="PageTitle" TargetType="TextBlock">
@@ -27,10 +26,51 @@
             <Setter Property="Margin" Value="0,12,0,6" />
         </Style>
         <Style TargetType="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+            <Setter Property="BorderBrush" Value="#D7DEEA" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="15,9" />
             <Setter Property="Margin" Value="0,0,8,8" />
             <Setter Property="MinHeight" Value="38" />
             <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <!-- 共用一個小範本；主按鈕與導覽只需覆寫顏色，不另做外觀元件。 -->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="Chrome" CornerRadius="8" Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                                  RecognizesAccessKey="True" />
+                            </Border>
+                            <Border x:Name="FocusRing" CornerRadius="5" Margin="3" BorderThickness="1"
+                                    BorderBrush="{TemplateBinding Foreground}" Visibility="Collapsed" IsHitTestVisible="False" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chrome" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.94" />
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="FocusRing" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Chrome" Property="Opacity" Value="0.45" />
+                                <Setter TargetName="FocusRing" Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="Background" Value="{StaticResource AccentBrush}" />
