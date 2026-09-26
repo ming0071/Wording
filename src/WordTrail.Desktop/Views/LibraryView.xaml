@@ -129,13 +129,7 @@
                               EnableRowVirtualization="True" EnableColumnVirtualization="True" ScrollViewer.CanContentScroll="True"
                               AutomationProperties.AutomationId="VocabularyGrid">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" Width="1.15*" MinWidth="150">
-                                <DataGridTemplateColumn.ClipboardContentBinding>
-                                    <MultiBinding StringFormat="{}{0} ({1})">
-                                        <Binding Path="Headword" />
-                                        <Binding Path="PartOfSpeech" />
-                                    </MultiBinding>
-                                </DataGridTemplateColumn.ClipboardContentBinding>
+                            <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" ClipboardContentBinding="{Binding Headword}" Width="1.15*" MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Margin="16,12" VerticalAlignment="Center">
