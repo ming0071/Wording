@@ -1,0 +1,25 @@
+# Build outputs and local tooling
+**/bin/
+**/obj/
+.tools/
+.vs/
+.idea/
+TestResults/
+artifacts/
+*.user
+*.suo
+
+# User data, credentials, and temporary diagnostics
+.env
+.env.*
+!.env.example
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.log
+auth.json
+*.pfx
+*.key
+.local/
+
