@@ -6,6 +6,8 @@
 .idea/
 TestResults/
 artifacts/
+__pycache__/
+*.pyc
 *.user
 *.suo
 
@@ -22,4 +24,3 @@ auth.json
 *.pfx
 *.key
 .local/
-

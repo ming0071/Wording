@@ -20,7 +20,7 @@
                 <TextBlock Text="如果 codex 不在 PATH，填入 codex.exe 的完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0"/>
                 <TextBlock Text="模型（留空使用 CLI 預設）" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding CodexModel, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 模型"/>
-                <TextBlock Text="每日 AI 生成上限（0–10）" Style="{StaticResource FieldLabel}"/>
+                <TextBlock Text="每日 AI 生成上限（0–50）" Style="{StaticResource FieldLabel}"/>
                 <TextBox Text="{Binding DailyGenerationLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" MaxLength="2" AutomationProperties.Name="每日 AI 生成上限"/>
                 <WrapPanel Margin="0,20,0,0"><Button Content="保存設定" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" AutomationProperties.AutomationId="SaveSettings"/><Button Content="檢查已保存的 Codex 設定" Command="{Binding CheckAiCommand}"/></WrapPanel>
                 <TextBlock Text="請在終端機使用 codex login 完成正常登入；本程式不讀取或顯示登入 token。訂閱額度或登入失效會顯示原因，離線學習不受影響。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0"/>

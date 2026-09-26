@@ -16,13 +16,30 @@ public sealed class ReviewViewModel : PageViewModel
     private int completed;
     private string emptyText = "正在準備學習卡…";
 
-    public ReviewItem? Current { get => current; private set { SetProperty(ref current, value); OnPropertyChanged(nameof(HasCard)); OnPropertyChanged(nameof(OriginText)); NotifyCommands(); } }
+    public ReviewItem? Current
+    {
+        get => current;
+        private set
+        {
+            SetProperty(ref current, value);
+            OnPropertyChanged(nameof(HasCard));
+            OnPropertyChanged(nameof(OriginText));
+            OnPropertyChanged(nameof(MeaningOriginText));
+            OnPropertyChanged(nameof(CollocationsOriginText));
+            OnPropertyChanged(nameof(Examples));
+            NotifyCommands();
+        }
+    }
     public bool HasCard => Current is not null;
     public bool IsAnswerVisible { get => isAnswerVisible; private set { SetProperty(ref isAnswerVisible, value); NotifyCommands(); } }
     public string ProgressText => $"這次已複習 {completed} 個詞義";
     public string EmptyText { get => emptyText; private set => SetProperty(ref emptyText, value); }
     public string SpeechStatus => speech.Status;
-    public string OriginText => Current is null ? "" : $"內容來源：{Current.Word.Origin.Note}";
+    public string OriginText => Current is null ? "" : $"詞義初始來源：{Current.Word.Origin.Note}";
+    public string MeaningOriginText => Current is null ? "" : $"解釋来源：{(Current.Word.MeaningOrigin ?? Current.Word.Origin).Note}";
+    public string CollocationsOriginText => Current is null ? "" : $"搭配來源：{(Current.Word.CollocationsOrigin ?? Current.Word.Origin).Note}";
+    public IReadOnlyList<ReviewExample> Examples => Current?.Word.Examples.Select(example =>
+        new ReviewExample(example.English, example.Chinese, $"例句來源：{(example.Origin ?? Current.Word.Origin).Note}")).ToArray() ?? [];
     public AsyncCommand AgainCommand { get; }
     public AsyncCommand HardCommand { get; }
     public AsyncCommand GoodCommand { get; }
@@ -67,6 +84,12 @@ public sealed class ReviewViewModel : PageViewModel
         speech.Stop();
         lastOperationId = null;
         NotifyCommands();
+    }
+
+    public async Task EndSessionAsync()
+    {
+        await store.EndReviewSessionAsync();
+        EndSession();
     }
 
     public override async Task LoadAsync(CancellationToken cancellationToken = default)
@@ -142,3 +165,5 @@ public sealed class ReviewViewModel : PageViewModel
         DictionaryCommand?.NotifyCanExecuteChanged();
     }
 }
+
+public sealed record ReviewExample(string English, string Chinese, string Source);

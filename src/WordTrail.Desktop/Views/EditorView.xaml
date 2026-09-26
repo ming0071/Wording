@@ -40,7 +40,7 @@
                     <Border Style="{StaticResource Panel}" Padding="20">
                         <StackPanel>
                             <TextBlock Text="補充學習內容" Style="{StaticResource SectionTitle}"/>
-                            <TextBlock Text="先寫明詞性與指定詞義，再讓 Codex 補充解釋、搭配及兩個雙語例句。生成內容不會自動保存。" Style="{StaticResource MutedText}"/>
+                            <TextBlock Text="輸入詞條即可建議一個常見意思；已有指定詞義時會依該意思補充搭配及兩個雙語例句。保存前請確認詞性與詞義。" Style="{StaticResource MutedText}"/>
                             <CheckBox IsChecked="{Binding AiConsent}" Margin="0,16,0,14"><TextBlock Text="同意將這個詞義與必要內容交給本機 Codex，使用我的訂閱額度。" TextWrapping="Wrap" FontSize="12"/></CheckBox>
                             <Button Content="用 Codex 產生預覽" Command="{Binding GenerateCommand}" Style="{StaticResource PrimaryButton}" AutomationProperties.AutomationId="GenerateContent"/>
                             <Button Content="取消生成" Command="{Binding CancelGenerationCommand}" Visibility="{Binding GenerateCommand.IsRunning, Converter={StaticResource BoolVisibility}}"/>

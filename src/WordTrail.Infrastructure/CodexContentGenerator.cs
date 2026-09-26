@@ -149,13 +149,13 @@ public sealed class CodexContentGenerator : IContentGenerator
         return text.Trim();
     }
 
-    private static string BuildSchema(Guid id) => $$"""
+    private static string BuildSchema(Guid id) => """
     {"type":"object","additionalProperties":false,"required":["senseId","meaning","collocations","examples"],
-     "properties":{"senseId":{"type":"string","enum":["{{id}}"]},"meaning":{"type":"string"},
+     "properties":{"senseId":{"type":"string","enum":["__SENSE_ID__"]},"meaning":{"type":"string"},
       "collocations":{"type":"array","minItems":2,"maxItems":2,"items":{"type":"string"}},
       "examples":{"type":"array","minItems":2,"maxItems":2,"items":{"type":"object","additionalProperties":false,
        "required":["english","chinese"],"properties":{"english":{"type":"string"},"chinese":{"type":"string"}}}}}}
-    """;
+    """.Replace("__SENSE_ID__", id.ToString("D"));
 
     private sealed record Usage(string Date, int Count);
 }

@@ -12,6 +12,7 @@
     </PackageReference>
     <ProjectReference Include="../../src/WordTrail.Core/WordTrail.Core.csproj" />
     <ProjectReference Include="../../src/WordTrail.Infrastructure/WordTrail.Infrastructure.csproj" />
+    <ProjectReference Include="../../src/WordTrail.Desktop/WordTrail.Desktop.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />

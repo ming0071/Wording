@@ -1,3 +1,4 @@
+using System.Windows;
 using WordTrail.Core;
 using WordTrail.Infrastructure;
 
@@ -9,12 +10,28 @@ public sealed class MainViewModel : ObservableObject
     private readonly IContentGenerator generator;
     private PageViewModel currentPage;
     private string currentSection = "今日學習";
+    private bool isNavigating;
     public DashboardViewModel Dashboard { get; }
     public LibraryViewModel Library { get; }
     public ReviewViewModel Review { get; }
     public SettingsViewModel Settings { get; }
     public PageViewModel CurrentPage { get => currentPage; private set => SetProperty(ref currentPage, value); }
-    public string CurrentSection { get => currentSection; private set => SetProperty(ref currentSection, value); }
+    public string CurrentSection
+    {
+        get => currentSection;
+        private set
+        {
+            SetProperty(ref currentSection, value);
+            OnPropertyChanged(nameof(IsTodaySelected));
+            OnPropertyChanged(nameof(IsLibrarySelected));
+            OnPropertyChanged(nameof(IsReviewSelected));
+            OnPropertyChanged(nameof(IsSettingsSelected));
+        }
+    }
+    public bool IsTodaySelected => CurrentSection == "今日學習";
+    public bool IsLibrarySelected => CurrentSection is "單字庫" or "新增詞義" or "編輯詞義";
+    public bool IsReviewSelected => CurrentSection == "複習";
+    public bool IsSettingsSelected => CurrentSection == "設定與備份";
     public RelayCommand NavigateCommand { get; }
 
     public MainViewModel(IStudyStore store, IBackupService backup, IContentGenerator generator,
@@ -38,8 +55,16 @@ public sealed class MainViewModel : ObservableObject
 
     private async void Navigate(string section)
     {
+        if (isNavigating) return;
         if (CurrentPage.IsBusy) { CurrentPage.Notice = "正在處理，完成或取消後即可切換畫面。"; return; }
-        if (CurrentPage == Review) Review.EndSession();
+        if (!ConfirmLeaveEditor()) return;
+        isNavigating = true;
+        try
+        {
+        if (CurrentPage == Review)
+        {
+            await Review.EndSessionAsync();
+        }
         var page = section switch
         {
             "library" => (PageViewModel)Library,
@@ -50,8 +75,10 @@ public sealed class MainViewModel : ObservableObject
         CurrentSection = section switch { "library" => "單字庫", "review" => "複習", "settings" => "設定與備份", _ => "今日學習" };
         if (page == Review) Review.BeginSession();
         CurrentPage = page;
-        try { await page.LoadAsync(); }
-        catch (Exception exception) { page.Error = exception.Message; }
+        await page.LoadAsync();
+        }
+        catch (Exception exception) { CurrentPage.Error = exception.Message; }
+        finally { isNavigating = false; }
     }
 
     private async void OpenEditor(VocabularyItem? item)
@@ -63,4 +90,8 @@ public sealed class MainViewModel : ObservableObject
         try { await editor.LoadAsync(); }
         catch (Exception exception) { editor.Error = exception.Message; }
     }
+
+    public bool ConfirmLeaveEditor() => CurrentPage is not EditorViewModel { IsDirty: true }
+        || MessageBox.Show("這個詞義有尚未保存的修改。要捨棄修改並離開嗎？", "尚未保存",
+            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes;
 }

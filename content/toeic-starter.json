@@ -945,7 +945,7 @@
       ],
       "collocations": [
         "post a notice",
-        "advance notice"
+        "public notice"
       ],
       "examples": [
         {
@@ -3499,7 +3499,7 @@
       ],
       "examples": [
         {
-          "english": "The bank sent me a message after each transaction.",
+          "english": "The bank sends me a message after each transaction.",
           "chinese": "每筆交易完成後，銀行都會傳訊息給我。"
         }
       ],
@@ -8144,8 +8144,8 @@
         "行銷與銷售"
       ],
       "collocations": [
-        "go on sale",
-        "be on sale"
+        "be on sale for half price",
+        "on sale this week"
       ],
       "examples": [
         {
@@ -8775,7 +8775,7 @@
       ],
       "collocations": [
         "access to files",
-        "internet access"
+        "restricted access"
       ],
       "examples": [
         {

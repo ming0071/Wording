@@ -9,6 +9,9 @@ public sealed class ExampleEditor : ObservableObject
     private string chinese = "";
     public string English { get => english; set => SetProperty(ref english, value); }
     public string Chinese { get => chinese; set => SetProperty(ref chinese, value); }
+    public string OriginalEnglish { get; init; } = "";
+    public string OriginalChinese { get; init; } = "";
+    public ContentOrigin? Origin { get; init; }
 }
 
 public sealed class EditorViewModel : PageViewModel
@@ -29,25 +32,31 @@ public sealed class EditorViewModel : PageViewModel
     private bool aiConsent;
     private AiEnrichment? preview;
     private ContentOrigin origin;
+    private bool isDirty;
+    private VocabularyItem? previewInput;
+    private string? generatedMeaning;
+    private string[]? generatedCollocations;
+    private ContentOrigin? generatedOrigin;
 
     public string Title { get; }
-    public string Headword { get => headword; set => SetProperty(ref headword, value); }
-    public string PartOfSpeech { get => partOfSpeech; set => SetProperty(ref partOfSpeech, value); }
-    public string Meaning { get => meaning; set => SetProperty(ref meaning, value); }
-    public string Cue { get => cue; set => SetProperty(ref cue, value); }
-    public string CategoriesText { get => categoriesText; set => SetProperty(ref categoriesText, value); }
-    public string CollocationsText { get => collocationsText; set => SetProperty(ref collocationsText, value); }
-    public string Level { get => level; set => SetProperty(ref level, value); }
+    public bool IsDirty { get => isDirty; private set => SetProperty(ref isDirty, value); }
+    public string Headword { get => headword; set { if (SetProperty(ref headword, value)) IsDirty = true; } }
+    public string PartOfSpeech { get => partOfSpeech; set { if (SetProperty(ref partOfSpeech, value)) IsDirty = true; } }
+    public string Meaning { get => meaning; set { if (SetProperty(ref meaning, value)) IsDirty = true; } }
+    public string Cue { get => cue; set { if (SetProperty(ref cue, value)) IsDirty = true; } }
+    public string CategoriesText { get => categoriesText; set { if (SetProperty(ref categoriesText, value)) IsDirty = true; } }
+    public string CollocationsText { get => collocationsText; set { if (SetProperty(ref collocationsText, value)) IsDirty = true; } }
+    public string Level { get => level; set { if (SetProperty(ref level, value)) IsDirty = true; } }
     public string[] Levels { get; } = ["基礎", "優先", "延伸"];
-    public bool SelectedForStudy { get => selectedForStudy; set => SetProperty(ref selectedForStudy, value); }
-    public bool IsArchived { get => isArchived; set => SetProperty(ref isArchived, value); }
+    public bool SelectedForStudy { get => selectedForStudy; set { if (SetProperty(ref selectedForStudy, value)) IsDirty = true; } }
+    public bool IsArchived { get => isArchived; set { if (SetProperty(ref isArchived, value)) IsDirty = true; } }
     public bool AiConsent { get => aiConsent; set { SetProperty(ref aiConsent, value); GenerateCommand.NotifyCanExecuteChanged(); } }
     public ObservableCollection<ExampleEditor> Examples { get; } = [];
     public ObservableCollection<string> AvailableCategories { get; } = [];
     public string CategoryHint => AvailableCategories.Count == 0 ? "還沒有分類；輸入名稱即可在保存時建立。" : "現有分類：" + string.Join("、", AvailableCategories);
     public AiEnrichment? Preview { get => preview; private set { SetProperty(ref preview, value); OnPropertyChanged(nameof(HasPreview)); ApplyPreviewCommand.NotifyCanExecuteChanged(); } }
     public bool HasPreview => Preview is not null;
-    public string OriginText => $"目前內容來源：{origin.Note}";
+    public string OriginText => $"詞義初始來源：{origin.Note}";
     public AsyncCommand SaveCommand { get; }
     public AsyncCommand GenerateCommand { get; }
     public RelayCommand CancelGenerationCommand { get; }
@@ -81,7 +90,7 @@ public sealed class EditorViewModel : PageViewModel
         CancelGenerationCommand = new(_ => GenerateCommand.Cancel());
         ApplyPreviewCommand = new(_ => ApplyPreview(), _ => Preview is not null && !GenerateCommand.IsRunning);
         DiscardPreviewCommand = new(_ => Preview = null);
-        AddExampleCommand = new(_ => Examples.Add(new ExampleEditor()));
+        AddExampleCommand = new(_ => { AddExample(new ExampleSentence("", "")); IsDirty = true; });
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Headword, message => Error = message));
     }
 
@@ -103,11 +112,20 @@ public sealed class EditorViewModel : PageViewModel
         if (examples.Any(example => string.IsNullOrWhiteSpace(example.English) || string.IsNullOrWhiteSpace(example.Chinese)))
             throw new InvalidOperationException("每個例句請同時填寫英文與繁中翻譯，或將兩欄留空。");
         var categories = CategoriesText.Split([',', '，', '、', '\n'], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Distinct().ToArray();
+        var collocations = CollocationsText.Split(['\r', '\n'], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var manualOrigin = new ContentOrigin("user", "使用者編輯");
+        var meaningOrigin = generatedOrigin is not null && Meaning.Trim() == generatedMeaning
+            ? generatedOrigin : Meaning.Trim() == original.Meaning ? original.MeaningOrigin ?? original.Origin : manualOrigin;
+        var collocationsOrigin = generatedOrigin is not null && collocations.SequenceEqual(generatedCollocations ?? [])
+            ? generatedOrigin : collocations.SequenceEqual(original.Collocations) ? original.CollocationsOrigin ?? original.Origin : manualOrigin;
         return original with
         {
             Headword = Headword.Trim(), PartOfSpeech = PartOfSpeech.Trim(), Meaning = Meaning.Trim(), Cue = Cue.Trim(),
-            Categories = categories, Collocations = CollocationsText.Split(['\r', '\n'], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-            Examples = examples.Select(example => new ExampleSentence(example.English.Trim(), example.Chinese.Trim())).ToArray(),
+            Categories = categories, Collocations = collocations,
+            Examples = examples.Select(example => new ExampleSentence(example.English.Trim(), example.Chinese.Trim(),
+                example.English.Trim() == example.OriginalEnglish && example.Chinese.Trim() == example.OriginalChinese
+                    ? example.Origin ?? original.Origin : manualOrigin)).ToArray(),
+            MeaningOrigin = meaningOrigin, CollocationsOrigin = collocationsOrigin,
             Level = Level, Enrollment = SelectedForStudy ? Enrollment.Selected : original.Enrollment == Enrollment.Selected ? Enrollment.Candidate : original.Enrollment,
             Kind = Headword.Trim().Contains(' ') ? "phrase" : "word", IsArchived = IsArchived, IsUserEdited = true, Origin = origin
         };
@@ -117,16 +135,20 @@ public sealed class EditorViewModel : PageViewModel
     {
         var item = BuildItem();
         await store.SaveVocabularyAsync(item, token);
+        IsDirty = false;
         Notice = "已保存。修改內容不會重設既有複習進度。";
         saved(item);
     }
 
     private async Task GenerateAsync(CancellationToken token)
     {
-        var item = BuildItem();
+        if (string.IsNullOrWhiteSpace(Headword) || Headword.Trim().Length > 100)
+            throw new InvalidOperationException("請先輸入 1–100 字的單字或片語。");
+        var item = original with { Headword = Headword.Trim(), PartOfSpeech = PartOfSpeech.Trim(), Meaning = Meaning.Trim(), Cue = Cue.Trim() };
         Preview = null;
         var result = await generator.GenerateAsync(item, token);
         token.ThrowIfCancellationRequested();
+        previewInput = item;
         Preview = result;
         Notice = "AI 內容已產生；先檢查，再按「套用到編輯欄位」。最後仍需按保存。";
     }
@@ -134,10 +156,20 @@ public sealed class EditorViewModel : PageViewModel
     private void ApplyPreview()
     {
         if (Preview is not { } result) return;
+        if (previewInput is not { } input || input.Headword != Headword.Trim() || input.PartOfSpeech != PartOfSpeech.Trim()
+            || input.Meaning != Meaning.Trim() || input.Cue != Cue.Trim())
+        {
+            Error = "詞條或指定詞義已變更，請重新生成，避免套用到不同詞義。";
+            Preview = null;
+            return;
+        }
         Meaning = result.Meaning;
         CollocationsText = string.Join(Environment.NewLine, result.Collocations);
-        SetExamples(result.Examples);
-        origin = result.Origin;
+        SetExamples(result.Examples.Select(example => example with { Origin = result.Origin }));
+        generatedMeaning = result.Meaning;
+        generatedCollocations = result.Collocations;
+        generatedOrigin = result.Origin;
+        IsDirty = true;
         OnPropertyChanged(nameof(OriginText));
         Preview = null;
         Notice = "已套用到欄位，尚未保存。你可以調整內容後再保存。";
@@ -146,7 +178,15 @@ public sealed class EditorViewModel : PageViewModel
     private void SetExamples(IEnumerable<ExampleSentence> examples)
     {
         Examples.Clear();
-        foreach (var example in examples) Examples.Add(new ExampleEditor { English = example.English, Chinese = example.Chinese });
-        if (Examples.Count == 0) Examples.Add(new ExampleEditor());
+        foreach (var example in examples) AddExample(example);
+        if (Examples.Count == 0) AddExample(new ExampleSentence("", ""));
+    }
+
+    private void AddExample(ExampleSentence example)
+    {
+        var editor = new ExampleEditor { English = example.English, Chinese = example.Chinese,
+            OriginalEnglish = example.English, OriginalChinese = example.Chinese, Origin = example.Origin };
+        editor.PropertyChanged += (_, _) => IsDirty = true;
+        Examples.Add(editor);
     }
 }

@@ -36,6 +36,8 @@ public partial class MainWindow : Window
         {
             model.CurrentPage.Notice = "正在保存或產生內容，請完成或取消後再關閉視窗。";
             e.Cancel = true;
+            return;
         }
+        if (DataContext is MainViewModel shell && !shell.ConfirmLeaveEditor()) e.Cancel = true;
     }
 }

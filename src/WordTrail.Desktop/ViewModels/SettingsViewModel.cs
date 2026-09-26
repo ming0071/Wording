@@ -55,8 +55,8 @@ public sealed class SettingsViewModel : PageViewModel
     {
         if (!int.TryParse(DailyNewLimit, out var newLimit) || newLimit is < 0 or > 10)
             throw new InvalidOperationException("每日新詞上限請填入 0–10 的整數。");
-        if (!int.TryParse(DailyGenerationLimit, out var generationLimit) || generationLimit is < 0 or > 10)
-            throw new InvalidOperationException("每日 AI 次數請填入 0–10 的整數；0 代表停用生成。");
+        if (!int.TryParse(DailyGenerationLimit, out var generationLimit) || generationLimit is < 0 or > 50)
+            throw new InvalidOperationException("每日 AI 次數請填入 0–50 的整數；0 代表停用生成。");
         if (string.IsNullOrWhiteSpace(CodexPath)) throw new InvalidOperationException("請填入 Codex 執行檔路徑或 codex。");
         settings.DailyNewLimit = newLimit;
         settings.CodexExecutablePath = CodexPath.Trim();

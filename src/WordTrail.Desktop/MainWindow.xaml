@@ -15,10 +15,10 @@
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" Margin="10,20,0,0"><TextBlock Text="本機保存 · 屬於你的單字庫" FontSize="11" Style="{StaticResource MutedText}"/><TextBlock Text="0.1.0" FontSize="11" Foreground="#9AA5B5" Margin="0,6,0,0"/></StackPanel>
                 <StackPanel>
-                    <Button Content="今日學習" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="today" AutomationProperties.AutomationId="NavToday"/>
-                    <Button Content="單字庫" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="library" AutomationProperties.AutomationId="NavLibrary"/>
-                    <Button Content="開始複習" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="review" AutomationProperties.AutomationId="NavReview"/>
-                    <Button Content="設定與備份" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="settings" AutomationProperties.AutomationId="NavSettings"/>
+                    <Button Content="今日學習" Tag="{Binding IsTodaySelected}" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="today" AutomationProperties.AutomationId="NavToday"/>
+                    <Button Content="單字庫" Tag="{Binding IsLibrarySelected}" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="library" AutomationProperties.AutomationId="NavLibrary"/>
+                    <Button Content="開始複習" Tag="{Binding IsReviewSelected}" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="review" AutomationProperties.AutomationId="NavReview"/>
+                    <Button Content="設定與備份" Tag="{Binding IsSettingsSelected}" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="settings" AutomationProperties.AutomationId="NavSettings"/>
                 </StackPanel>
             </DockPanel>
         </Border>
