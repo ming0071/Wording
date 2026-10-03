@@ -18,12 +18,13 @@ public sealed class ReviewViewModel : PageViewModel
     private Guid? lastOperationId;
     private int completed;
     private string emptyText = "正在準備學習卡…";
-    private string selectedCategory = "全部單字庫";
-    private string? reviewCategory;
+    private string[] reviewCategories = [];
     private string scopeText = "";
 
     public ObservableCollection<string> Categories { get; } = [];
-    public string SelectedCategory { get => selectedCategory; set => SetProperty(ref selectedCategory, value); }
+    public CategorySelection CategoryScope { get; } = new("全部單字庫");
+    public string SelectedCategory { get => CategoryScope.SelectedNames.FirstOrDefault() ?? "全部單字庫";
+        set => CategoryScope.SetSelected(value == "全部單字庫" ? [] : [value]); }
     public string ScopeText { get => scopeText; private set => SetProperty(ref scopeText, value); }
     public bool CanChangeCategory => !IsBusy && !isSubmitting && pendingSubmission is null;
 
@@ -39,6 +40,8 @@ public sealed class ReviewViewModel : PageViewModel
             OnPropertyChanged(nameof(CollocationsText));
             OnPropertyChanged(nameof(HasSynonyms));
             OnPropertyChanged(nameof(HasNotes));
+            OnPropertyChanged(nameof(HasEnglishDefinition));
+            OnPropertyChanged(nameof(HasCollocations));
             NotifyCommands();
         }
     }
@@ -57,6 +60,8 @@ public sealed class ReviewViewModel : PageViewModel
     public string CollocationsText => string.Join(" · ", Current?.Word.Collocations ?? []);
     public bool HasSynonyms => Current?.Word.Synonyms.Length > 0;
     public bool HasNotes => !string.IsNullOrWhiteSpace(Current?.Word.Notes);
+    public bool HasEnglishDefinition => !string.IsNullOrWhiteSpace(Current?.Word.EnglishDefinition);
+    public bool HasCollocations => Current?.Word.Collocations.Length > 0;
     public string KeyboardHint => $"{KeyLabel(settings.FlipKey)} 翻卡 · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
     public ICommand? CommandForShortcut(string key) => key == settings.FlipKey ? FlipCommand :
         key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :
@@ -73,6 +78,7 @@ public sealed class ReviewViewModel : PageViewModel
     public AsyncCommand RefreshCommand { get; }
     public AsyncCommand ApplyCategoryCommand { get; }
     public AsyncCommand UndoCommand { get; }
+    public AsyncCommand StarCommand { get; }
     public RelayCommand FlipCommand { get; }
     public RelayCommand SpeakCommand { get; }
     public RelayCommand StopSpeechCommand { get; }
@@ -85,6 +91,12 @@ public sealed class ReviewViewModel : PageViewModel
         this.store = store;
         this.speech = speech;
         this.settings = settings;
+        StarCommand = Command(async token =>
+        {
+            if (Current is not { } card) return;
+            await store.SetStarredAsync(card.Word.Id, !card.Word.IsStarred, token);
+            Current = card with { Word = card.Word with { IsStarred = !card.Word.IsStarred } };
+        }, () => Current is not null && !isSubmitting && pendingSubmission is null);
         AgainCommand = Command(token => RateAsync(ReviewRating.Again, token), CanRate);
         HardCommand = Command(token => RateAsync(ReviewRating.Hard, token), CanRate);
         GoodCommand = Command(token => RateAsync(ReviewRating.Good, token), CanRate);
@@ -96,15 +108,20 @@ public sealed class ReviewViewModel : PageViewModel
         }, () => !isSubmitting);
         ApplyCategoryCommand = Command(async token =>
         {
-            var category = SelectedCategory == "全部單字庫" ? null : SelectedCategory;
-            await LoadCardAsync(category, token);
+            try { await LoadCardAsync(CategoryScope.SelectedNames, token); }
+            catch { CategoryScope.SetSelected(reviewCategories); throw; }
             Notice = "已切換複習範圍；到期卡優先，新詞依每日上限提供。";
         }, () => !isSubmitting && pendingSubmission is null);
+        CategoryScope.Changed += () => ApplyCategoryCommand.Execute(null);
         UndoCommand = Command(UndoAsync, () => lastOperationId.HasValue && !isSubmitting && pendingSubmission is null);
-        FlipCommand = new(_ => IsAnswerVisible = true, _ => Current is not null && !IsAnswerVisible && !isSubmitting);
+        FlipCommand = new(_ =>
+        {
+            IsAnswerVisible = true;
+            if (settings.AutoSpeakExamples) SpeakExamples();
+        }, _ => Current is not null && !IsAnswerVisible && !isSubmitting);
         SpeakCommand = new(_ => Speak(), _ => Current is not null);
         StopSpeechCommand = new(_ => speech.Stop());
-        SpeakExampleCommand = new(_ => SpeakText(string.Join(" ", Current?.Word.Examples.Select(x => x.English) ?? [])),
+        SpeakExampleCommand = new(_ => SpeakExamples(),
             _ => Current?.Word.Examples.Length > 0 && IsAnswerVisible);
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Current?.Word.Headword, message => Error = message), _ => Current is not null);
         PropertyChanged += (_, args) =>
@@ -144,19 +161,20 @@ public sealed class ReviewViewModel : PageViewModel
         Categories.Clear();
         Categories.Add("全部單字庫");
         foreach (var category in categories) Categories.Add(category);
-        if (reviewCategory is not null && !Categories.Contains(reviewCategory)) reviewCategory = null;
-        SelectedCategory = reviewCategory ?? "全部單字庫";
-        await LoadCardAsync(reviewCategory, cancellationToken);
+        CategoryScope.SetAvailable(categories);
+        CategoryScope.SetSelected(reviewCategories);
+        await LoadCardAsync(CategoryScope.SelectedNames, cancellationToken);
     }
 
-    private async Task LoadCardAsync(string? category, CancellationToken cancellationToken)
+    private async Task LoadCardAsync(string[] categories, CancellationToken cancellationToken)
     {
         speech.Stop();
         var now = DateTimeOffset.UtcNow;
-        var next = await store.GetNextReviewAsync(now, settings.DailyNewLimit, cancellationToken, category);
-        var summary = await store.GetDashboardAsync(now, cancellationToken, category);
-        reviewCategory = category;
-        ScopeText = $"{category ?? "全部單字庫"} · {summary.DueCount} 個到期 · {summary.NewCount} 個未學新詞";
+        var category = categories.Length == 1 ? categories[0] : null;
+        var next = await store.GetNextReviewAsync(now, settings.DailyNewLimit, cancellationToken, category, categories);
+        var summary = await store.GetDashboardAsync(now, cancellationToken, category, categories);
+        reviewCategories = categories;
+        ScopeText = $"{(categories.Length == 0 ? "全部單字庫" : string.Join("、", categories))} · {summary.DueCount} 個到期 · {summary.NewCount} 個未學新詞";
         Current = next;
         IsAnswerVisible = false;
         operationId = Guid.NewGuid();
@@ -171,6 +189,7 @@ public sealed class ReviewViewModel : PageViewModel
                 : nextDueText.Length > 0 ? "這個範圍目前沒有可複習的卡片。" + nextDueText
                     : "這個範圍目前沒有到期卡或未學新詞。可以切換主題，或到單字庫新增詞義。";
         }
+        else if (settings.AutoSpeakWord) Speak();
     }
 
     private bool CanRate() => Current is not null && IsAnswerVisible && !isSubmitting;
@@ -220,6 +239,7 @@ public sealed class ReviewViewModel : PageViewModel
     {
         SpeakText(Current?.Word.Headword);
     }
+    private void SpeakExamples() => SpeakText(string.Join(" ", Current?.Word.Examples.Select(x => x.English) ?? []));
 
     private void SpeakText(string? text)
     {
@@ -230,6 +250,7 @@ public sealed class ReviewViewModel : PageViewModel
 
     private void NotifyCommands()
     {
+        StarCommand?.NotifyCanExecuteChanged();
         foreach (var command in RatingCommands) command?.NotifyCanExecuteChanged();
         UndoCommand?.NotifyCanExecuteChanged();
         RefreshCommand?.NotifyCanExecuteChanged();

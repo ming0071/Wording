@@ -13,6 +13,12 @@ public sealed class DashboardViewModel : PageViewModel
     public RelayCommand StartReviewCommand { get; }
     public RelayCommand BrowseCommand { get; }
     public AsyncCommand RefreshCommand { get; }
+    private LearningActivity activity = LearningActivity.Build([], DateOnly.FromDateTime(DateTime.Now));
+    public LearningActivity Activity { get => activity; private set { SetProperty(ref activity, value); OnPropertyChanged(nameof(ActivitySummary)); } }
+    public string ActivitySummary => $"近一年累積複習 {Activity.Total} 詞次 · 學習 {Activity.ActiveDays} 天 · 連續 {Activity.Streak} 天";
+    private string selectedDayText = "點選格子查看當天成果。";
+    public string SelectedDayText { get => selectedDayText; private set => SetProperty(ref selectedDayText, value); }
+    public RelayCommand SelectActivityDayCommand { get; }
 
     public DashboardViewModel(IStudyStore store, Action startReview, Action browse)
     {
@@ -20,8 +26,14 @@ public sealed class DashboardViewModel : PageViewModel
         StartReviewCommand = new(_ => startReview());
         BrowseCommand = new(_ => browse());
         RefreshCommand = Command(LoadAsync);
+        SelectActivityDayCommand = new(value => { if (value is ActivityCell cell) SelectedDayText = cell.Description; });
     }
 
-    public override async Task LoadAsync(CancellationToken cancellationToken = default) =>
+    public override async Task LoadAsync(CancellationToken cancellationToken = default)
+    {
         Summary = await store.GetDashboardAsync(DateTimeOffset.UtcNow, cancellationToken);
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        Activity = LearningActivity.Build(await store.GetStudyActivityAsync(today.AddDays(-364), today, cancellationToken), today);
+        OnPropertyChanged(nameof(Greeting));
+    }
 }

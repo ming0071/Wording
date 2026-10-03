@@ -17,7 +17,7 @@ public sealed class CodexProcessRunner : ICodexProcessRunner
     public async Task<CodexRunResult> RunAsync(string executable, IReadOnlyList<string> arguments,
         string input, string workingDirectory, TimeSpan timeout, CancellationToken cancellationToken)
     {
-        var start = new ProcessStartInfo(executable)
+        var start = new ProcessStartInfo(CodexExecutableLocator.Resolve(executable))
         {
             WorkingDirectory = workingDirectory,
             UseShellExecute = false,

@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "headword": "bank",
+      "partOfSpeech": "名詞",
+      "meaning": "河岸",
+      "englishDefinition": "The land along the side of a river.",
+      "categories": ["旅行"],
+      "synonyms": ["riverside"],
+      "collocations": ["a river bank"],
+      "notes": "和金融機構的 bank 是不同詞義。",
+      "examples": [
+        { "english": "We walked along the river bank.", "chinese": "我們沿著河岸散步。" }
+      ]
+    }
+  ]
+}

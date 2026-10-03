@@ -282,6 +282,7 @@ public sealed partial class DesktopWorkflowTests
         public Task? SaveCompletion { get; set; }
         public ReviewItem? NextReview { get; set; }
         public string[] Categories { get; set; } = [];
+        public IReadOnlyList<StudyActivity> Activity { get; set; } = [];
         public string? RequestedCategory { get; private set; }
         public Func<ReviewSubmission, Task<ReviewResult>>? Submit { get; set; }
         public async Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default)
@@ -299,12 +300,19 @@ public sealed partial class DesktopWorkflowTests
         public Task ImportSeedPackAsync(SeedPack pack, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task<IReadOnlyList<VocabularyItem>> GetVocabularyAsync(string? search = null, string? category = null, CancellationToken cancellationToken = default, bool includeArchived = false) => Task.FromResult<IReadOnlyList<VocabularyItem>>(Saved is null || (Saved.IsArchived && !includeArchived) ? [] : [Saved]);
         public Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<string>>(Categories);
+        public Task<IReadOnlyList<StudyActivity>> GetStudyActivityAsync(DateOnly from, DateOnly through, CancellationToken cancellationToken = default) => Task.FromResult(Activity);
         public Task AddCategoryAsync(string name, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task SetEnrollmentAsync(Guid senseId, Enrollment enrollment, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task SetPausedAsync(Guid senseId, bool paused, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task SetStarredAsync(Guid senseId, bool starred, CancellationToken cancellationToken = default)
+        {
+            if (Saved?.Id == senseId) Saved = Saved with { IsStarred = starred };
+            if (NextReview?.Word.Id == senseId) NextReview = NextReview with { Word = NextReview.Word with { IsStarred = starred } };
+            return Task.CompletedTask;
+        }
         public Task ArchiveAsync(Guid senseId, CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default, string? category = null) => Task.FromResult(new DashboardSummary(0, 0, 0, 0, 0, null));
-        public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, System.Numerics.BigInteger dailyNewLimit, CancellationToken cancellationToken = default, string? category = null)
+        public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default, string? category = null, IReadOnlyList<string>? categories = null) => Task.FromResult(new DashboardSummary(0, 0, 0, 0, 0, null));
+        public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, System.Numerics.BigInteger dailyNewLimit, CancellationToken cancellationToken = default, string? category = null, IReadOnlyList<string>? categories = null)
         {
             RequestedCategory = category;
             return Task.FromResult(NextReview);

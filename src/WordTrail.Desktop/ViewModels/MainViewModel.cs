@@ -42,7 +42,7 @@ public sealed class MainViewModel : ObservableObject
         Dashboard = new(store, () => Navigate("review"), () => Navigate("library"));
         Library = new(store, OpenEditor);
         Review = new(store, speech, settings);
-        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => Review.EndSession());
+        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => Review.EndSession(), store);
         currentPage = Dashboard;
         NavigateCommand = new(parameter => Navigate(parameter as string ?? "today"));
     }
@@ -84,7 +84,8 @@ public sealed class MainViewModel : ObservableObject
     private async void OpenEditor(VocabularyItem? item)
     {
         if (CurrentPage.IsBusy) return;
-        var editor = new EditorViewModel(store, generator, item, _ => { }, () => Navigate("library"));
+        var editor = new EditorViewModel(store, generator, item, _ => { }, () => Navigate("library"),
+            () => Application.Current.Dispatcher.BeginInvoke(() => OpenEditor(null)));
         CurrentSection = item is null ? "新增詞義" : "編輯詞義";
         CurrentPage = editor;
         try { await editor.LoadAsync(); }
@@ -92,6 +93,5 @@ public sealed class MainViewModel : ObservableObject
     }
 
     public bool ConfirmLeaveEditor() => CurrentPage is not EditorViewModel { IsDirty: true }
-        || MessageBox.Show("這個詞義有尚未保存的修改。要捨棄修改並離開嗎？", "尚未保存",
-            MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) == MessageBoxResult.Yes;
+        || Views.LeaveEditorDialog.Confirm();
 }

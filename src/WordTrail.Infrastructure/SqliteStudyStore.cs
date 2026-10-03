@@ -191,6 +191,17 @@ public sealed class SqliteStudyStore : IStudyStore
     public Task ArchiveAsync(Guid senseId, CancellationToken cancellationToken = default) =>
         ChangeFlagAsync(senseId, "archived", 1, cancellationToken);
 
+    public Task SetStarredAsync(Guid senseId, bool starred, CancellationToken cancellationToken = default) =>
+        WithMaintenanceAsync(() =>
+        {
+            using var connection = OpenConnection();
+            using var transaction = connection.BeginTransaction();
+            var item = ReadWord(connection, transaction, senseId) ?? throw new StudyDataException("找不到詞義。");
+            Execute(connection, transaction, "UPDATE senses SET content_json=$json WHERE id=$id;",
+                ("$json", JsonSerializer.Serialize(item with { IsStarred = starred }, JsonOptions)), ("$id", Id(senseId)));
+            transaction.Commit();
+        }, cancellationToken);
+
     private Task ChangeFlagAsync(Guid senseId, string column, int value, CancellationToken cancellationToken) =>
         WithMaintenanceAsync(() =>
         {
@@ -209,19 +220,19 @@ public sealed class SqliteStudyStore : IStudyStore
     // Candidate is an active word in older databases; Skipped remains excluded until resumed.
     private const string ReviewEligibility = "s.enrollment<>2 AND s.archived=0 AND s.paused=0 ";
     private const string CategoryPredicate = "AND ($category IS NULL OR EXISTS(" +
-        "SELECT 1 FROM sense_categories sc WHERE sc.sense_id=s.id AND sc.category=$category)) ";
+        "SELECT 1 FROM sense_categories sc WHERE sc.sense_id=s.id AND sc.category IN (SELECT value FROM json_each($category)))) ";
 
     public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default,
-        string? category = null) =>
+        string? category = null, IReadOnlyList<string>? categories = null) =>
         WithMaintenanceAsync(() =>
         {
             using var connection = OpenConnection();
             var day = LocalDay(now);
-            var due = DueCount(connection, null, now, category);
+            var due = DueCount(connection, null, now, category, categories);
             var newCount = Count(connection, null,
                 "SELECT COUNT(*) FROM cards c JOIN senses s ON s.id=c.sense_id " +
                 "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NULL " + CategoryPredicate + ";",
-                ("$category", NormalizeCategory(category)));
+                ("$category", NormalizeCategories(category, categories)));
             var reviewed = Count(connection, null,
                 "SELECT COUNT(DISTINCT sense_id) FROM review_log WHERE local_day=$day AND undone=0;", ("$day", day));
             var started = StartedCount(connection, null, day);
@@ -229,13 +240,13 @@ public sealed class SqliteStudyStore : IStudyStore
             var next = Scalar(connection, null,
                 "SELECT MIN(c.due_ms) FROM cards c JOIN senses s ON s.id=c.sense_id " +
                 "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NOT NULL AND c.due_ms>$now " + CategoryPredicate + ";",
-                ("$now", Ms(now)), ("$category", NormalizeCategory(category)));
+                ("$now", Ms(now)), ("$category", NormalizeCategories(category, categories)));
             return new DashboardSummary(due, newCount, reviewed, started, total,
                 next is null or DBNull ? null : FromMs(Convert.ToInt64(next)));
         }, cancellationToken);
 
     public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, BigInteger dailyNewLimit,
-        CancellationToken cancellationToken = default, string? category = null) => WithMaintenanceAsync(() =>
+        CancellationToken cancellationToken = default, string? category = null, IReadOnlyList<string>? categories = null) => WithMaintenanceAsync(() =>
         {
             if (dailyNewLimit < 0) throw new ArgumentOutOfRangeException(nameof(dailyNewLimit));
             using var connection = OpenConnection();
@@ -246,7 +257,7 @@ public sealed class SqliteStudyStore : IStudyStore
                 "SELECT c.sense_id FROM cards c JOIN senses s ON s.id=c.sense_id " +
                 "WHERE " + ReviewEligibility + CategoryPredicate +
                 "AND c.last_review_ms IS NOT NULL AND c.due_ms<=$now ORDER BY c.due_ms,s.rowid LIMIT 1;",
-                ("$now", Ms(now)), ("$category", NormalizeCategory(category))) as string;
+                ("$now", Ms(now)), ("$category", NormalizeCategories(category, categories))) as string;
             if (id is null)
             {
                 var quota = DailyQuota(connection, transaction, day);
@@ -257,7 +268,7 @@ public sealed class SqliteStudyStore : IStudyStore
                     "WHERE " + ReviewEligibility + CategoryPredicate + "AND c.last_review_ms IS NULL " +
                     "AND ($space=1 OR EXISTS(SELECT 1 FROM new_starts n WHERE n.sense_id=s.id)) " +
                     "ORDER BY EXISTS(SELECT 1 FROM new_starts n WHERE n.sense_id=s.id) DESC,s.rowid LIMIT 1;",
-                    ("$space", hasSpace ? 1 : 0), ("$category", NormalizeCategory(category))) as string;
+                    ("$space", hasSpace ? 1 : 0), ("$category", NormalizeCategories(category, categories))) as string;
             }
             ReviewItem? result = null;
             if (id is not null)
@@ -268,6 +279,20 @@ public sealed class SqliteStudyStore : IStudyStore
                     schedule.LastReviewAt is null, schedule.LastReviewAt is null ? null : schedule.DueAt);
             }
             transaction.Commit();
+            return result;
+        }, cancellationToken);
+
+    public Task<IReadOnlyList<StudyActivity>> GetStudyActivityAsync(DateOnly from, DateOnly through,
+        CancellationToken cancellationToken = default) => WithMaintenanceAsync<IReadOnlyList<StudyActivity>>(() =>
+        {
+            using var connection = OpenConnection();
+            using var command = Command(connection, null,
+                "SELECT local_day,COUNT(DISTINCT sense_id) FROM review_log WHERE undone=0 AND local_day BETWEEN $from AND $through GROUP BY local_day ORDER BY local_day;",
+                ("$from", from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)),
+                ("$through", through.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)));
+            using var reader = command.ExecuteReader();
+            var result = new List<StudyActivity>();
+            while (reader.Read()) result.Add(new(DateOnly.ParseExact(reader.GetString(0), "yyyy-MM-dd", CultureInfo.InvariantCulture), reader.GetInt32(1)));
             return result;
         }, cancellationToken);
 
@@ -460,6 +485,7 @@ public sealed class SqliteStudyStore : IStudyStore
 
     private void InsertWord(SqliteConnection connection, SqliteTransaction transaction, VocabularyItem item, string? packId)
     {
+        item = item with { CreatedAt = _clock.GetUtcNow() };
         Execute(connection, transaction,
             "INSERT INTO senses(id,headword,content_json,enrollment,archived,paused,user_edited,seed_pack) " +
             "VALUES($id,$word,$json,$enrollment,$archived,$paused,$edited,$pack);",
@@ -476,6 +502,8 @@ public sealed class SqliteStudyStore : IStudyStore
     private static void WriteContent(SqliteConnection connection, SqliteTransaction transaction,
         VocabularyItem item, bool userEdited)
     {
+        var existing = ReadWord(connection, transaction, item.Id);
+        if (existing is not null) item = item with { IsStarred = existing.IsStarred, CreatedAt = existing.CreatedAt };
         Execute(connection, transaction,
             "UPDATE senses SET headword=$word,content_json=$json,user_edited=$edited WHERE id=$id;",
             ("$word", item.Headword), ("$json", JsonSerializer.Serialize(item, JsonOptions)),
@@ -499,7 +527,7 @@ public sealed class SqliteStudyStore : IStudyStore
     private static List<VocabularyItem> ReadWords(SqliteConnection connection, SqliteTransaction? transaction)
     {
         using var command = Command(connection, transaction,
-            "SELECT id,content_json,enrollment,archived,paused,user_edited FROM senses ORDER BY rowid;");
+            "SELECT s.id,s.content_json,s.enrollment,s.archived,s.paused,s.user_edited,c.stability,s.rowid FROM senses s LEFT JOIN cards c ON c.sense_id=s.id ORDER BY s.rowid;");
         using var reader = command.ExecuteReader();
         var result = new List<VocabularyItem>();
         while (reader.Read()) result.Add(DecodeWord(reader));
@@ -509,7 +537,7 @@ public sealed class SqliteStudyStore : IStudyStore
     private static VocabularyItem? ReadWord(SqliteConnection connection, SqliteTransaction? transaction, Guid id)
     {
         using var command = Command(connection, transaction,
-            "SELECT id,content_json,enrollment,archived,paused,user_edited FROM senses WHERE id=$id;", ("$id", Id(id)));
+            "SELECT s.id,s.content_json,s.enrollment,s.archived,s.paused,s.user_edited,c.stability,s.rowid FROM senses s LEFT JOIN cards c ON c.sense_id=s.id WHERE s.id=$id;", ("$id", Id(id)));
         using var reader = command.ExecuteReader();
         return reader.Read() ? DecodeWord(reader) : null;
     }
@@ -519,7 +547,8 @@ public sealed class SqliteStudyStore : IStudyStore
         var item = JsonSerializer.Deserialize<VocabularyItem>(reader.GetString(1), JsonOptions)
             ?? throw new StudyDataException("無法讀取詞義內容。");
         return item with { Id = Guid.Parse(reader.GetString(0)), Enrollment = (Enrollment)reader.GetInt32(2),
-            IsArchived = reader.GetBoolean(3), IsPaused = reader.GetBoolean(4), IsUserEdited = reader.GetBoolean(5) };
+            IsArchived = reader.GetBoolean(3), IsPaused = reader.GetBoolean(4), IsUserEdited = reader.GetBoolean(5),
+            Stability = reader.IsDBNull(6) ? 0 : reader.GetDouble(6), CreationOrder = reader.GetInt64(7) };
     }
 
     private static (ReviewSchedule Schedule, long Version) ReadSchedule(SqliteConnection connection,
@@ -593,14 +622,19 @@ public sealed class SqliteStudyStore : IStudyStore
     private static int StartedCount(SqliteConnection connection, SqliteTransaction? transaction, string day) =>
         Count(connection, transaction, "SELECT COUNT(*) FROM new_starts WHERE first_day=$day;", ("$day", day));
 
-    private static string? NormalizeCategory(string? category) => string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+    private static string? NormalizeCategories(string? category, IReadOnlyList<string>? categories)
+    {
+        var selected = (categories ?? (category is null ? [] : new[] { category }))
+            .Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+        return selected.Length == 0 ? null : JsonSerializer.Serialize(selected);
+    }
 
     private static int DueCount(SqliteConnection connection, SqliteTransaction? transaction, DateTimeOffset now,
-        string? category = null) =>
+        string? category = null, IReadOnlyList<string>? categories = null) =>
         Count(connection, transaction,
             "SELECT COUNT(*) FROM cards c JOIN senses s ON s.id=c.sense_id " +
             "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NOT NULL AND c.due_ms<=$now " + CategoryPredicate + ";",
-            ("$now", Ms(now)), ("$category", NormalizeCategory(category)));
+            ("$now", Ms(now)), ("$category", NormalizeCategories(category, categories)));
 
     private string LocalDay(DateTimeOffset now) =>
         TimeZoneInfo.ConvertTime(now, _timeZone).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -644,7 +678,7 @@ public sealed class SqliteStudyStore : IStudyStore
         Categories = item.Categories.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
         Collocations = item.Collocations.Select(x => x.Trim()).Where(x => x.Length > 0).ToArray(),
         Synonyms = item.Synonyms.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
-        Notes = item.Notes.Trim()
+        Notes = item.Notes.Trim(), EnglishDefinition = item.EnglishDefinition.Trim()
     };
 
     private static void ValidateVocabulary(VocabularyItem item)
@@ -652,6 +686,7 @@ public sealed class SqliteStudyStore : IStudyStore
         ArgumentNullException.ThrowIfNull(item);
         if (item.Id == Guid.Empty || string.IsNullOrWhiteSpace(item.Headword) || item.Headword.Length > 200 ||
             string.IsNullOrWhiteSpace(item.Meaning) || item.Meaning.Length > 4000 ||
+            item.EnglishDefinition is null || item.EnglishDefinition.Length > 4000 ||
             item.PartOfSpeech is null || item.Cue is null || item.Level is null || item.Kind is null ||
             item.Categories is null || item.Collocations is null || item.Synonyms is null || item.Notes is null || item.Notes.Length > 4000 || item.Examples is null || item.Origin is null ||
             !Enum.IsDefined(item.Enrollment))

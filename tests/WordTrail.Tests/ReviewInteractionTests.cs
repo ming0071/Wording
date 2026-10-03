@@ -147,7 +147,15 @@ public sealed partial class DesktopWorkflowTests
                 }
                 foreach (var block in Descendants(view).OfType<TextBlock>().Where(IsShown)) AssertFits(view, block);
             }
-            Assert.DoesNotContain(Descendants(view), x => x is ScrollViewer);
+            // The topic selector can scroll when there are many topics. Its container alone
+            // does not mean the card needs scrolling; verify the visible layout instead.
+            Assert.All(Descendants(view).OfType<ScrollViewer>().Where(IsShown), scroll =>
+            {
+                Assert.True(scroll.ScrollableHeight <= 0.1, "The minimum review page requires vertical scrolling.");
+                Assert.True(scroll.ScrollableWidth <= 0.1, "The minimum review page requires horizontal scrolling.");
+            });
+            var contentHost = (FrameworkElement)view.FindName("ContentHost");
+            Assert.DoesNotContain(Descendants(contentHost), x => x is ScrollViewer);
             Assert.All(Descendants(view).OfType<FrameworkElement>(), x => Assert.Null(x.ToolTip));
             var longest = seed.Items.MaxBy(x => x.Examples.Sum(e => e.English.Length + e.Chinese.Length))!;
             store.NextReview = new(longest, 0, true, null);
@@ -219,7 +227,7 @@ public sealed partial class DesktopWorkflowTests
     }
 }
 
-// Real WPF layout and rendering on an STA dispatcher, without a Window, Show, input injection or desktop capture.
+// Load app resources without running the production startup or accessing the user's database.
 internal static class OffscreenWpf
 {
     private static readonly Lazy<Dispatcher> DispatcherThread = new(() =>
@@ -229,8 +237,8 @@ internal static class OffscreenWpf
         {
             try
             {
-                var app = new App();
-                app.InitializeComponent();
+                var app = new Application { ShutdownMode = ShutdownMode.OnExplicitShutdown };
+                app.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = new Uri("/WordTrail;component/Styles.xaml", UriKind.Relative) });
                 ready.SetResult(Dispatcher.CurrentDispatcher);
                 Dispatcher.Run();
             }

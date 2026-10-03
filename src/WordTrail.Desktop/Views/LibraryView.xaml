@@ -77,39 +77,25 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel>
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Content="＋ 新增詞義" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}" AutomationProperties.AutomationId="NewWord" />
+            <WrapPanel Margin="0,0,0,6">
                 <TextBlock Text="你的單字庫" Style="{StaticResource PageTitle}" />
-            </DockPanel>
+                <Button Content="＋ 新增詞義" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}" Margin="22,0,0,0" VerticalAlignment="Center" AutomationProperties.AutomationId="NewWord" />
+            </WrapPanel>
             <TextBlock Text="新詞自動加入學習；依主題查閱、編輯，或暫停不想複習的詞義。" Style="{StaticResource MutedText}" Margin="0,0,0,16" />
             <views:StatusBanner />
         </StackPanel>
-        <Border Grid.Row="1" Style="{StaticResource Panel}" Padding="16,12,16,16" Margin="0,0,0,16">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="150" />
-                    <ColumnDefinition Width="125" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Margin="0,0,12,0">
-                    <TextBlock Text="搜尋詞條或意思" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
-                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" ToolTip="搜尋英文詞條、搭配或中文詞義" AutomationProperties.Name="搜尋詞條或中文詞義" AutomationProperties.AutomationId="VocabularySearch">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Enter" Command="{Binding SearchCommand}" />
-                        </TextBox.InputBindings>
+        <Border Grid.Row="1" Style="{StaticResource Panel}" Padding="16,12" Margin="0,0,0,16">
+            <StackPanel>
+                <views:CategoryChips DataContext="{Binding CategoryScope}" IsEnabled="{Binding DataContext.CanChangeCategory, RelativeSource={RelativeSource AncestorType=UserControl}}" AutomationProperties.AutomationId="LibraryCategory" />
+                <Grid Margin="0,8,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="145" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,12,0" AutomationProperties.Name="搜尋詞條或中文詞義" AutomationProperties.AutomationId="VocabularySearch">
+                        <TextBox.InputBindings><KeyBinding Key="Enter" Command="{Binding SearchCommand}" /></TextBox.InputBindings>
                     </TextBox>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                    <TextBlock Text="主題分類" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
-                    <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" AutomationProperties.Name="分類篩選" AutomationProperties.AutomationId="LibraryCategory" />
-                </StackPanel>
-                <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                    <TextBlock Text="學習狀態" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
-                    <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" AutomationProperties.Name="學習狀態篩選" AutomationProperties.AutomationId="EnrollmentFilter" />
-                </StackPanel>
-                <Button Grid.Column="3" Content="套用篩選" Command="{Binding SearchCommand}" Margin="0" VerticalAlignment="Bottom" AutomationProperties.AutomationId="SearchWords" />
-            </Grid>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding Filters}" SelectedItem="{Binding SelectedFilter}" Margin="0,0,12,0" AutomationProperties.Name="學習狀態篩選" AutomationProperties.AutomationId="EnrollmentFilter" />
+                    <Button Grid.Column="2" Content="搜尋" Command="{Binding SearchCommand}" Margin="0" AutomationProperties.AutomationId="SearchWords" />
+                </Grid>
+            </StackPanel>
         </Border>
         <Border Grid.Row="2" Style="{StaticResource Panel}" Padding="0" ClipToBounds="True">
             <Grid>
@@ -118,18 +104,24 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <DockPanel Margin="18,14">
+                    <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}" Width="195" Margin="12,0,0,0" IsEnabled="{Binding CanChangeCategory}" AutomationProperties.Name="詞義排序" ToolTip="熟練程度依記憶穩定度排序；舊詞的建立順序沿用原始加入順序。" />
                     <TextBlock Text="詞義收藏" FontSize="15" FontWeight="SemiBold" Margin="0,0,16,0" />
                     <TextBlock Text="{Binding CountText}" Style="{StaticResource MutedText}" FontSize="11" VerticalAlignment="Center" />
                 </DockPanel>
                 <Grid Grid.Row="1" Margin="1,0,1,8">
                     <DataGrid ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}"
-                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False"
+                              AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"
                               SelectionMode="Single" SelectionUnit="FullRow" HeadersVisibility="Column" RowHeaderWidth="0"
                               GridLinesVisibility="None" BorderThickness="0" Background="White"
                               ColumnHeaderStyle="{StaticResource LibraryHeader}" RowStyle="{StaticResource LibraryRow}" CellStyle="{StaticResource LibraryCell}"
                               EnableRowVirtualization="True" EnableColumnVirtualization="True" ScrollViewer.CanContentScroll="True"
                               AutomationProperties.AutomationId="VocabularyGrid">
                         <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="星號" Width="70" CanUserSort="False">
+                                <DataGridTemplateColumn.CellTemplate><DataTemplate>
+                                    <Button Content="{Binding StarLabel}" FontSize="24" Foreground="#B88416" Padding="5,0" Margin="10,0" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Command="{Binding DataContext.StarRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" AutomationProperties.Name="切換星號" />
+                                </DataTemplate></DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" ClipboardContentBinding="{Binding Headword}" Width="1.15*" MinWidth="150">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

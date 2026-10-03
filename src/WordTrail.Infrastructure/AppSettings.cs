@@ -17,6 +17,8 @@ public sealed class AppSettings
     public string EasyKey { get; set; } = "4";
     public string SpeakKey { get; set; } = "S";
     public string SpeakExampleKey { get; set; } = "E";
+    public bool AutoSpeakWord { get; set; } = true;
+    public bool AutoSpeakExamples { get; set; } = true;
     public static IReadOnlyList<string> ShortcutKeys { get; } =
         new[] { "Space", "Enter" }.Concat(Enumerable.Range(0, 10).Select(x => x.ToString(CultureInfo.InvariantCulture)))
             .Concat(Enumerable.Range('A', 26).Select(x => ((char)x).ToString()))

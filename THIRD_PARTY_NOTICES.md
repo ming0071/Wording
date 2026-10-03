@@ -6,6 +6,7 @@ WordTrail uses third-party software under its own licenses. Package notices and 
 | --- | --- | --- |
 | .NET / WPF / System.Speech | MIT | https://github.com/dotnet/wpf ; https://github.com/dotnet/runtime |
 | Microsoft.Data.Sqlite | MIT | https://github.com/dotnet/efcore |
+| Microsoft.Web.WebView2 SDK | Microsoft Software License Terms | https://aka.ms/webview ; bundled terms in docs/licenses/WebView2-LICENSE.txt and docs/licenses/WebView2-NOTICE.txt |
 | SQLitePCLRaw | Apache-2.0 | https://github.com/ericsink/SQLitePCL.raw |
 | SQLite | Public domain | https://www.sqlite.org/copyright.html |
 | FSRS.Core | MIT | https://github.com/TranPhucTien/FSRS.Core |

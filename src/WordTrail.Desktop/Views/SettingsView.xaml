@@ -18,6 +18,8 @@
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="複習快捷鍵" Style="{StaticResource SectionTitle}" />
+                    <CheckBox Content="每張複習卡開啟時，自動朗讀單字" IsChecked="{Binding AutoSpeakWord}" Margin="0,8,0,14" />
+                    <CheckBox Content="翻卡顯示答案後，自動朗讀英文例句" IsChecked="{Binding AutoSpeakExamples}" Margin="0,0,0,14" />
                     <TextBlock Text="各操作請選擇不同的按鍵。Space 是空白鍵，數字鍵同時支援鍵盤上排與數字鍵盤。" Style="{StaticResource MutedText}" FontSize="12" />
                     <UniformGrid Columns="5" Margin="0,12,0,0">
                         <StackPanel Margin="0,0,10,0"><TextBlock Text="翻卡" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding FlipKey}" AutomationProperties.Name="翻卡快捷鍵" /></StackPanel>
@@ -38,13 +40,14 @@
                     <TextBlock Text="使用官方 CLI 的既有 ChatGPT 登入。程式不要求 API key，也不會切換到付費 API。" Style="{StaticResource MutedText}" />
                     <TextBlock Text="Codex 執行檔路徑" Style="{StaticResource FieldLabel}" />
                     <TextBox Text="{Binding CodexPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 執行檔路徑" AutomationProperties.AutomationId="CodexPath" />
-                    <TextBlock Text="如果 codex 不在 PATH，填入 codex.exe 的完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0" />
+                    <WrapPanel Margin="0,8,0,0"><Button Content="自動尋找" Command="{Binding FindCodexCommand}" /><Button Content="選擇執行檔…" Command="{Binding BrowseCodexCommand}" /></WrapPanel>
+                    <TextBlock Text="填入 codex 可在每次執行時自動尋找，支援 Codex 桌面版的版本目錄。也可以指定完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0" />
                     <TextBlock Text="模型（留空使用 CLI 預設）" Style="{StaticResource FieldLabel}" />
                     <TextBox Text="{Binding CodexModel, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 模型" />
                     <TextBlock Text="每日 AI 生成上限（0–50）" Style="{StaticResource FieldLabel}" />
                     <TextBox Text="{Binding DailyGenerationLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" MaxLength="2" AutomationProperties.Name="每日 AI 生成上限" />
                     <WrapPanel Margin="0,20,0,0">
-                        <Button Content="檢查已保存的 Codex 設定" Command="{Binding CheckAiCommand}" />
+                        <Button Content="保存並檢查 Codex" Command="{Binding CheckAiCommand}" />
                     </WrapPanel>
                     <TextBlock Text="請在終端機使用 codex login 完成正常登入；本程式不讀取或顯示登入 token。訂閱額度或登入失效會顯示原因，離線學習不受影響。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0" />
                 </StackPanel>
@@ -52,6 +55,8 @@
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="資料與備份" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="單字與複習進度存放於下方資料目錄的 wordtrail.db。JSON 可交給 AI 編輯，再匯入更新；既有 ID 的複習進度會保留。" Style="{StaticResource MutedText}" Margin="0,0,0,12" />
+                    <WrapPanel Margin="0,0,0,12"><Button Content="匯出單字 JSON" Command="{Binding ExportVocabularyCommand}" /><Button Content="匯入單字 JSON…" Command="{Binding ImportVocabularyCommand}" /></WrapPanel>
                     <TextBlock Text="備份包含單字、分類與複習進度。還原會替換整個單字庫，並先保存目前資料；不會合併兩份內容。" Style="{StaticResource MutedText}" />
                     <WrapPanel Margin="0,18,0,0">
                         <Button Content="匯出備份 ZIP" Command="{Binding BackupCommand}" AutomationProperties.AutomationId="CreateBackup" />

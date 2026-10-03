@@ -1,0 +1,20 @@
+<Window x:Class="WordTrail.Desktop.Views.LeaveEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="尚未保存" Width="460" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False" FontFamily="Microsoft JhengHei UI" FontSize="14" Foreground="#172338">
+    <Border Background="#F7F8FC" BorderBrush="#D7DEEA" BorderThickness="1" CornerRadius="16" Padding="28">
+        <StackPanel>
+            <Border Background="#E9E6FF" CornerRadius="10" Padding="10,5" HorizontalAlignment="Left" Margin="0,0,0,16">
+                <TextBlock Text="編輯中的詞義" Foreground="#5546C7" FontSize="12" />
+            </Border>
+            <TextBlock Text="要離開編輯嗎？" Style="{StaticResource PageTitle}" FontSize="23" />
+            <TextBlock Text="還有尚未保存的修改。你可以繼續編輯並保存，或捨棄這次修改後離開。" Style="{StaticResource MutedText}" Margin="0,4,0,24" />
+            <WrapPanel HorizontalAlignment="Right">
+                <Button Content="捨棄並離開" Click="Discard" Margin="0,0,10,0" AutomationProperties.AutomationId="DiscardEdits" />
+                <Button x:Name="KeepEditing" Content="繼續編輯" Style="{StaticResource PrimaryButton}" IsCancel="True" IsDefault="True" Click="Keep" Margin="0" AutomationProperties.AutomationId="KeepEditing" />
+            </WrapPanel>
+        </StackPanel>
+    </Border>
+</Window>

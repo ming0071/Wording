@@ -13,7 +13,7 @@
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Bottom" Margin="10,20,0,0">
                     <TextBlock Text="本機保存 · 屬於你的單字庫" FontSize="11" Style="{StaticResource MutedText}" />
-                    <TextBlock Text="0.1.4" FontSize="11" Foreground="#9AA5B5" Margin="0,6,0,0" />
+                    <TextBlock Text="0.1.9" FontSize="11" Foreground="#9AA5B5" Margin="0,6,0,0" />
                 </StackPanel>
                 <StackPanel>
                     <Button Content="今日學習" Tag="{Binding IsTodaySelected}" Style="{StaticResource NavButton}" Command="{Binding NavigateCommand}" CommandParameter="today" AutomationProperties.AutomationId="NavToday" />

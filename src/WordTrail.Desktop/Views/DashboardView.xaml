@@ -27,15 +27,32 @@
                     </StackPanel>
                 </Border>
             </UniformGrid>
-            <Border Style="{StaticResource Panel}" Padding="30" Margin="0,0,0,20">
-                <StackPanel>
-                    <TextBlock Text="把記憶慢慢留下來" FontSize="24" FontWeight="SemiBold" Margin="0,0,0,10" />
-                    <TextBlock Text="看見單字，先在心中回想意思，再翻面核對。誠實選擇難度，下一次複習就會依你的記憶調整。" Style="{StaticResource MutedText}" MaxWidth="650" HorizontalAlignment="Left" />
-                    <WrapPanel Margin="0,22,0,4">
+            <Border Style="{StaticResource Panel}" Padding="20" Margin="0,0,0,20">
+                <WrapPanel VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,28,10" MaxWidth="340">
+                        <TextBlock Text="今天，再前進一點" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding NextDueText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0" />
+                    </StackPanel>
+                    <WrapPanel VerticalAlignment="Center" Margin="0,0,0,10">
                         <Button Content="開始今天的複習 →" Style="{StaticResource PrimaryButton}" Command="{Binding StartReviewCommand}" AutomationProperties.AutomationId="StartReview" />
                         <Button Content="瀏覽單字庫" Command="{Binding BrowseCommand}" />
                     </WrapPanel>
-                    <TextBlock Text="{Binding NextDueText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0" />
+                </WrapPanel>
+            </Border>
+            <Border Style="{StaticResource Panel}" Padding="22" Margin="0,0,0,20" AutomationProperties.AutomationId="LearningActivity">
+                <StackPanel>
+                    <TextBlock Text="每天留下的一點進步" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding ActivitySummary}" Style="{StaticResource MutedText}" Margin="0,8,0,16" />
+                    <views:ActivityHeatmap Activity="{Binding Activity}" SelectDayCommand="{Binding SelectActivityDayCommand}" />
+                    <DockPanel Margin="0,12,0,0">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                            <TextBlock Text="Less" FontSize="11" Foreground="#68758A" Margin="0,0,5,0" />
+                            <Border Width="12" Height="12" Background="#EDF0F5" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#C3E7D0" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#81CC9D" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#3AA66A" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#207448" CornerRadius="2" Margin="0,0,5,0" />
+                            <TextBlock Text="More" FontSize="11" Foreground="#68758A" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding SelectedDayText}" Style="{StaticResource MutedText}" FontSize="12" />
+                    </DockPanel>
+                    <TextBlock Text="同一詞義每天計一次；已撤銷的評分不列入。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,8,0,0" />
                 </StackPanel>
             </Border>
             <Border Background="#EDF0FA" CornerRadius="12" Padding="22">

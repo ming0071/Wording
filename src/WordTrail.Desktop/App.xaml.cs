@@ -27,6 +27,7 @@ public partial class App : Application
             instanceMutex = new Mutex(true, $"Local\\WordTrail-{identity}", out var firstInstance);
             if (!firstInstance)
             {
+                if (VocabularyFileCommand.IsRequested(e.Args)) throw new InvalidOperationException("請先關閉使用這個單字庫的 WordTrail，再執行檔案匯入或匯出。");
                 MessageBox.Show("這個單字庫已在另一個 WordTrail 視窗開啟。", "WordTrail");
                 Shutdown();
                 return;
@@ -35,6 +36,11 @@ public partial class App : Application
             var aiSettings = new AiSettings { ExecutablePath = settings.CodexExecutablePath, Model = settings.CodexModel, DailyGenerationLimit = settings.DailyGenerationLimit };
             var store = new SqliteStudyStore(Path.Combine(dataDirectory, "wordtrail.db"));
             await store.InitializeAsync();
+            if (VocabularyFileCommand.IsRequested(e.Args))
+            {
+                Shutdown(await VocabularyFileCommand.ExecuteAsync(e.Args, store));
+                return;
+            }
             var seedPath = Path.Combine(AppContext.BaseDirectory, "content", "toeic-starter.json");
             if (File.Exists(seedPath))
             {
@@ -56,6 +62,12 @@ public partial class App : Application
         }
         catch (Exception exception)
         {
+            if (VocabularyFileCommand.IsRequested(e.Args))
+            {
+                try { VocabularyFileCommand.WriteResult(e.Args, false, exception.Message); }
+                finally { Shutdown(1); }
+                return;
+            }
             MessageBox.Show($"WordTrail 無法啟動。既有資料不會被自動清空。\n\n{exception.Message}", "啟動失敗", MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown(1);
         }

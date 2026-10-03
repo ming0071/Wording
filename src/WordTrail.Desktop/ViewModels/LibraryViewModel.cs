@@ -8,7 +8,6 @@ public sealed class LibraryViewModel : PageViewModel
     private readonly IStudyStore store;
     private readonly Action<VocabularyItem?> edit;
     private string searchText = "";
-    private string selectedCategory = "全部分類";
     private string selectedFilter = "全部";
     private string newCategory = "";
     private VocabularyItem? selectedItem;
@@ -16,8 +15,16 @@ public sealed class LibraryViewModel : PageViewModel
     public ObservableCollection<VocabularyItem> Items { get; } = [];
     public ObservableCollection<string> Categories { get; } = [];
     public string[] Filters { get; } = ["全部", "學習中", "已暫停", "已封存"];
+    public string[] SortOptions { get; } = ["建立時間：最新優先", "建立時間：最早優先", "單字：A–Z", "單字：Z–A", "熟練程度：低到高", "熟練程度：高到低", "星號優先"];
+    private string selectedSort = "建立時間：最新優先";
+    public string SelectedSort { get => selectedSort; set { if (SetProperty(ref selectedSort, value)) SearchCommand.Execute(null); } }
+    public AsyncCommand StarCommand { get; }
+    public RelayCommand StarRowCommand { get; }
     public string SearchText { get => searchText; set => SetProperty(ref searchText, value); }
-    public string SelectedCategory { get => selectedCategory; set => SetProperty(ref selectedCategory, value); }
+    public CategorySelection CategoryScope { get; } = new();
+    public bool CanChangeCategory => !IsBusy;
+    public string SelectedCategory { get => CategoryScope.SelectedNames.FirstOrDefault() ?? "全部分類";
+        set => CategoryScope.SetSelected(value == "全部分類" ? [] : [value]); }
     public string SelectedFilter { get => selectedFilter; set => SetProperty(ref selectedFilter, value); }
     public string NewCategory { get => newCategory; set => SetProperty(ref newCategory, value); }
     public string CountText => $"{Items.Count} 個詞義 · 新詞自動加入學習";
@@ -41,13 +48,27 @@ public sealed class LibraryViewModel : PageViewModel
     public AsyncCommand RestoreCommand { get; }
     public RelayCommand NewCommand { get; }
     public RelayCommand EditCommand { get; }
-    private AsyncCommand[] SelectionCommands => [PauseCommand, ArchiveCommand, RestoreCommand];
+    private AsyncCommand[] SelectionCommands => [PauseCommand, ArchiveCommand, RestoreCommand, StarCommand];
 
     public LibraryViewModel(IStudyStore store, Action<VocabularyItem?> edit)
     {
         this.store = store;
         this.edit = edit;
         SearchCommand = Command(LoadAsync);
+        StarCommand = Command(async token =>
+        {
+            if (SelectedItem is not { } item) return;
+            await store.SetStarredAsync(item.Id, !item.IsStarred, token);
+            await LoadAsync(token);
+        }, () => SelectedItem is not null);
+        StarRowCommand = new(value =>
+        {
+            if (value is not VocabularyItem item || IsBusy) return;
+            SelectedItem = item;
+            StarCommand.Execute(null);
+        }, _ => !IsBusy);
+        CategoryScope.Changed += () => SearchCommand.Execute(null);
+        PropertyChanged += (_, args) => { if (args.PropertyName == nameof(IsBusy)) { OnPropertyChanged(nameof(CanChangeCategory)); StarRowCommand.NotifyCanExecuteChanged(); } };
         AddCategoryCommand = Command(AddCategoryAsync);
         PauseCommand = Command(TogglePauseAsync, () => SelectedItem is { IsArchived: false });
         ArchiveCommand = Command(ArchiveAsync, () => SelectedItem is { IsArchived: false });
@@ -59,27 +80,41 @@ public sealed class LibraryViewModel : PageViewModel
     public override async Task LoadAsync(CancellationToken cancellationToken = default)
     {
         var index = Math.Max(0, Items.IndexOf(SelectedItem!));
-        var currentCategory = SelectedCategory;
+        var selectedId = SelectedItem?.Id;
         var categories = await store.GetCategoriesAsync(cancellationToken);
         Categories.Clear();
         Categories.Add("全部分類");
         foreach (var category in categories) Categories.Add(category);
-        SelectedCategory = Categories.Contains(currentCategory) ? currentCategory : "全部分類";
+        CategoryScope.SetAvailable(categories);
+        var selected = CategoryScope.SelectedNames;
         var vocabulary = await store.GetVocabularyAsync(SearchText,
-            SelectedCategory == "全部分類" ? null : SelectedCategory, cancellationToken,
+            null, cancellationToken,
             includeArchived: SelectedFilter == "已封存");
-        var filtered = vocabulary.Where(item => SelectedFilter switch
+        var filtered = vocabulary.Where(item => selected.Length == 0 || item.Categories.Intersect(selected, StringComparer.OrdinalIgnoreCase).Any())
+            .Where(item => SelectedFilter switch
         {
             "學習中" => !item.IsArchived && !item.IsPaused && item.Enrollment != Enrollment.Skipped,
             "已暫停" => !item.IsArchived && (item.IsPaused || item.Enrollment == Enrollment.Skipped),
             "已封存" => item.IsArchived,
             _ => true
         }).ToList();
+        filtered = SortItems(filtered, SelectedSort).ToList();
         Items.Clear();
         foreach (var item in filtered) Items.Add(item);
-        SelectedItem = Items.Count == 0 ? null : Items[Math.Min(index, Items.Count - 1)];
+        SelectedItem = Items.FirstOrDefault(x => x.Id == selectedId) ?? (Items.Count == 0 ? null : Items[Math.Min(index, Items.Count - 1)]);
         OnPropertyChanged(nameof(CountText));
     }
+
+    public static IEnumerable<VocabularyItem> SortItems(IEnumerable<VocabularyItem> items, string sort) => sort switch
+    {
+        "建立時間：最早優先" => items.OrderBy(x => x.CreatedAt).ThenBy(x => x.CreationOrder),
+        "單字：A–Z" => items.OrderBy(x => x.Headword, StringComparer.OrdinalIgnoreCase),
+        "單字：Z–A" => items.OrderByDescending(x => x.Headword, StringComparer.OrdinalIgnoreCase),
+        "熟練程度：低到高" => items.OrderBy(x => x.Stability).ThenBy(x => x.Headword, StringComparer.OrdinalIgnoreCase),
+        "熟練程度：高到低" => items.OrderByDescending(x => x.Stability).ThenBy(x => x.Headword, StringComparer.OrdinalIgnoreCase),
+        "星號優先" => items.OrderByDescending(x => x.IsStarred).ThenBy(x => x.Headword, StringComparer.OrdinalIgnoreCase),
+        _ => items.Reverse().OrderByDescending(x => x.CreatedAt).ThenByDescending(x => x.CreationOrder)
+    };
 
     private async Task AddCategoryAsync(CancellationToken token)
     {

@@ -27,6 +27,10 @@ public sealed class SettingsViewModel : PageViewModel
     private string easyKey;
     private string speakKey;
     private string speakExampleKey;
+    private bool autoSpeakWord;
+    public bool AutoSpeakWord { get => autoSpeakWord; set => SetProperty(ref autoSpeakWord, value); }
+    private bool autoSpeakExamples;
+    public bool AutoSpeakExamples { get => autoSpeakExamples; set => SetProperty(ref autoSpeakExamples, value); }
     public string DataDirectory { get; }
     public string SpeechStatus { get; }
     public string DailyNewLimit { get => dailyNewLimit; set => SetProperty(ref dailyNewLimit, value); }
@@ -46,9 +50,13 @@ public sealed class SettingsViewModel : PageViewModel
     public AsyncCommand BackupCommand { get; }
     public AsyncCommand RestoreCommand { get; }
     public RelayCommand OpenFolderCommand { get; }
+    public RelayCommand FindCodexCommand { get; }
+    public RelayCommand BrowseCodexCommand { get; }
+    public AsyncCommand ImportVocabularyCommand { get; }
+    public AsyncCommand ExportVocabularyCommand { get; }
 
     public SettingsViewModel(IBackupService backup, IContentGenerator generator, IPronunciationService speech,
-        AppSettings settings, AiSettings aiSettings, string dataDirectory, Action restored)
+        AppSettings settings, AiSettings aiSettings, string dataDirectory, Action restored, IStudyStore? store = null)
     {
         this.backup = backup;
         this.generator = generator;
@@ -68,11 +76,37 @@ public sealed class SettingsViewModel : PageViewModel
         easyKey = settings.EasyKey;
         speakKey = settings.SpeakKey;
         speakExampleKey = settings.SpeakExampleKey;
+        autoSpeakWord = settings.AutoSpeakWord;
+        autoSpeakExamples = settings.AutoSpeakExamples;
         SaveCommand = Command(SaveAsync);
-        CheckAiCommand = Command(async token => Notice = await generator.CheckAvailabilityAsync(token));
+        CheckAiCommand = Command(async token => { await SaveAsync(token); Notice = await generator.CheckAvailabilityAsync(token); });
         BackupCommand = Command(BackupAsync);
         RestoreCommand = Command(RestoreAsync);
+        ImportVocabularyCommand = Command(async token =>
+        {
+            var dialog = new OpenFileDialog { Title = "匯入單字 JSON", Filter = "單字 JSON (*.json)|*.json" };
+            if (dialog.ShowDialog() != true) return;
+            var count = await new VocabularyFileService(store!).ImportAsync(dialog.FileName, token);
+            Notice = $"已匯入 {count} 個詞義，既有複習進度已保留。";
+        }, () => store is not null);
+        ExportVocabularyCommand = Command(async token =>
+        {
+            var dialog = new SaveFileDialog { Title = "匯出單字 JSON", Filter = "單字 JSON (*.json)|*.json", FileName = "vocabulary.json" };
+            if (dialog.ShowDialog() != true) return;
+            var count = await new VocabularyFileService(store!).ExportAsync(dialog.FileName, token);
+            Notice = $"已匯出 {count} 個詞義：{dialog.FileName}";
+        }, () => store is not null);
         OpenFolderCommand = new(_ => OpenFolder());
+        FindCodexCommand = new(_ =>
+        {
+            try { CodexPath = CodexExecutableLocator.Resolve("codex"); Error = ""; Notice = "已找到 Codex。按「保存並檢查」確認登入。"; }
+            catch (Exception exception) { Error = exception.Message; }
+        });
+        BrowseCodexCommand = new(_ =>
+        {
+            var dialog = new OpenFileDialog { Title = "選擇 Codex 執行檔", Filter = "Codex 執行檔 (*.exe)|*.exe" };
+            if (dialog.ShowDialog() == true) CodexPath = dialog.FileName;
+        });
     }
 
     private Task SaveAsync(CancellationToken token)
@@ -86,7 +120,8 @@ public sealed class SettingsViewModel : PageViewModel
         {
             DailyNewLimit = newLimit, CodexExecutablePath = CodexPath.Trim(), CodexModel = CodexModel.Trim(),
             DailyGenerationLimit = generationLimit, FlipKey = FlipKey, AgainKey = AgainKey,
-            HardKey = HardKey, GoodKey = GoodKey, EasyKey = EasyKey, SpeakKey = SpeakKey, SpeakExampleKey = SpeakExampleKey
+            HardKey = HardKey, GoodKey = GoodKey, EasyKey = EasyKey, SpeakKey = SpeakKey, SpeakExampleKey = SpeakExampleKey,
+            AutoSpeakWord = AutoSpeakWord, AutoSpeakExamples = AutoSpeakExamples
         };
         updated.Save(DataDirectory);
         settings.DailyNewLimit = updated.DailyNewLimit;
@@ -100,6 +135,8 @@ public sealed class SettingsViewModel : PageViewModel
         settings.EasyKey = updated.EasyKey;
         settings.SpeakKey = updated.SpeakKey;
         settings.SpeakExampleKey = updated.SpeakExampleKey;
+        settings.AutoSpeakWord = updated.AutoSpeakWord;
+        settings.AutoSpeakExamples = updated.AutoSpeakExamples;
         aiSettings.ExecutablePath = settings.CodexExecutablePath;
         aiSettings.Model = settings.CodexModel;
         aiSettings.DailyGenerationLimit = generationLimit;

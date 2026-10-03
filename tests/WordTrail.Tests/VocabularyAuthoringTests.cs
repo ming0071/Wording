@@ -19,7 +19,7 @@ public sealed partial class DesktopWorkflowTests
         var word = StudyTestData.Word() with { Examples = [new("First example.", "第一句"), new("Second example.", "第二句")] };
         var store = new RecordingStore { NextReview = new(word, 0, true, null) };
         var speech = new RecordingSpeech();
-        var settings = new AppSettings();
+        var settings = new AppSettings { AutoSpeakWord = false, AutoSpeakExamples = false };
         var review = new ReviewViewModel(store, speech, settings);
         await review.LoadAsync();
         Assert.True(ReviewKeyboard.Handle(review, Key.S, ModifierKeys.None, false));
@@ -120,7 +120,7 @@ public sealed partial class DesktopWorkflowTests
     }
 
     [Fact]
-    public void VerticalReviewShowsExtrasWithoutTooltipsAndEditorUsesPartOfSpeechDropdown()
+    public void VerticalReviewShowsExtrasWithoutTooltipsAndEditorUsesPartOfSpeechChips()
     {
         OffscreenWpf.Invoke(() =>
         {
@@ -150,16 +150,16 @@ public sealed partial class DesktopWorkflowTests
             var editor = new EditorViewModel(store, new FixedGenerator(), word, _ => { });
             var editorView = new EditorView { DataContext = editor, FontSize = 14 };
             Layout(editorView, 959, 710);
-            var picker = Assert.Single(Descendants(editorView).OfType<ComboBox>(), x => AutomationProperties.GetAutomationId(x) == "PartOfSpeechInput");
-            Assert.Equal("noun", picker.SelectedItem);
+            var picker = Assert.Single(Descendants(editorView).OfType<ListBox>(), x => AutomationProperties.GetAutomationId(x) == "PartOfSpeechInput");
+            Assert.Equal("noun", picker.SelectedValue);
             Assert.Contains("動詞", editor.PartOfSpeechOptions);
-            picker.SelectedItem = "動詞";
+            picker.SelectedValue = "動詞";
             Assert.Equal("動詞", editor.PartOfSpeech);
             Assert.True(editor.IsDirty);
             editor.AddSenseCommand.Execute(null);
             Layout(editorView, 959, 710);
             Assert.Single(editor.AdditionalSenses);
-            Assert.Contains(Descendants(editorView).OfType<ComboBox>(), x => AutomationProperties.GetName(x) == "另一詞義的詞性");
+            Assert.Equal(2, Descendants(editorView).OfType<ListBox>().Count(x => AutomationProperties.GetAutomationId(x) == "PartOfSpeechInput"));
         });
     }
 
