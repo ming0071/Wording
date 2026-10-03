@@ -1,13 +1,11 @@
-# 維護文件
+# Documentation
 
-專案功能、安裝、操作示範與測試指令從根目錄的 [README](../README.md) 開始。
+本目錄保存使用說明、排程驗證、操作示範與授權檔案。完整文件導覽集中在主頁的 [Documentation](../README.md#documentation)；功能、安裝與快速開始也從主頁閱讀。
 
-| 位置 | 用途 |
+| 檔案與資源 | 內容 |
 | --- | --- |
-| [vocabulary-files.md](vocabulary-files.md) | JSON 欄位、穩定 ID、匯入／匯出指令與資料庫位置 |
-| [FSRS_VERIFICATION.md](FSRS_VERIFICATION.md) | 排程參數、與參考演算法的差異、重建測試資料的方法 |
-| [桌面介面導覽](../src/Wording.Desktop/README.md) | 畫面、ViewModel、快捷鍵與背景介面測試 |
-| [教材說明](../content/README.md) | 可選擇匯入的詞彙檔案及維護規則 |
-| `licenses/WebView2-LICENSE.txt`、`licenses/WebView2-NOTICE.txt` | WebView2 的授權與通知；保留並供發布使用 |
-
-測試結果可從指令輸出、`artifacts/test-results` 與 GitHub Actions 查看。
+| [評分與複習排程](review-scheduling.md) | 評分、複習間隔與每日新詞名額 |
+| [JSON 格式與檔案操作](vocabulary-files.md) | 單字檔案與資料位置 |
+| [FSRS 參考驗證](FSRS_VERIFICATION.md) | 開發用排程參數與驗證方法 |
+| [操作示範](images/wording-demo.gif) | 主 README 使用的操作 GIF |
+| [WebView2 授權](licenses/WebView2-LICENSE.txt) · [通知](licenses/WebView2-NOTICE.txt) | 隨 Windows 程式包提供的原始授權文件 |

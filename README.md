@@ -4,7 +4,7 @@
 
 Windows 英文單字學習 App，將自己的詞庫、雙語例句與 FSRS 間隔複習放在一起。以 C#、WPF 與 SQLite 開發，資料保存在本機；新安裝從空白詞庫開始，可自行新增或匯入 TOEIC 學習詞彙。
 
-[下載程式](https://github.com/ming0071/Wording/releases) · [選用單字庫](content/toeic-vocabulary.json) · [文件](docs/README.md) · [Build & Tests](https://github.com/ming0071/Wording/actions)
+[下載程式](https://github.com/ming0071/Wording/releases) · [選用單字庫](content/toeic-vocabulary.json) · [文件](#documentation) · [Build & Tests](https://github.com/ming0071/Wording/actions)
 
 ## Features
 
@@ -20,7 +20,9 @@ Windows 英文單字學習 App，將自己的詞庫、雙語例句與 FSRS 間�
 
 ### Windows 程式包
 
-從 [Releases](https://github.com/ming0071/Wording/releases) 下載 Windows x64 ZIP，完整解壓後執行 `Wording.exe`。不需安裝 .NET SDK。
+使用 Windows 11 x64，從 [Releases](https://github.com/ming0071/Wording/releases) 下載 Windows x64 ZIP，完整解壓後執行 `Wording.exe`。程式包已包含 .NET，不需另外安裝。
+
+內嵌字典需要 Microsoft Edge WebView2 Runtime。
 
 ### 從原始碼執行
 
@@ -33,7 +35,7 @@ cd Wording
 .\src\Wording.Desktop\bin\Release\net10.0-windows\Wording.exe
 ```
 
-`build.ps1` 包含建置與測試；後續直接開啟 EXE。內嵌字典需要 Microsoft Edge WebView2 Runtime。
+`build.ps1` 包含建置與測試；後續直接開啟 EXE。
 
 ## Usage
 
@@ -41,14 +43,27 @@ cd Wording
 
 ![Wording 操作示範：匯入詞庫、選擇主題、翻卡評分與今日成果](docs/images/wording-demo.gif)
 
-選用詞庫：[toeic-vocabulary.json](content/toeic-vocabulary.json)（1,323 個詞義、8 個主題，含例句、學習筆記與星號）。從「設定與備份」匯入，複習進度從自己的新詞開始。
+### Getting Started
+
+1. 到「單字庫」新增詞義，或在「設定與備份」匯入 [toeic-vocabulary.json](content/toeic-vocabulary.json)（1,323 個詞義、8 個主題，含例句、學習筆記與星號）。新安裝的詞庫為空，教材需自行匯入。
+2. 按「開始複習」，選擇一個或多個主題；未篩選時使用全部單字庫。
+3. 先回想答案，按空白鍵翻卡，再用 1–4 評分。預設 S 讀單字、E 讀例句，可在設定更改。
+4. 到「今日學習」查看複習成果與熱力圖；每日新詞上限可在「設定與備份」調整。
+
+### Review
+
+1 重來、2 困難、3 良好、4 簡單，依這次能否想起答案評分。新詞第一次選 3，會在 **10 分鐘後**再複習；到期後再次選 3，便進入以天計算的長期排程。後續間隔由 FSRS 依每個詞義的評分與複習歷史計算，評分後會顯示下一次複習時間。
+
+每日預設加入 5 個新詞，所有主題共用名額；到期複習較多時會減少新詞。完整規則見 [評分與複習排程](docs/review-scheduling.md)。
+
+### Data
 
 | 格式 | 適合用途 |
 | --- | --- |
 | 單字 JSON | 分享、編輯或擴充詞彙，包含星號，不含複習進度 |
 | 備份 ZIP | 保存完整詞庫與複習紀錄；還原時整庫替換 |
 
-資料的實際位置可在「設定與備份」查看。[JSON 格式與檔案操作](docs/vocabulary-files.md) · [教材說明](content/README.md)
+資料的實際位置可在「設定與備份」查看。ZIP 保存單字與複習資料庫，個人設定另存於 `settings.json`。檔案欄位與匯入規則見 [JSON 格式與檔案操作](docs/vocabulary-files.md)。
 
 ### Codex（選用）
 
@@ -80,7 +95,7 @@ Wording/
 │   ├── Wording.Infrastructure/   # SQLite、FSRS、備份、Codex、語音
 │   └── Wording.Desktop/          # WPF 畫面、ViewModel 與操作
 ├── content/                     # 選用教材與 JSON 範例
-├── docs/                        # 資料格式、排程說明、GIF 與授權
+├── docs/                        # 使用說明、排程驗證、GIF 與授權
 ├── scripts/                     # 建置、測試、打包與詞庫檔案工具
 ├── tests/
 │   └── Wording.Tests/           # 自動測試與參考資料
@@ -89,4 +104,13 @@ Wording/
 └── README.md
 ```
 
-[維護文件](docs/README.md) · [桌面介面導覽](src/Wording.Desktop/README.md) · [第三方授權](THIRD_PARTY_NOTICES.md)
+## Documentation
+
+| 文件 | 內容 |
+| --- | --- |
+| [評分與複習排程](docs/review-scheduling.md) | 1–4 評分、新詞學習步驟、長期複習與每日新詞名額 |
+| [JSON 格式與檔案操作](docs/vocabulary-files.md) | 資料位置、欄位、穩定 ID 與匯入／匯出指令 |
+| [教材說明](content/README.md) | 選用詞庫、主題、星號與教材維護 |
+| [桌面介面導覽](src/Wording.Desktop/README.md) | 畫面、操作流程、共用樣式與介面測試 |
+| [FSRS 參考驗證](docs/FSRS_VERIFICATION.md) | 排程參數、套件差異與參考資料重建 |
+| [第三方授權](THIRD_PARTY_NOTICES.md) | 相依套件的授權與來源 |
