@@ -2,11 +2,11 @@ param(
     [Parameter(Mandatory = $true)][ValidateSet('import', 'export')][string]$Action,
     [Parameter(Mandatory = $true)][string]$File,
     [string]$DataDirectory,
-    [string]$Executable = (Join-Path $PSScriptRoot '../src/WordTrail.Desktop/bin/Release/net10.0-windows/WordTrail.exe')
+    [string]$Executable = (Join-Path $PSScriptRoot '../src/Wording.Desktop/bin/Release/net10.0-windows/Wording.exe')
 )
 $ErrorActionPreference = 'Stop'
-if (-not (Test-Path -LiteralPath $Executable)) { throw '找不到 WordTrail.exe，請先編譯或用 -Executable 指定執行檔。' }
-$resultPath = Join-Path ([IO.Path]::GetTempPath()) ('wordtrail-result-' + [guid]::NewGuid().ToString('N') + '.json')
+if (-not (Test-Path -LiteralPath $Executable)) { throw '找不到 Wording.exe，請先編譯或用 -Executable 指定執行檔。' }
+$resultPath = Join-Path ([IO.Path]::GetTempPath()) ('wording-result-' + [guid]::NewGuid().ToString('N') + '.json')
 $start = New-Object System.Diagnostics.ProcessStartInfo
 $start.FileName = [IO.Path]::GetFullPath($Executable)
 $start.UseShellExecute = $false
@@ -21,7 +21,7 @@ if ($DataDirectory) {
 try {
     $process = [System.Diagnostics.Process]::Start($start)
     $process.WaitForExit()
-    if (-not (Test-Path -LiteralPath $resultPath)) { throw ('WordTrail 未回傳結果，結束代碼：' + $process.ExitCode) }
+    if (-not (Test-Path -LiteralPath $resultPath)) { throw ('Wording 未回傳結果，結束代碼：' + $process.ExitCode) }
     $result = Get-Content -LiteralPath $resultPath -Raw -Encoding UTF8 | ConvertFrom-Json
     if (-not $result.success) { throw $result.message }
     Write-Output $result.message

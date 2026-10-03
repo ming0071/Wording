@@ -102,7 +102,7 @@ result = dict(generator="official py-fsrs", version="6.3.1", parameters=PARAMETE
               relearningStepsSeconds=[600], enableFuzzing=False,
               floatAbsoluteTolerance=1e-10, floatRelativeTolerance=1e-10,
               timestampToleranceMilliseconds=1, cases=cases)
-destination = Path(__file__).resolve().parents[1] / "tests/WordTrail.Tests/Fixtures/fsrs-reference.json"
+destination = Path(__file__).resolve().parents[1] / "tests/Wording.Tests/Fixtures/fsrs-reference.json"
 destination.parent.mkdir(parents=True, exist_ok=True)
 destination.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(f"Generated {len(cases)} cases with official py-fsrs 6.3.1: {destination}")

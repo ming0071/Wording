@@ -1,7 +1,7 @@
 # Render the repo-owned vector mark into PNG-backed, multi-resolution Windows icons.
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
-$taskAssets = Join-Path (Split-Path $PSScriptRoot -Parent) 'src/WordTrail.Desktop/Assets'
+$taskAssets = Join-Path (Split-Path $PSScriptRoot -Parent) 'src/Wording.Desktop/Assets'
 [IO.Directory]::CreateDirectory($taskAssets) | Out-Null
 $taskImages = @()
 foreach ($taskSize in @(16,24,32,48,64,128,256)) {
@@ -27,7 +27,7 @@ foreach ($taskSize in @(16,24,32,48,64,128,256)) {
     $taskStream = [IO.MemoryStream]::new()
     $taskBitmap.Save($taskStream, [Drawing.Imaging.ImageFormat]::Png)
     $taskImages += @{ Size = $taskSize; Bytes = $taskStream.ToArray() }
-    if ($taskSize -eq 256) { [IO.File]::WriteAllBytes((Join-Path $taskAssets 'WordTrail.png'), $taskStream.ToArray()) }
+    if ($taskSize -eq 256) { [IO.File]::WriteAllBytes((Join-Path $taskAssets 'Wording.png'), $taskStream.ToArray()) }
     $taskStream.Dispose()
     $taskMint.Dispose()
     $taskPen.Dispose()
@@ -36,7 +36,7 @@ foreach ($taskSize in @(16,24,32,48,64,128,256)) {
     $taskGraphics.Dispose()
     $taskBitmap.Dispose()
 }
-$taskIcon = [IO.BinaryWriter]::new([IO.File]::Create((Join-Path $taskAssets 'WordTrail.ico')))
+$taskIcon = [IO.BinaryWriter]::new([IO.File]::Create((Join-Path $taskAssets 'Wording.ico')))
 try {
     $taskIcon.Write([uint16]0)
     $taskIcon.Write([uint16]1)

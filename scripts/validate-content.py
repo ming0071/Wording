@@ -164,6 +164,7 @@ def validate_pack(pack):
 
     # Compare the whole set, not list positions: sorting must not change sense IDs.
     expected_ids = {
+        # Original namespace is retained to preserve the shipped vocabulary IDs.
         uuid.uuid5(uuid.NAMESPACE_URL, f"https://wordtrail.local/content/toeic-starter/{n:03d}")
         for n in range(1, EXPECTED_COUNT + 1)
     }

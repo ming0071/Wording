@@ -1,11 +1,11 @@
 # 用檔案維護單字庫
 
-預設資料庫是 `%LOCALAPPDATA%\WordTrail\wordtrail.db`，這台電腦為 `C:\Users\Ming\AppData\Local\WordTrail\wordtrail.db`。設定另存於同目錄的 `settings.json`。使用 `--data-dir` 啟動的獨立資料庫則位於指定目錄。
+新安裝的預設資料庫是 `%LOCALAPPDATA%\Wording\wording.db`。由 WordTrail 升級的使用者會沿用 `%LOCALAPPDATA%\WordTrail\wordtrail.db`，保留單字、星號與複習紀錄；設定另存於同目錄的 `settings.json`。使用 `--data-dir` 啟動的獨立資料庫則位於指定目錄，也能辨識既有 `wordtrail.db`。App「設定與備份」顯示實際使用的資料目錄。
 
 SQLite 資料庫同時包含單字與複習紀錄。給 AI 修改單字請使用 JSON，不要把 `.db` 當文字檔編輯。App「設定與備份」有單字 JSON 匯入／匯出；也可以完全不開畫面，從專案根目錄執行：
 
 ```powershell
-# 先關閉 WordTrail。匯出後可請 AI 修改 vocabulary.json。
+# 先關閉 Wording。匯出後可請 AI 修改 vocabulary.json。
 .\scripts\vocabulary.ps1 export .\vocabulary.json
 .\scripts\vocabulary.ps1 import .\vocabulary.json
 
@@ -13,7 +13,7 @@ SQLite 資料庫同時包含單字與複習紀錄。給 AI 修改單字請使用
 .\scripts\vocabulary.ps1 import .\content\vocabulary-example.json
 ```
 
-腳本預設使用這個專案 Release 編譯出的 WordTrail.exe。可用 `-Executable '完整路徑\WordTrail.exe'` 指定其他版本，或用 `-DataDirectory '獨立資料目錄'` 選擇測試庫。啟動參數也可直接使用 `--import-vocabulary 檔案`、`--export-vocabulary 檔案`、`--result-file 結果.json`。
+腳本預設使用這個專案 Release 編譯出的 Wording.exe。可用 `-Executable '完整路徑\Wording.exe'` 指定其他版本，或用 `-DataDirectory '獨立資料目錄'` 選擇測試庫。啟動參數也可直接使用 `--import-vocabulary 檔案`、`--export-vocabulary 檔案`、`--result-file 結果.json`。
 
 JSON 的外層為 `version: 1` 與 `items` 陣列；每一筆是一個詞義。同一個單字有多種意思，就新增多筆。必填 `headword`、`partOfSpeech`、`meaning`。其他文字欄位與範例相同，可省略；例句有英文必填，中文可留空。圖片這版不支援。
 

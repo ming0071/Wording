@@ -1,6 +1,6 @@
 # Third-party notices
 
-WordTrail uses third-party software under its own licenses. Package notices and license files shipped by the packages remain applicable.
+Wording uses third-party software under its own licenses. Package notices and license files shipped by the packages remain applicable.
 
 | Component | License | Source |
 | --- | --- | --- |

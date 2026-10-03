@@ -9,7 +9,7 @@ try {
     # Keep test binaries separate from the app that may already be running.
     $taskReport = if ($Filter) { 'tests-filtered.trx' } else { 'tests.trx' }
     $taskArguments = @(
-        'test', 'tests/WordTrail.Tests/WordTrail.Tests.csproj',
+        'test', 'tests/Wording.Tests/Wording.Tests.csproj',
         '-c', $Configuration, "-p:OutputPath=bin/TestRun/$Configuration/",
         '--logger', "trx;LogFileName=$taskReport",
         '--results-directory', 'artifacts/test-results', '--nologo'

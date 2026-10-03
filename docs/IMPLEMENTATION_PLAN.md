@@ -1,4 +1,4 @@
-# WordTrail：個人英文學習程式執行方案
+# Wording：個人英文學習程式執行方案
 
 更新：2026-09-26。這是經多 agent 對抗式審查修正的實作規格；本文件存在不代表應用程式已完成。
 
@@ -49,11 +49,11 @@
 四個 projects：
 
 ```text
-WordTrail/
-  src/WordTrail.Desktop/          # Views、ViewModels、程式啟動與組裝
-  src/WordTrail.Core/             # 詞義、複習規則、少量服務契約
-  src/WordTrail.Infrastructure/   # SQLite、FSRS adapter、Codex process、TTS、備份
-  tests/WordTrail.Tests/          # 單元、資料庫整合與固定測試資料
+Wording/
+  src/Wording.Desktop/          # Views、ViewModels、程式啟動與組裝
+  src/Wording.Core/             # 詞義、複習規則、少量服務契約
+  src/Wording.Infrastructure/   # SQLite、FSRS adapter、Codex process、TTS、備份
+  tests/Wording.Tests/          # 單元、資料庫整合與固定測試資料
   content/                       # 版本化詞庫，不放個人學習資料
   scripts/                       # build、test、publish、verify
   docs/                          # 操作、架構、決策、驗收證據
@@ -126,7 +126,7 @@ AI 工作同時最多一件，明確點擊才呼叫；預設每天最多 10 次�
 
 ## 8. 備份、隱私與復原
 
-正式資料放 %LOCALAPPDATA%\WordTrail，執行檔目錄只放程式。測試固定使用獨立暫存資料目錄，不讀寫正式詞庫。無 telemetry；診斷只含必要事件／錯誤代碼，避免記錄憑證或整段私有筆記。
+正式資料放 %LOCALAPPDATA%\Wording，執行檔目錄只放程式。測試固定使用獨立暫存資料目錄，不讀寫正式詞庫。無 telemetry；診斷只含必要事件／錯誤代碼，避免記錄憑證或整段私有筆記。
 
 備份用 BackupDatabase 取得一致 SQLite 快照，再加 manifest（格式版本、DB schema、檔案清單／SHA-256）；如有合法可存媒體才加入。先寫暫存 ZIP，驗證後改正式檔名。讀寫與維護操作共用簡單鎖；不直接複製開啟中的 .db 或遺漏 WAL。
 
@@ -138,9 +138,9 @@ Git／ZIP／備份排除個人 DB、複習歷史、Codex 認證、API keys、.en
 
 ## 9. Git、交付與自主執行
 
-建議路徑 C:\Users\ASUS\Desktop\Codex\WordTrail，獨立 Git repository；不操作上層既有 repository，也不修改 global safe.directory。初期先提交規格與審查，實作使用 codex/initial-implementation 分支，依可檢查的里程碑提交。最終乾淨工作樹、標記 v0.1.0。
+建議路徑 C:\Users\ASUS\Desktop\Codex\Wording，獨立 Git repository；不操作上層既有 repository，也不修改 global safe.directory。初期先提交規格與審查，實作使用 codex/initial-implementation 分支，依可檢查的里程碑提交。最終乾淨工作樹、標記 v0.1.0。
 
-GitHub 採 ming0071/WordTrail，private，已依後續「建立專案並推上 GitHub」指示建立；不覆寫既有 repository，不 force-push。不把其他專案帶入新 repo。推送前檢查 staged 檔案與常見秘密模式；核對遠端與 commit SHA。
+GitHub 採 ming0071/Wording，private，已依後續「建立專案並推上 GitHub」指示建立；不覆寫既有 repository，不 force-push。不把其他專案帶入新 repo。推送前檢查 staged 檔案與常見秘密模式；核對遠端與 commit SHA。
 
 GitHub Actions 採 Windows、最小 contents:read、無 AI 憑證的還原／建置／測試／打包；固定測試輸出與 ZIP artifact。private repo 的 Actions 有帳號配額與設定限制；無額度／被停用時保留本機完整證據，註明雲端 gate 未通過，不買額度或擅改付款設定。
 

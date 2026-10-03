@@ -1,9 +1,9 @@
 # FSRS 參考驗證
 
-- 正式依賴：`FSRS.Core 1.0.7`，參數版本 `fsrs6-wordtrail-v1-py6.3.1-whole-days`。
+- 正式依賴：`FSRS.Core 1.0.7`，參數版本 `fsrs6-wording-v1-py6.3.1-whole-days`。
 - 獨立參考：官方 `py-fsrs 6.3.1`。Python 僅用於開發，不隨 Windows 程式執行。
 - 兩邊明確使用相同的 21 個權重、0.9 保留率、1／10 分鐘 learning steps、10 分鐘 relearning、36500 天最大間隔、關閉 fuzz。特別案例把最大間隔設為 30 天。
-- `scripts/generate_fsrs_fixtures.py` 產生 `tests/WordTrail.Tests/Fixtures/fsrs-reference.json`，目前 58 個案例。
+- `scripts/generate_fsrs_fixtures.py` 產生 `tests/Wording.Tests/Fixtures/fsrs-reference.json`，目前 58 個案例。
 - 狀態和 step 完全相同；到期時間誤差最多 1 ms；浮點絕對及相對容許誤差各 `1e-10`。
 
 ## 已確認並修正的差異

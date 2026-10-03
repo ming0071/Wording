@@ -1,6 +1,6 @@
 # 起始教材
 
-`toeic-starter.json` 是 WordTrail 的原創學習教材，包含 300 個詞義或常用片語，適合先以職場、服務與旅行情境建立每日複習習慣。它不是 ETS 官方 TOEIC 詞表，也不是商業辭典摘錄；不提供分數提升保證。
+`toeic-starter.json` 是 Wording 的原創學習教材，包含 300 個詞義或常用片語，適合先以職場、服務與旅行情境建立每日複習習慣。它不是 ETS 官方 TOEIC 詞表，也不是商業辭典摘錄；不提供分數提升保證。
 
 所有解釋、搭配與例句均由 AI 編寫，未複製 Oxford、Merriam-Webster 或其他商業辭典內容。每筆 `origin` 都保留「AI 編寫的原創學習教材；非官方 TOEIC 詞表」標示。這批靜態教材是在開發時編寫，沒有透過應用程式呼叫付費 API，也沒有虛構 API model、生成時間或 prompt 版本。
 
@@ -27,7 +27,7 @@
 
 ## 資料約定
 
-根物件包含 `packId`、`version`、`items`，欄位採 camelCase，對應 `WordTrail.Core.SeedPack` 與 `VocabularyItem`。每筆有：
+根物件包含 `packId`、`version`、`items`，欄位採 camelCase，對應 `Wording.Core.SeedPack` 與 `VocabularyItem`。每筆有：
 
 - 穩定的 `id`、英文 `headword`、繁中 `partOfSpeech` 與單一主要 `meaning`。
 - 英文 `cue`，供卡片正面指出情境或辨別多義字；背面才顯示中文解釋。
@@ -39,7 +39,7 @@
 
 ## 穩定 ID 與更新
 
-第一版最初配號時，使用 Python 標準函式庫 `uuid.uuid5`，namespace 為 `uuid.NAMESPACE_URL`，名稱為 `https://wordtrail.local/content/toeic-starter/001` 至 `/300`。這些網址只是 UUID 的固定輸入，不是來源引用，也不會連線。
+第一版最初配號時，使用 Python 標準函式庫 `uuid.uuid5`，namespace 為 `uuid.NAMESPACE_URL`，名稱為 `https://wording.local/content/toeic-starter/001` 至 `/300`。這些網址只是 UUID 的固定輸入，不是來源引用，也不會連線。
 
 配號完成後，JSON 裡的 ID 就是永久詞義身分。修正錯字、例句、翻譯、分類或重新排序時，**必須保留原 ID**；不要依目前行號重算 ID，也不要把舊 ID 配給別的詞義。若新增不同詞義，請配置尚未使用的新 ID 並提高教材版本，連同驗證器的版本與數量規則一併更新。教材更新應由資料匯入層保留使用者編輯、選取狀態與原有排程。
 

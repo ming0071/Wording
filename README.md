@@ -1,4 +1,4 @@
-# WordTrail
+# Wording
 
 個人用的 Windows 英文單字庫。C#／WPF／SQLite，包含逐詞義間隔複習、300 筆原創教材、Windows 英文發音，以及使用既有 ChatGPT 登入的本機 Codex 文字補充。
 
@@ -6,9 +6,9 @@
 
 ## 直接使用
 
-從 [GitHub Releases](https://github.com/ming0071/WordTrail/releases) 下載 Windows x64 ZIP，完整解壓後開啟 `WordTrail.exe`。這是自足程式包，使用時不必安裝 Visual Studio 或 .NET SDK；Codex AI 功能仍需要另外設定 CLI 登入。
+從 [GitHub Releases](https://github.com/ming0071/Wording/releases) 下載 Windows x64 ZIP，完整解壓後開啟 `Wording.exe`。這是自足程式包，使用時不必安裝 Visual Studio 或 .NET SDK；Codex AI 功能仍需要另外設定 CLI 登入。
 
-自動建置的程式包與測試報告也在 [GitHub Actions](https://github.com/ming0071/WordTrail/actions)。私人專案的下載需要使用可存取此 repository 的 GitHub 帳號登入。
+自動建置的程式包與測試報告也在 [GitHub Actions](https://github.com/ming0071/Wording/actions)。私人專案的下載需要使用可存取此 repository 的 GitHub 帳號登入。
 
 ## 從原始碼開始使用
 
@@ -20,15 +20,15 @@
 在 PowerShell 執行下列指令。私人 repository 需要有權限的 GitHub 帳號；第一次建置需要網路下載 NuGet 套件。
 
 ```powershell
-git clone https://github.com/ming0071/WordTrail.git
-cd WordTrail
+git clone https://github.com/ming0071/Wording.git
+cd Wording
 .\scripts\build.ps1
-.\src\WordTrail.Desktop\bin\Release\net10.0-windows\WordTrail.exe
+.\src\Wording.Desktop\bin\Release\net10.0-windows\Wording.exe
 ```
 
-`build.ps1` 會還原套件、編譯並執行全部測試，成功後即可開啟上面的 EXE。後續啟動直接開 EXE，不必每次編譯。編譯前請關閉這個目錄中的 WordTrail，以免 Windows 鎖住檔案。
+`build.ps1` 會還原套件、編譯並執行全部測試，成功後即可開啟上面的 EXE。後續啟動直接開 EXE，不必每次編譯。編譯前請關閉這個目錄中的 Wording，以免 Windows 鎖住檔案。
 
-也可在 Visual Studio 開啟 `WordTrail.sln`，將 `WordTrail.Desktop` 設為啟始專案。SDK 允許 .NET 10 穩定服務更新；實際使用版本會出現在 CI 紀錄。腳本會先尋找 PATH 中的 `dotnet`，再尋找 `C:\Program Files\dotnet\dotnet.exe`。如果剛安裝 SDK 後直接執行 `dotnet` 找不到指令，重新開啟 PowerShell。
+也可在 Visual Studio 開啟 `Wording.sln`，將 `Wording.Desktop` 設為啟始專案。SDK 允許 .NET 10 穩定服務更新；實際使用版本會出現在 CI 紀錄。腳本會先尋找 PATH 中的 `dotnet`，再尋找 `C:\Program Files\dotnet\dotnet.exe`。如果剛安裝 SDK 後直接執行 `dotnet` 找不到指令，重新開啟 PowerShell。
 
 若 PowerShell 阻擋 `.ps1`，可僅在此次程序中執行：
 
@@ -76,9 +76,11 @@ Windows TTS 是另外的離線語音來源，不是 Codex speech API，也不是
 
 ## 資料與備份
 
-資料與設定位於 `%LOCALAPPDATA%\WordTrail`，不在 Git repository 或執行檔目錄。程式升級只替換執行檔，不刪此資料夾。測試及示範可用 `--data-dir <獨立目錄>`，勿指向正式資料。
+資料與設定位於 `%LOCALAPPDATA%\Wording`，不在 Git repository 或執行檔目錄。程式升級只替換執行檔，不刪此資料夾。測試及示範可用 `--data-dir <獨立目錄>`，勿指向正式資料。
 
-- `wordtrail.db`：SQLite 單字、分類、星號、排程與複習紀錄。
+Wording 原名 WordTrail。升級時若已有 `%LOCALAPPDATA%\WordTrail\wordtrail.db`，會直接沿用該資料庫及同目錄設定，不搬移或清空資料；舊版備份仍可還原。自訂 `--data-dir` 內的既有 `wordtrail.db` 也可沿用。新安裝才使用 `Wording\wording.db`。既有本機專案資料夾叫 `WordTrail` 也不影響操作；新 clone 的預設資料夾名稱是 `Wording`。
+
+- `wording.db`：SQLite 單字、分類、星號、排程與複習紀錄。
 - `settings.json`：新詞數量、快捷鍵、朗讀與 Codex 設定。
 - `.db` 是資料庫，不可當文字檔編輯；關閉 App 後再進行資料庫檔案操作。
 
@@ -94,7 +96,7 @@ Windows TTS 是另外的離線語音來源，不是 Codex speech API，也不是
 .\scripts\test.ps1
 ```
 
-腳本會還原套件、編譯並跑 xUnit 測試，成功時顯示通過數量，失敗時列出案例及原因並回傳失敗狀態。測試執行檔放在 `bin/TestRun/Release`，與日常使用的 App 分開，可避免檔案鎖定。資料測試使用獨立暫存資料庫，不會修改 `%LOCALAPPDATA%\WordTrail`；介面測試在背景載入 WPF，不需要畫面操控權。
+腳本會還原套件、編譯並跑 xUnit 測試，成功時顯示通過數量，失敗時列出案例及原因並回傳失敗狀態。測試執行檔放在 `bin/TestRun/Release`，與日常使用的 App 分開，可避免檔案鎖定。資料測試使用獨立暫存資料庫，不會修改 `%LOCALAPPDATA%\Wording`；介面測試在背景載入 WPF，不需要畫面操控權。
 
 完整報告在 `artifacts/test-results/tests.trx`，篩選測試另存 `tests-filtered.trx`，同類報告每次覆寫；部分介面測試產生的圖片在 `artifacts/layout-check`。這些本機產物不提交 Git。報告可用 Visual Studio 開啟，或查看 PowerShell 顯示的失敗訊息。
 
@@ -111,7 +113,7 @@ Windows TTS 是另外的離線語音來源，不是 Codex speech API，也不是
 不使用腳本的等效指令（需 `dotnet` 在 PATH 中）：
 
 ```powershell
-dotnet test tests/WordTrail.Tests/WordTrail.Tests.csproj -c Release -p:OutputPath=bin/TestRun/Release/ --logger "trx;LogFileName=tests.trx" --results-directory artifacts/test-results
+dotnet test tests/Wording.Tests/Wording.Tests.csproj -c Release -p:OutputPath=bin/TestRun/Release/ --logger "trx;LogFileName=tests.trx" --results-directory artifacts/test-results
 ```
 
 自動測試涵蓋資料保存、複習排程、評分／撤銷、備份還原、AI 回應解析、快捷鍵邏輯、星號、排序及部分版面。它不會呼叫真實 Codex 生成或實際朗讀；通過不代表真實網路服務與所有 Windows 顯示環境已驗收。
@@ -121,21 +123,21 @@ dotnet test tests/WordTrail.Tests/WordTrail.Tests.csproj -c Release -p:OutputPat
 以獨立資料目錄啟動，可試用功能而不影響正式單字庫。重複使用同一路徑會保留測試紀錄。
 
 ```powershell
-.\src\WordTrail.Desktop\bin\Release\net10.0-windows\WordTrail.exe --data-dir "$PWD\.local\manual-test"
+.\src\Wording.Desktop\bin\Release\net10.0-windows\Wording.exe --data-dir "$PWD\.local\manual-test"
 ```
 
 依序檢查新增多個詞義、保存後重開、未保存返回提示、今日學習進入複習、空白鍵與數字評分、S／E 朗讀、星號與各項排序、最大化／縮小版面，以及備份還原。需要 AI 時另測 Codex 連線、生成、預覽、套用與保存；這會使用訂閱額度。
 
 ## 更新與維護
 
-1. 先在 App 建立整庫備份，關閉 WordTrail。
+1. 先在 App 建立整庫備份，關閉 Wording。
 2. 若改過原始碼，先檢查 `git status` 並保存自己的變更，再更新；Git 不會替你備份單字庫。
 3. 在專案根目錄執行更新與建置，成功後重新開啟 EXE：
 
 ```powershell
 git pull --ff-only
 .\scripts\build.ps1
-.\src\WordTrail.Desktop\bin\Release\net10.0-windows\WordTrail.exe
+.\src\Wording.Desktop\bin\Release\net10.0-windows\Wording.exe
 ```
 
 日常小改動先跑相關測試；版本驗收再跑全部。若出現檔案使用中，關閉正在使用同一編譯目錄的 App，或使用 `test.ps1` 的獨立測試輸出。若測試失敗，保留終端錯誤和 TRX，不要把失敗結果當成可發布版本。
@@ -146,20 +148,20 @@ git pull --ff-only
 .\scripts\publish.ps1 -Version 0.1.9
 ```
 
-輸出為 `artifacts/WordTrail-0.1.9-win-x64`、同名 ZIP 與 `.sha256`。發布腳本只打包，不會執行測試；請先驗證。GitHub Actions 在 push／PR 時執行教材驗證、建置、全部測試與打包；教材驗證另使用 Python 3.12，本機一般使用與 xUnit 測試不需要 Python。
+輸出為 `artifacts/Wording-0.1.9-win-x64`、同名 ZIP 與 `.sha256`。發布腳本只打包，不會執行測試；請先驗證。GitHub Actions 在 push／PR 時執行教材驗證、建置、全部測試與打包；教材驗證另使用 Python 3.12，本機一般使用與 xUnit 測試不需要 Python。
 
 ## 專案導覽
 
 | 位置 | 修改什麼 |
 | --- | --- |
-| `src/WordTrail.Core/Models.cs` | 詞義、學習狀態、服務契約 |
-| `src/WordTrail.Desktop` | 畫面、操作與顯示 |
-| `src/WordTrail.Infrastructure/SqliteStudyStore.cs` | 資料庫、複習交易、每日配額 |
-| `src/WordTrail.Infrastructure/FsrsScheduler.cs` | FSRS 對接與共同參數 |
-| `src/WordTrail.Infrastructure/CodexContentGenerator.cs` | 提示、輸出檢查與 CLI 參數 |
-| `src/WordTrail.Infrastructure/BackupService.cs` | 一致備份、還原 |
+| `src/Wording.Core/Models.cs` | 詞義、學習狀態、服務契約 |
+| `src/Wording.Desktop` | 畫面、操作與顯示 |
+| `src/Wording.Infrastructure/SqliteStudyStore.cs` | 資料庫、複習交易、每日配額 |
+| `src/Wording.Infrastructure/FsrsScheduler.cs` | FSRS 對接與共同參數 |
+| `src/Wording.Infrastructure/CodexContentGenerator.cs` | 提示、輸出檢查與 CLI 參數 |
+| `src/Wording.Infrastructure/BackupService.cs` | 一致備份、還原 |
 | `content/toeic-starter.json` | 版本化原創起始教材 |
-| `tests/WordTrail.Tests` | 有意義的排程／資料／AI 回應測試 |
+| `tests/Wording.Tests` | 有意義的排程／資料／AI 回應測試 |
 
 完整決策與驗收標準見 [執行方案](docs/IMPLEMENTATION_PLAN.md)、[對抗式審查](docs/ADVERSARIAL_REVIEW.md)。實際已通過／未通過項目以 [驗收紀錄](docs/VALIDATION.md) 為準。
 

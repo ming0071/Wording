@@ -2,6 +2,14 @@
 
 更新：2026-10-03。以下區分自動測試、真實服務呼叫與桌面操作；未完成的項目列在文末。
 
+## 2026-10-03：Wording 更名驗證
+
+- 原 WordTrail 專案改名為 Wording，包含 solution、專案目錄與檔名、C# 命名空間、WPF 資源、App 標題、圖示檔名、腳本、README 與 GitHub 連結。中途討論的 WordFlow 未作為正式發布名稱。
+- 新安裝使用 `%LOCALAPPDATA%\Wording\wording.db`。既有 `%LOCALAPPDATA%\WordTrail\wordtrail.db` 與設定會沿用，不搬移資料；自訂資料目錄也支援舊資料庫檔名。既有程序互斥識別、JSON 匯入 ID 與教材 UUID 保持相容。
+- 新備份使用 Wording 識別，仍接受 WordTrail 備份。測試使用舊識別的實際備份驗證還原與失敗回退。
+- `scripts/build.ps1` Release 建置通過，0 警告、0 錯誤；113 項自動測試全部通過，包含新增的資料路徑相容性案例。300 筆教材驗證通過、0 結構錯誤。
+- 未讀寫使用者正式資料庫；本機專案外層目錄可保留原名稱，不影響新版 Wording.exe 或 git remote。
+
 ## 2026-10-03：v0.1.9 完整自動驗收
 
 - 重現完整測試：111 項中 110 項通過、1 項失敗。失敗來自舊的「複習頁不得含任何 ScrollViewer」斷言；主題按鈕列新增的捲動容器並不代表卡片需要捲動。
@@ -17,9 +25,9 @@
 - 依使用者要求只執行本輪受影響的 10 個案例，全部通過；未執行完整測試套件。報告：`artifacts/test-results/tests-v014.trx`。本輪未開啟產品視窗、未操控桌面、未呼叫真實語音或 AI。
 - 複習頁改成上下單欄：詞條、詞義、搭配、同義詞、雙語例句與個人筆記。操作列仍固定在底部，無外層捲動，所有來源 ToolTip 均移除。300 張教材的背景 WPF 最小尺寸檢查通過；另檢查有同義詞／筆記的卡片。已查看 `artifacts/layout-check/review-v014-minimum.png` 和 `review-v014-notes.png`。
 - 預設 S 朗讀單字、E 朗讀全部英文例句，兩鍵可自訂。測試確認翻卡前不讀例句、長按不重複朗讀，以及自訂鍵及設定保存。舊使用者的 S／E 映射保留，新朗讀操作自動取得未使用的按鍵。
-- 新增／編輯詞性改為選單，保留舊詞條原有自訂詞性。可在同一詞條下新增／移除其他詞義並一次保存，各義項使用獨立 ID 與排程；筆記和同義詞存在既有 JSON，舊資料不需 schema 轉換。參考 Quizlet 的詞條／定義及增加卡片的編輯形式：[Creating flashcard sets](https://help.quizlet.com/hc/en-us/articles/360029780752-Creating-flashcard-sets)。各詞義分開保留排程是 WordTrail 的設計。
+- 新增／編輯詞性改為選單，保留舊詞條原有自訂詞性。可在同一詞條下新增／移除其他詞義並一次保存，各義項使用獨立 ID 與排程；筆記和同義詞存在既有 JSON，舊資料不需 schema 轉換。參考 Quizlet 的詞條／定義及增加卡片的編輯形式：[Creating flashcard sets](https://help.quizlet.com/hc/en-us/articles/360029780752-Creating-flashcard-sets)。各詞義分開保留排程是 Wording 的設計。
 - 驗證涵蓋不完整草稿禁止保存、保存途中修改保持 dirty、重試保持詞義 ID、批次寫入失敗整批回退，以及重啟和備份還原保留筆記、同義詞及原有複習紀錄。保存中不能新增／移除義項，仍可修改筆記；避免草稿結構和已寫入的詞義不一致。後續只重跑改到的案例，報告另存於 `tests-v014-followup.trx` 與 `tests-v014-save-guard.trx`。
-- Release 建置成功。NuGet 因目前網路限制無法更新弱點資料，產生 NU1900；使用既有套件快取仍可建置。Windows x64 自足包位於 `artifacts/WordTrail-0.1.4-win-x64`，另有同名 ZIP 和 SHA-256。
+- Release 建置成功。NuGet 因目前網路限制無法更新弱點資料，產生 NU1900；使用既有套件快取仍可建置。Windows x64 自足包位於 `artifacts/Wording-0.1.4-win-x64`，另有同名 ZIP 和 SHA-256。
 
 ## 2026-10-03：v0.1.3 背景驗證
 
@@ -28,11 +36,11 @@
 - 預設空白鍵翻卡，1–4 評分，數字鍵盤亦可用；五個按鍵可自訂。測試涵蓋翻面前不可評分、輸入焦點與組合鍵不觸發、長按及連續按鍵不重複提交、主題選單關閉後仍能操作、全部可選按鍵（含 Enter）與自訂數字鍵盤別名。
 - 每日新詞可保存任意大小的非負整數；以超過 64 位元的數字驗證設定保存、重新讀取、跨 10 張取卡與重啟。不再有固定 10 個的新詞上限；當日到期量高時既有 2／0 的減量規則保留。
 - 資料庫 schema 1 → 2 交易升級保留詞義、排程、複習紀錄及已開始名額，舊版數字 JSON 設定仍可載入。舊備份先於暫存庫升級驗證，成功後才替換正式庫；注入升級失敗確認舊庫與現有資料不變。重複快捷鍵不能覆寫有效設定。
-- Windows x64 自足包產生於 `artifacts/WordTrail-0.1.3-win-x64`，另有同名 ZIP 與 SHA-256。未驗收實際桌面的 DPI、工作列或系統語音；背景測試可覆蓋本輪版面與程式行為，不能宣稱替代全部原生 Windows 情境。
+- Windows x64 自足包產生於 `artifacts/Wording-0.1.3-win-x64`，另有同名 ZIP 與 SHA-256。未驗收實際桌面的 DPI、工作列或系統語音；背景測試可覆蓋本輪版面與程式行為，不能宣稱替代全部原生 Windows 情境。
 
 ## 2026-10-03：v0.1.2 本機驗證
 
-- 使用本機 .NET SDK 10.0.401 建置；0 個警告、0 個錯誤。全部 70 個測試通過，記錄位於本機 `artifacts/test-results/tests.trx`。Windows x64 自足程式包在本機產生於 `artifacts/WordTrail-win-x64`。
+- 使用本機 .NET SDK 10.0.401 建置；0 個警告、0 個錯誤。全部 70 個測試通過，記錄位於本機 `artifacts/test-results/tests.trx`。Windows x64 自足程式包在本機產生於 `artifacts/Wording-win-x64`。
 - 新增回歸案例：舊版 Candidate 直接可學；Skipped／暫停／封存維持排除；主題中的到期卡優先於新詞；未知主題與 SQL 特殊字元不會跨主題取卡；多分類共用排程；每日新詞名額跨主題共用，調整上限不須先選字；不確定評分禁止切換範圍。另修正舊版低複習量時仍被固定 5 個新詞擋住的問題，設定 6–10 現在能生效，舊日配額轉換保留已開始的計數。
 - 使用 Release 程式與獨立 `.local/ui-check-v012` 資料目錄操作，首頁顯示 300 個未學新詞。視窗標題與側邊導覽顯示新的 W 圖示。
 - 單字庫主題選單實際展開並選擇「旅行與交通」，套用後顯示 25 個詞義；分類與狀態欄的圓角、箭頭和焦點樣式一致。實機發現 ToggleButton 受到 Fluent 預設樣式干擾，已修正成整個欄位可點擊。
@@ -45,9 +53,9 @@
 
 ## 建置、測試與成品
 
-- 私有 repository：[ming0071/WordTrail](https://github.com/ming0071/WordTrail)。本機沒有安裝 Visual Studio 或 .NET SDK，建置與打包由 Windows GitHub Actions 執行。
-- 最新已通過程式版本：`31b35866d6c8dbc43d240a7de8291c0b3c9d9478`，對應 [CI 36233114256](https://github.com/ming0071/WordTrail/actions/runs/36233114256)。v0.1.1 包含實機檢查後的文字對比與列表複製修正；建置、測試、self-contained 發布全部成功，已下載的 TRX 記錄 **63 個執行、63 個通過、0 個失敗**。
-- 較早的 [CI 36228994567](https://github.com/ming0071/WordTrail/actions/runs/36228994567) 對應 `40a21e9`，通過 41 個測試。後續審查新增的測試與修正已納入上述最新 CI。
+- 私有 repository：[ming0071/Wording](https://github.com/ming0071/Wording)。本機沒有安裝 Visual Studio 或 .NET SDK，建置與打包由 Windows GitHub Actions 執行。
+- 最新已通過程式版本：`31b35866d6c8dbc43d240a7de8291c0b3c9d9478`，對應 [CI 36233114256](https://github.com/ming0071/Wording/actions/runs/36233114256)。v0.1.1 包含實機檢查後的文字對比與列表複製修正；建置、測試、self-contained 發布全部成功，已下載的 TRX 記錄 **63 個執行、63 個通過、0 個失敗**。
+- 較早的 [CI 36228994567](https://github.com/ming0071/Wording/actions/runs/36228994567) 對應 `40a21e9`，通過 41 個測試。後續審查新增的測試與修正已納入上述最新 CI。
 - 較早 `c5937f4` 的 ZIP 已下載、核對 SHA-256 並解壓至獨立目錄 `.local/final-preview`。該包雜湊為 `78b50f37e3e740ba836f8bc7a054d88ad38e439c03f0ff27dba243bbd1f26977`；其他版本請使用各自隨附的 `.sha256` 檔核對。
 
 ## 排程、資料與教材
