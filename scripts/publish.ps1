@@ -1,4 +1,4 @@
-param([string]$Version = '0.1.9')
+param([string]$Version = '0.2.0')
 $ErrorActionPreference = 'Stop'
 $taskDotnet = & (Join-Path $PSScriptRoot 'resolve-dotnet.ps1')
 Push-Location (Split-Path $PSScriptRoot -Parent)
