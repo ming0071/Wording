@@ -54,6 +54,16 @@ internal sealed class StudyTestData : IDisposable
         command.ExecuteNonQuery();
     }
 
+    public void UseLegacyLimitsSchema() => Execute("""
+        ALTER TABLE daily_limits RENAME TO daily_limits_v2;
+        CREATE TABLE daily_limits(local_day TEXT NOT NULL PRIMARY KEY,
+          adaptive_limit INTEGER NOT NULL CHECK(adaptive_limit BETWEEN 0 AND 10),
+          configured_limit INTEGER NOT NULL CHECK(configured_limit BETWEEN 0 AND 10));
+        INSERT INTO daily_limits SELECT local_day,COALESCE(adaptive_limit,5),CAST(configured_limit AS INTEGER) FROM daily_limits_v2;
+        DROP TABLE daily_limits_v2;
+        PRAGMA user_version=1;
+        """);
+
     public void Dispose()
     {
         if (Directory.Exists(DirectoryPath)) Directory.Delete(DirectoryPath, recursive: true);

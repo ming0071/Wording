@@ -18,6 +18,8 @@ public sealed record VocabularyItem
     public string Kind { get; init; } = "word";
     public string[] Categories { get; init; } = [];
     public string[] Collocations { get; init; } = [];
+    public string[] Synonyms { get; init; } = [];
+    public string Notes { get; init; } = "";
     public ExampleSentence[] Examples { get; init; } = [];
     public ContentOrigin Origin { get; init; } = new("user", "使用者編寫");
     public ContentOrigin? MeaningOrigin { get; init; }
@@ -29,7 +31,7 @@ public sealed record VocabularyItem
 }
 
 public sealed record SeedPack(string PackId, int Version, VocabularyItem[] Items);
-public sealed record DashboardSummary(int DueCount, int SelectedNewCount, int ReviewedToday,
+public sealed record DashboardSummary(int DueCount, int NewCount, int ReviewedToday,
     int StartedToday, int TotalCount, DateTimeOffset? NextDue);
 public sealed record ReviewItem(VocabularyItem Word, long ScheduleVersion, bool IsNew,
     DateTimeOffset? DueAt);
@@ -48,12 +50,14 @@ public interface IStudyStore
     Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task AddCategoryAsync(string name, CancellationToken cancellationToken = default);
     Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default);
+    Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default);
     Task SetEnrollmentAsync(Guid senseId, Enrollment enrollment, CancellationToken cancellationToken = default);
     Task SetPausedAsync(Guid senseId, bool paused, CancellationToken cancellationToken = default);
     Task ArchiveAsync(Guid senseId, CancellationToken cancellationToken = default);
-    Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default);
-    Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, int dailyNewLimit,
-        CancellationToken cancellationToken = default);
+    Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default,
+        string? category = null);
+    Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, System.Numerics.BigInteger dailyNewLimit,
+        CancellationToken cancellationToken = default, string? category = null);
     Task<ReviewResult> SubmitReviewAsync(ReviewSubmission submission, CancellationToken cancellationToken = default);
     Task UndoReviewAsync(Guid operationId, CancellationToken cancellationToken = default);
     Task EndReviewSessionAsync(CancellationToken cancellationToken = default);

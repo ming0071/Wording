@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.IO;
+using System.Globalization;
+using System.Numerics;
 using System.Windows;
 using Microsoft.Win32;
 using WordTrail.Core;
@@ -18,12 +20,27 @@ public sealed class SettingsViewModel : PageViewModel
     private string dailyGenerationLimit;
     private string codexPath;
     private string codexModel;
+    private string flipKey;
+    private string againKey;
+    private string hardKey;
+    private string goodKey;
+    private string easyKey;
+    private string speakKey;
+    private string speakExampleKey;
     public string DataDirectory { get; }
     public string SpeechStatus { get; }
     public string DailyNewLimit { get => dailyNewLimit; set => SetProperty(ref dailyNewLimit, value); }
     public string DailyGenerationLimit { get => dailyGenerationLimit; set => SetProperty(ref dailyGenerationLimit, value); }
     public string CodexPath { get => codexPath; set => SetProperty(ref codexPath, value); }
     public string CodexModel { get => codexModel; set => SetProperty(ref codexModel, value); }
+    public IReadOnlyList<string> ShortcutKeys => AppSettings.ShortcutKeys;
+    public string FlipKey { get => flipKey; set => SetProperty(ref flipKey, value); }
+    public string AgainKey { get => againKey; set => SetProperty(ref againKey, value); }
+    public string HardKey { get => hardKey; set => SetProperty(ref hardKey, value); }
+    public string GoodKey { get => goodKey; set => SetProperty(ref goodKey, value); }
+    public string EasyKey { get => easyKey; set => SetProperty(ref easyKey, value); }
+    public string SpeakKey { get => speakKey; set => SetProperty(ref speakKey, value); }
+    public string SpeakExampleKey { get => speakExampleKey; set => SetProperty(ref speakExampleKey, value); }
     public AsyncCommand SaveCommand { get; }
     public AsyncCommand CheckAiCommand { get; }
     public AsyncCommand BackupCommand { get; }
@@ -44,6 +61,13 @@ public sealed class SettingsViewModel : PageViewModel
         dailyGenerationLimit = settings.DailyGenerationLimit.ToString();
         codexPath = settings.CodexExecutablePath;
         codexModel = settings.CodexModel;
+        flipKey = settings.FlipKey;
+        againKey = settings.AgainKey;
+        hardKey = settings.HardKey;
+        goodKey = settings.GoodKey;
+        easyKey = settings.EasyKey;
+        speakKey = settings.SpeakKey;
+        speakExampleKey = settings.SpeakExampleKey;
         SaveCommand = Command(SaveAsync);
         CheckAiCommand = Command(async token => Notice = await generator.CheckAvailabilityAsync(token));
         BackupCommand = Command(BackupAsync);
@@ -53,20 +77,33 @@ public sealed class SettingsViewModel : PageViewModel
 
     private Task SaveAsync(CancellationToken token)
     {
-        if (!int.TryParse(DailyNewLimit, out var newLimit) || newLimit is < 0 or > 10)
-            throw new InvalidOperationException("每日新詞上限請填入 0–10 的整數。");
+        if (!BigInteger.TryParse(DailyNewLimit.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var newLimit))
+            throw new InvalidOperationException("每日新詞上限請填入非負整數；0 代表暫停新詞，數量沒有固定上限。");
         if (!int.TryParse(DailyGenerationLimit, out var generationLimit) || generationLimit is < 0 or > 50)
             throw new InvalidOperationException("每日 AI 次數請填入 0–50 的整數；0 代表停用生成。");
         if (string.IsNullOrWhiteSpace(CodexPath)) throw new InvalidOperationException("請填入 Codex 執行檔路徑或 codex。");
-        settings.DailyNewLimit = newLimit;
-        settings.CodexExecutablePath = CodexPath.Trim();
-        settings.CodexModel = CodexModel.Trim();
-        settings.DailyGenerationLimit = generationLimit;
-        settings.Save(DataDirectory);
+        var updated = new AppSettings
+        {
+            DailyNewLimit = newLimit, CodexExecutablePath = CodexPath.Trim(), CodexModel = CodexModel.Trim(),
+            DailyGenerationLimit = generationLimit, FlipKey = FlipKey, AgainKey = AgainKey,
+            HardKey = HardKey, GoodKey = GoodKey, EasyKey = EasyKey, SpeakKey = SpeakKey, SpeakExampleKey = SpeakExampleKey
+        };
+        updated.Save(DataDirectory);
+        settings.DailyNewLimit = updated.DailyNewLimit;
+        settings.CodexExecutablePath = updated.CodexExecutablePath;
+        settings.CodexModel = updated.CodexModel;
+        settings.DailyGenerationLimit = updated.DailyGenerationLimit;
+        settings.FlipKey = updated.FlipKey;
+        settings.AgainKey = updated.AgainKey;
+        settings.HardKey = updated.HardKey;
+        settings.GoodKey = updated.GoodKey;
+        settings.EasyKey = updated.EasyKey;
+        settings.SpeakKey = updated.SpeakKey;
+        settings.SpeakExampleKey = updated.SpeakExampleKey;
         aiSettings.ExecutablePath = settings.CodexExecutablePath;
         aiSettings.Model = settings.CodexModel;
         aiSettings.DailyGenerationLimit = generationLimit;
-        Notice = "設定已保存。新詞上限從下一次取卡開始套用。";
+        Notice = "設定已保存。快捷鍵與新詞上限從下一次進入複習／取卡開始套用。";
         return Task.CompletedTask;
     }
 

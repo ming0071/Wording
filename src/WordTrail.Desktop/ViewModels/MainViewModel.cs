@@ -84,7 +84,7 @@ public sealed class MainViewModel : ObservableObject
     private async void OpenEditor(VocabularyItem? item)
     {
         if (CurrentPage.IsBusy) return;
-        var editor = new EditorViewModel(store, generator, item, _ => { });
+        var editor = new EditorViewModel(store, generator, item, _ => { }, () => Navigate("library"));
         CurrentSection = item is null ? "新增詞義" : "編輯詞義";
         CurrentPage = editor;
         try { await editor.LoadAsync(); }

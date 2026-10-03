@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Data.Sqlite;
@@ -12,7 +13,7 @@ namespace WordTrail.Infrastructure;
 /// </summary>
 public sealed class SqliteStudyStore : IStudyStore
 {
-    internal const int SchemaVersion = 1;
+    internal const int SchemaVersion = 2;
     internal static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly TimeProvider _clock;
@@ -53,6 +54,7 @@ public sealed class SqliteStudyStore : IStudyStore
                 Execute(connection, transaction, $"PRAGMA user_version={SchemaVersion};");
                 transaction.Commit();
             }
+            UpgradeConnection(connection, () => InjectFault("Migration.BeforeCommit"));
             ValidateConnection(connection);
             Execute(connection, null, "PRAGMA journal_mode=WAL;");
         }, cancellationToken);
@@ -85,7 +87,7 @@ public sealed class SqliteStudyStore : IStudyStore
                 {
                     var item = Normalize(source) with
                     {
-                        Enrollment = Enrollment.Candidate, IsPaused = false,
+                        Enrollment = Enrollment.Selected, IsPaused = false,
                         IsArchived = false, IsUserEdited = false
                     };
                     InsertWord(connection, transaction, item, pack.PackId);
@@ -142,27 +144,40 @@ public sealed class SqliteStudyStore : IStudyStore
         }, cancellationToken);
 
     public Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default) =>
-        WithMaintenanceAsync(() =>
+        SaveVocabularyBatchAsync([item], cancellationToken);
+
+    public Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default)
+    {
+        var snapshot = items.ToArray();
+        return WithMaintenanceAsync(() =>
         {
-            ValidateVocabulary(item);
-            item = Normalize(item);
+            if (snapshot.Length == 0 || snapshot.Select(x => x.Id).Distinct().Count() != snapshot.Length)
+                throw new ArgumentException("請保存至少一個詞義，詞義 ID 不可重複。");
+            foreach (var item in snapshot) ValidateVocabulary(item);
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction();
-            var existing = ReadWord(connection, transaction, item.Id);
-            if (existing is null)
-                InsertWord(connection, transaction, item with { IsUserEdited = true }, null);
-            else
+            foreach (var source in snapshot)
             {
-                WriteContent(connection, transaction, item, userEdited: true);
-                Execute(connection, transaction,
-                    "UPDATE senses SET enrollment=$enrollment,archived=$archived,paused=$paused WHERE id=$id;",
-                    ("$enrollment", (int)item.Enrollment), ("$archived", item.IsArchived ? 1 : 0),
-                    ("$paused", item.IsPaused ? 1 : 0), ("$id", Id(item.Id)));
-                if (existing.Enrollment != item.Enrollment || existing.IsArchived != item.IsArchived || existing.IsPaused != item.IsPaused)
-                    Execute(connection, transaction, "UPDATE cards SET version=version+1 WHERE sense_id=$id;", ("$id", Id(item.Id)));
+                cancellationToken.ThrowIfCancellationRequested();
+                var item = Normalize(source);
+                var existing = ReadWord(connection, transaction, item.Id);
+                if (existing is null)
+                    InsertWord(connection, transaction, item with { IsUserEdited = true }, null);
+                else
+                {
+                    WriteContent(connection, transaction, item, userEdited: true);
+                    Execute(connection, transaction,
+                        "UPDATE senses SET enrollment=$enrollment,archived=$archived,paused=$paused WHERE id=$id;",
+                        ("$enrollment", (int)item.Enrollment), ("$archived", item.IsArchived ? 1 : 0),
+                        ("$paused", item.IsPaused ? 1 : 0), ("$id", Id(item.Id)));
+                    if (existing.Enrollment != item.Enrollment || existing.IsArchived != item.IsArchived || existing.IsPaused != item.IsPaused)
+                        Execute(connection, transaction, "UPDATE cards SET version=version+1 WHERE sense_id=$id;", ("$id", Id(item.Id)));
+                }
+                InjectFault("Vocabulary.AfterItem");
             }
             transaction.Commit();
         }, cancellationToken);
+    }
 
     public Task SetEnrollmentAsync(Guid senseId, Enrollment enrollment, CancellationToken cancellationToken = default)
     {
@@ -191,40 +206,47 @@ public sealed class SqliteStudyStore : IStudyStore
             transaction.Commit();
         }, cancellationToken);
 
-    public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default) =>
+    // Candidate is an active word in older databases; Skipped remains excluded until resumed.
+    private const string ReviewEligibility = "s.enrollment<>2 AND s.archived=0 AND s.paused=0 ";
+    private const string CategoryPredicate = "AND ($category IS NULL OR EXISTS(" +
+        "SELECT 1 FROM sense_categories sc WHERE sc.sense_id=s.id AND sc.category=$category)) ";
+
+    public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default,
+        string? category = null) =>
         WithMaintenanceAsync(() =>
         {
             using var connection = OpenConnection();
             var day = LocalDay(now);
-            var due = DueCount(connection, null, now);
+            var due = DueCount(connection, null, now, category);
             var newCount = Count(connection, null,
                 "SELECT COUNT(*) FROM cards c JOIN senses s ON s.id=c.sense_id " +
-                "WHERE s.enrollment=1 AND s.archived=0 AND s.paused=0 AND c.last_review_ms IS NULL;");
+                "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NULL " + CategoryPredicate + ";",
+                ("$category", NormalizeCategory(category)));
             var reviewed = Count(connection, null,
                 "SELECT COUNT(DISTINCT sense_id) FROM review_log WHERE local_day=$day AND undone=0;", ("$day", day));
             var started = StartedCount(connection, null, day);
             var total = Count(connection, null, "SELECT COUNT(*) FROM senses WHERE archived=0;");
             var next = Scalar(connection, null,
                 "SELECT MIN(c.due_ms) FROM cards c JOIN senses s ON s.id=c.sense_id " +
-                "WHERE s.enrollment=1 AND s.archived=0 AND s.paused=0 AND c.last_review_ms IS NOT NULL AND c.due_ms>$now;",
-                ("$now", Ms(now)));
+                "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NOT NULL AND c.due_ms>$now " + CategoryPredicate + ";",
+                ("$now", Ms(now)), ("$category", NormalizeCategory(category)));
             return new DashboardSummary(due, newCount, reviewed, started, total,
                 next is null or DBNull ? null : FromMs(Convert.ToInt64(next)));
         }, cancellationToken);
 
-    public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, int dailyNewLimit,
-        CancellationToken cancellationToken = default) => WithMaintenanceAsync(() =>
+    public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, BigInteger dailyNewLimit,
+        CancellationToken cancellationToken = default, string? category = null) => WithMaintenanceAsync(() =>
         {
-            if (dailyNewLimit is < 0 or > 10) throw new ArgumentOutOfRangeException(nameof(dailyNewLimit));
+            if (dailyNewLimit < 0) throw new ArgumentOutOfRangeException(nameof(dailyNewLimit));
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction();
             var day = LocalDay(now);
             EnsureDay(connection, transaction, now, dailyNewLimit);
             var id = Scalar(connection, transaction,
                 "SELECT c.sense_id FROM cards c JOIN senses s ON s.id=c.sense_id " +
-                "WHERE s.enrollment=1 AND s.archived=0 AND s.paused=0 " +
+                "WHERE " + ReviewEligibility + CategoryPredicate +
                 "AND c.last_review_ms IS NOT NULL AND c.due_ms<=$now ORDER BY c.due_ms,s.rowid LIMIT 1;",
-                ("$now", Ms(now))) as string;
+                ("$now", Ms(now)), ("$category", NormalizeCategory(category))) as string;
             if (id is null)
             {
                 var quota = DailyQuota(connection, transaction, day);
@@ -232,10 +254,10 @@ public sealed class SqliteStudyStore : IStudyStore
                 // 首次評分被撤銷的卡仍可重答；new_starts 不被 Undo 刪除，不能反覆換取名額。
                 id = Scalar(connection, transaction,
                     "SELECT c.sense_id FROM cards c JOIN senses s ON s.id=c.sense_id " +
-                    "WHERE s.enrollment=1 AND s.archived=0 AND s.paused=0 AND c.last_review_ms IS NULL " +
+                    "WHERE " + ReviewEligibility + CategoryPredicate + "AND c.last_review_ms IS NULL " +
                     "AND ($space=1 OR EXISTS(SELECT 1 FROM new_starts n WHERE n.sense_id=s.id)) " +
                     "ORDER BY EXISTS(SELECT 1 FROM new_starts n WHERE n.sense_id=s.id) DESC,s.rowid LIMIT 1;",
-                    ("$space", hasSpace ? 1 : 0)) as string;
+                    ("$space", hasSpace ? 1 : 0), ("$category", NormalizeCategory(category))) as string;
             }
             ReviewItem? result = null;
             if (id is not null)
@@ -268,8 +290,8 @@ public sealed class SqliteStudyStore : IStudyStore
             }
             var word = ReadWord(connection, transaction, submission.SenseId)
                 ?? throw new StudyDataException("找不到詞義。");
-            if (word.IsArchived || word.IsPaused || word.Enrollment != Enrollment.Selected)
-                throw new ReviewConflictException("此卡已暫停、封存或移出學習池，請重新取得卡片。");
+            if (word.IsArchived || word.IsPaused || word.Enrollment == Enrollment.Skipped)
+                throw new ReviewConflictException("此卡已暫停或封存，請重新取得卡片。");
             var (before, version) = ReadSchedule(connection, transaction, submission.SenseId);
             if (version != submission.ExpectedScheduleVersion)
                 throw new ReviewConflictException("這張卡已更新，請重新取得卡片後評分。");
@@ -374,10 +396,32 @@ public sealed class SqliteStudyStore : IStudyStore
         catch { connection.Dispose(); throw; }
     }
 
-    internal static void ValidateConnection(SqliteConnection connection)
+    internal static void UpgradeConnection(SqliteConnection connection, Action? beforeCommit = null)
     {
         var version = Convert.ToInt32(Scalar(connection, null, "PRAGMA user_version;"));
-        if (version != SchemaVersion) throw new StudyDataException("不支援此資料庫版本，原有資料未被修改。");
+        ValidateConnection(connection, allowLegacy: true);
+        if (version == SchemaVersion) return;
+        using var transaction = connection.BeginTransaction();
+        Execute(connection, transaction, """
+            ALTER TABLE daily_limits RENAME TO daily_limits_v1;
+            CREATE TABLE daily_limits(local_day TEXT NOT NULL PRIMARY KEY,
+              adaptive_limit INTEGER CHECK(adaptive_limit IN(0,2)),
+              configured_limit TEXT NOT NULL CHECK(length(configured_limit)>0 AND configured_limit NOT GLOB '*[^0-9]*'));
+            INSERT INTO daily_limits SELECT local_day,
+              CASE WHEN adaptive_limit IN(0,2) THEN adaptive_limit ELSE NULL END,
+              CAST(configured_limit AS TEXT) FROM daily_limits_v1;
+            DROP TABLE daily_limits_v1;
+            """);
+        beforeCommit?.Invoke();
+        Execute(connection, transaction, $"PRAGMA user_version={SchemaVersion};");
+        transaction.Commit();
+    }
+
+    internal static void ValidateConnection(SqliteConnection connection, bool allowLegacy = false)
+    {
+        var version = Convert.ToInt32(Scalar(connection, null, "PRAGMA user_version;"));
+        if (version != SchemaVersion && !(allowLegacy && version == 1))
+            throw new StudyDataException("不支援此資料庫版本，原有資料未被修改。");
         if (!string.Equals(Scalar(connection, null, "PRAGMA integrity_check;") as string, "ok", StringComparison.Ordinal))
             throw new StudyDataException("資料庫完整性檢查失敗。");
         using (var command = Command(connection, null, "PRAGMA foreign_key_check;"))
@@ -386,7 +430,12 @@ public sealed class SqliteStudyStore : IStudyStore
         // 也確認是本程式格式，不能只相信外來檔案的 user_version。
         Scalar(connection, null, "SELECT COUNT(*) FROM senses s JOIN cards c ON c.sense_id=s.id;");
         Scalar(connection, null, "SELECT COUNT(*) FROM review_log WHERE operation_id IS NOT NULL AND before_json IS NOT NULL;");
-        Scalar(connection, null, "SELECT COUNT(*) FROM daily_limits WHERE adaptive_limit>=0 AND configured_limit>=0;");
+        using (var command = Command(connection, null, "SELECT adaptive_limit,configured_limit FROM daily_limits;"))
+        using (var reader = command.ExecuteReader())
+            while (reader.Read())
+                if ((!reader.IsDBNull(0) && (reader.GetInt32(0) < 0 || reader.GetInt32(0) > 10)) ||
+                    !BigInteger.TryParse(reader.GetValue(1).ToString(), NumberStyles.None, CultureInfo.InvariantCulture, out _))
+                    throw new StudyDataException("資料庫含有無效的新詞上限。");
         Scalar(connection, null, "SELECT COUNT(*) FROM new_starts WHERE first_day IS NOT NULL;");
         Scalar(connection, null, "SELECT COUNT(*) FROM sense_categories;");
         Scalar(connection, null, "SELECT COUNT(*) FROM content_packs WHERE version>0;");
@@ -518,30 +567,40 @@ public sealed class SqliteStudyStore : IStudyStore
     }
 
     private void EnsureDay(SqliteConnection connection, SqliteTransaction transaction,
-        DateTimeOffset now, int? configuredLimit)
+        DateTimeOffset now, BigInteger? configuredLimit)
     {
         var due = DueCount(connection, transaction, now);
-        var adaptive = due >= 20 ? 0 : due >= 10 ? 2 : 5;
+        int? adaptive = due >= 20 ? 0 : due >= 10 ? 2 : null;
         Execute(connection, transaction,
             "INSERT OR IGNORE INTO daily_limits(local_day,adaptive_limit,configured_limit) VALUES($day,$adaptive,$configured);",
-            ("$day", LocalDay(now)), ("$adaptive", adaptive), ("$configured", configuredLimit ?? 5));
+            ("$day", LocalDay(now)), ("$adaptive", adaptive),
+            ("$configured", (configuredLimit ?? 5).ToString(CultureInfo.InvariantCulture)));
         if (configuredLimit is { } limit)
             Execute(connection, transaction, "UPDATE daily_limits SET configured_limit=$limit WHERE local_day=$day;",
-                ("$limit", limit), ("$day", LocalDay(now)));
+                ("$limit", limit.ToString(CultureInfo.InvariantCulture)), ("$day", LocalDay(now)));
     }
 
-    private static int DailyQuota(SqliteConnection connection, SqliteTransaction transaction, string day) =>
-        Convert.ToInt32(Scalar(connection, transaction,
-            "SELECT MIN(adaptive_limit,configured_limit) FROM daily_limits WHERE local_day=$day;", ("$day", day)));
+    private static BigInteger DailyQuota(SqliteConnection connection, SqliteTransaction transaction, string day)
+    {
+        using var command = Command(connection, transaction,
+            "SELECT adaptive_limit,configured_limit FROM daily_limits WHERE local_day=$day;", ("$day", day));
+        using var reader = command.ExecuteReader();
+        if (!reader.Read()) throw new StudyDataException("缺少今日新詞設定。");
+        var configured = BigInteger.Parse(reader.GetString(1), CultureInfo.InvariantCulture);
+        return reader.IsDBNull(0) ? configured : BigInteger.Min(configured, reader.GetInt32(0));
+    }
 
     private static int StartedCount(SqliteConnection connection, SqliteTransaction? transaction, string day) =>
         Count(connection, transaction, "SELECT COUNT(*) FROM new_starts WHERE first_day=$day;", ("$day", day));
 
-    private static int DueCount(SqliteConnection connection, SqliteTransaction? transaction, DateTimeOffset now) =>
+    private static string? NormalizeCategory(string? category) => string.IsNullOrWhiteSpace(category) ? null : category.Trim();
+
+    private static int DueCount(SqliteConnection connection, SqliteTransaction? transaction, DateTimeOffset now,
+        string? category = null) =>
         Count(connection, transaction,
             "SELECT COUNT(*) FROM cards c JOIN senses s ON s.id=c.sense_id " +
-            "WHERE s.enrollment=1 AND s.archived=0 AND s.paused=0 AND c.last_review_ms IS NOT NULL AND c.due_ms<=$now;",
-            ("$now", Ms(now)));
+            "WHERE " + ReviewEligibility + "AND c.last_review_ms IS NOT NULL AND c.due_ms<=$now " + CategoryPredicate + ";",
+            ("$now", Ms(now)), ("$category", NormalizeCategory(category)));
 
     private string LocalDay(DateTimeOffset now) =>
         TimeZoneInfo.ConvertTime(now, _timeZone).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -583,7 +642,9 @@ public sealed class SqliteStudyStore : IStudyStore
     {
         Headword = item.Headword.Trim(), Meaning = item.Meaning.Trim(), PartOfSpeech = item.PartOfSpeech.Trim(),
         Categories = item.Categories.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
-        Collocations = item.Collocations.Select(x => x.Trim()).Where(x => x.Length > 0).ToArray()
+        Collocations = item.Collocations.Select(x => x.Trim()).Where(x => x.Length > 0).ToArray(),
+        Synonyms = item.Synonyms.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
+        Notes = item.Notes.Trim()
     };
 
     private static void ValidateVocabulary(VocabularyItem item)
@@ -592,13 +653,13 @@ public sealed class SqliteStudyStore : IStudyStore
         if (item.Id == Guid.Empty || string.IsNullOrWhiteSpace(item.Headword) || item.Headword.Length > 200 ||
             string.IsNullOrWhiteSpace(item.Meaning) || item.Meaning.Length > 4000 ||
             item.PartOfSpeech is null || item.Cue is null || item.Level is null || item.Kind is null ||
-            item.Categories is null || item.Collocations is null || item.Examples is null || item.Origin is null ||
+            item.Categories is null || item.Collocations is null || item.Synonyms is null || item.Notes is null || item.Notes.Length > 4000 || item.Examples is null || item.Origin is null ||
             !Enum.IsDefined(item.Enrollment))
             throw new ArgumentException("請填寫詞條與指定詞義，並確認欄位長度。");
-        if (item.Categories.Length > 30 || item.Examples.Length > 20 || item.Collocations.Length > 30)
+        if (item.Categories.Length > 30 || item.Examples.Length > 20 || item.Collocations.Length > 30 || item.Synonyms.Length > 30)
             throw new ArgumentException("分類、例句或搭配數量過多。");
         foreach (var category in item.Categories) ValidateCategory(category);
-        if (item.Collocations.Any(x => x is null || x.Length > 500) ||
+        if (item.Collocations.Any(x => x is null || x.Length > 500) || item.Synonyms.Any(x => x is null || x.Length > 200) ||
             item.Examples.Any(x => x is null || string.IsNullOrWhiteSpace(x.English) ||
                 x.English.Length > 4000 || x.Chinese is null || x.Chinese.Length > 4000))
             throw new ArgumentException("例句或搭配內容不正確。");
@@ -642,8 +703,8 @@ public sealed class SqliteStudyStore : IStudyStore
         CREATE TABLE new_starts(sense_id TEXT NOT NULL PRIMARY KEY REFERENCES senses(id),
           first_day TEXT NOT NULL, started_ms INTEGER NOT NULL);
         CREATE TABLE daily_limits(local_day TEXT NOT NULL PRIMARY KEY,
-          adaptive_limit INTEGER NOT NULL CHECK(adaptive_limit BETWEEN 0 AND 10),
-          configured_limit INTEGER NOT NULL CHECK(configured_limit BETWEEN 0 AND 10));
+          adaptive_limit INTEGER CHECK(adaptive_limit IN(0,2)),
+          configured_limit TEXT NOT NULL CHECK(length(configured_limit)>0 AND configured_limit NOT GLOB '*[^0-9]*'));
         CREATE TABLE content_packs(pack_id TEXT NOT NULL PRIMARY KEY, version INTEGER NOT NULL);
         """;
 }

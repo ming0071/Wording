@@ -42,5 +42,6 @@ jobs:
           name: validation-evidence
           path: |
             artifacts/test-results/**
+            artifacts/layout-check/**
             **/packages.lock.json
           if-no-files-found: warn

@@ -1,11 +1,13 @@
 <UserControl x:Class="WordTrail.Desktop.Views.EditorView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:WordTrail.Desktop.Views">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top">
+            <Button Content="← 返回單字庫" Command="{Binding BackCommand}" HorizontalAlignment="Left"
+                    AutomationProperties.AutomationId="BackToLibrary" Margin="0,0,0,14" />
             <DockPanel>
                 <Button DockPanel.Dock="Right" Content="保存詞義" Style="{StaticResource PrimaryButton}" Command="{Binding SaveCommand}" AutomationProperties.AutomationId="SaveWord" />
                 <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitle}" />
             </DockPanel>
-            <TextBlock Text="一張卡只記一個意思。若是另一個義項，請另外新增；文字勘誤不會重設進度。" Style="{StaticResource MutedText}" Margin="0,0,0,18" />
+            <TextBlock Text="同一個單字可以有多個詞義，按「新增另一個詞義」即可一起保存。每個意思各自複習，修改內容保留原有進度。" Style="{StaticResource MutedText}" Margin="0,0,0,18" />
             <views:StatusBanner />
         </StackPanel>
         <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -20,8 +22,8 @@
                         <TextBlock Text="詞義與例句" Style="{StaticResource SectionTitle}" />
                         <TextBlock Text="單字／固定片語 *" Style="{StaticResource FieldLabel}" />
                         <TextBox Text="{Binding Headword, UpdateSourceTrigger=PropertyChanged}" MaxLength="100" AutomationProperties.Name="單字或固定片語" AutomationProperties.AutomationId="HeadwordInput" />
-                        <TextBlock Text="詞性 *（例如 noun、verb、phrase）" Style="{StaticResource FieldLabel}" />
-                        <TextBox Text="{Binding PartOfSpeech, UpdateSourceTrigger=PropertyChanged}" MaxLength="40" AutomationProperties.Name="詞性" AutomationProperties.AutomationId="PartOfSpeechInput" />
+                        <TextBlock Text="詞性 *" Style="{StaticResource FieldLabel}" />
+                        <ComboBox ItemsSource="{Binding PartOfSpeechOptions}" SelectedItem="{Binding PartOfSpeech}" AutomationProperties.Name="詞性" AutomationProperties.AutomationId="PartOfSpeechInput" />
                         <TextBlock Text="這個詞義的繁中解釋 *" Style="{StaticResource FieldLabel}" />
                         <TextBox Text="{Binding Meaning, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="78" MaxLength="1500" AutomationProperties.Name="繁中詞義" AutomationProperties.AutomationId="MeaningInput" />
                         <TextBlock Text="英文情境提示（同詞多義時使用）" Style="{StaticResource FieldLabel}" />
@@ -33,6 +35,10 @@
                         <ComboBox ItemsSource="{Binding Levels}" SelectedItem="{Binding Level}" AutomationProperties.Name="建議優先級" />
                         <TextBlock Text="常見搭配（每行一個）" Style="{StaticResource FieldLabel}" />
                         <TextBox Text="{Binding CollocationsText, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80" AutomationProperties.Name="常見搭配" />
+                        <TextBlock Text="同義詞（以頓號、逗號或換行分隔）" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding SynonymsText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AutomationProperties.Name="同義詞" AutomationProperties.AutomationId="SynonymsInput" />
+                        <TextBlock Text="我的筆記（記憶提示、容易混淆的地方）" Style="{StaticResource FieldLabel}" />
+                        <TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="72" MaxLength="4000" AutomationProperties.Name="我的筆記" AutomationProperties.AutomationId="NotesInput" />
                         <TextBlock Text="雙語例句" Style="{StaticResource FieldLabel}" />
                         <ItemsControl ItemsSource="{Binding Examples}">
                             <ItemsControl.ItemTemplate>
@@ -49,7 +55,36 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                         <Button Content="＋ 再加一個例句" Command="{Binding AddExampleCommand}" HorizontalAlignment="Left" />
-                        <CheckBox Content="加入學習池" IsChecked="{Binding SelectedForStudy}" Margin="0,14,0,10" />
+                        <ItemsControl ItemsSource="{Binding AdditionalSenses}" Margin="0,16,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="#DDE3F1" BorderThickness="1" CornerRadius="10" Padding="14" Margin="0,0,0,14">
+                                        <StackPanel>
+                                            <DockPanel>
+                                                <Button DockPanel.Dock="Right" Content="移除詞義" Padding="8,5" Command="{Binding DataContext.RemoveSenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                                                <TextBlock Text="另一個詞義" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                            </DockPanel>
+                                            <TextBlock Text="詞性 *" Style="{StaticResource FieldLabel}" />
+                                            <ComboBox ItemsSource="{Binding DataContext.PartOfSpeechOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding PartOfSpeech}" AutomationProperties.Name="另一詞義的詞性" />
+                                            <TextBlock Text="繁中解釋 *" Style="{StaticResource FieldLabel}" />
+                                            <TextBox Text="{Binding Meaning, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="68" MaxLength="1500" AutomationProperties.Name="另一詞義的繁中解釋" />
+                                            <TextBlock Text="英文情境提示" Style="{StaticResource FieldLabel}" />
+                                            <TextBox Text="{Binding Cue, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" MaxLength="300" />
+                                            <Expander Header="同義詞、筆記與例句（選填）" Margin="0,14,0,0">
+                                                <StackPanel>
+                                                    <TextBlock Text="同義詞" Style="{StaticResource FieldLabel}" /><TextBox Text="{Binding SynonymsText, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" />
+                                                    <TextBlock Text="我的筆記" Style="{StaticResource FieldLabel}" /><TextBox Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="64" MaxLength="4000" />
+                                                    <TextBlock Text="英文例句" Style="{StaticResource FieldLabel}" /><TextBox Text="{Binding English, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="64" />
+                                                    <TextBlock Text="繁中翻譯" Style="{StaticResource FieldLabel}" /><TextBox Text="{Binding Chinese, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MinHeight="64" />
+                                                </StackPanel>
+                                            </Expander>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="＋ 新增另一個詞義" Command="{Binding AddSenseCommand}" HorizontalAlignment="Left" AutomationProperties.AutomationId="AddSense" />
+                        <CheckBox Content="暫停複習（保留進度）" IsChecked="{Binding IsPaused}" Margin="0,14,0,10" />
                         <CheckBox Content="封存這個詞義（保留進度）" IsChecked="{Binding IsArchived}" Margin="0,0,0,14" />
                         <TextBlock Text="{Binding OriginText}" Style="{StaticResource MutedText}" FontSize="11" />
                     </StackPanel>

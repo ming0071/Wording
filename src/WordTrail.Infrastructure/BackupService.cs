@@ -33,8 +33,11 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
             try
             {
                 var stagedDatabase = ValidateAndExtract(source, staging, cancellationToken);
-                using (var validation = store.OpenConnection(readOnly: true, path: stagedDatabase))
+                using (var validation = store.OpenConnection(path: stagedDatabase))
+                {
+                    SqliteStudyStore.UpgradeConnection(validation, () => store.InjectFault("Migration.BeforeCommit"));
                     SqliteStudyStore.ValidateConnection(validation);
+                }
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // 舊庫備份成功才往下走；這個檔案會保留，供使用者回到還原前狀態。
@@ -166,7 +169,7 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
             manifest = JsonSerializer.Deserialize<BackupManifest>(input, SqliteStudyStore.JsonOptions)
                 ?? throw new StudyDataException("缺少備份資訊。");
         if (manifest.Application != "WordTrail" || manifest.FormatVersion != FormatVersion ||
-            manifest.SchemaVersion != SqliteStudyStore.SchemaVersion || manifest.Files is null ||
+            manifest.SchemaVersion < 1 || manifest.SchemaVersion > SqliteStudyStore.SchemaVersion || manifest.Files is null ||
             manifest.Files.Length != 1 || manifest.Files[0].Name != DatabaseEntry ||
             manifest.Files[0].Length != databaseEntry.Length)
             throw new StudyDataException("備份版本或檔案資訊不符合目前程式。");
@@ -190,6 +193,13 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
         }
         if (!string.Equals(Hash(destination), manifest.Files[0].Sha256, StringComparison.OrdinalIgnoreCase))
             throw new StudyDataException("備份雜湊不符；檔案可能已損壞。");
+        using (var connection = new Microsoft.Data.Sqlite.SqliteConnection(new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
+               { DataSource = destination, Mode = Microsoft.Data.Sqlite.SqliteOpenMode.ReadOnly, Pooling = false }.ToString()))
+        {
+            connection.Open();
+            if (Convert.ToInt32(SqliteStudyStore.Scalar(connection, null, "PRAGMA user_version;")) != manifest.SchemaVersion)
+                throw new StudyDataException("備份宣告的版本與資料庫不符。");
+        }
         return destination;
     }
 

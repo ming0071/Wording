@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 using WordTrail.Core;
 using WordTrail.Infrastructure;
 
@@ -16,6 +18,14 @@ public sealed class ReviewViewModel : PageViewModel
     private Guid? lastOperationId;
     private int completed;
     private string emptyText = "正在準備學習卡…";
+    private string selectedCategory = "全部單字庫";
+    private string? reviewCategory;
+    private string scopeText = "";
+
+    public ObservableCollection<string> Categories { get; } = [];
+    public string SelectedCategory { get => selectedCategory; set => SetProperty(ref selectedCategory, value); }
+    public string ScopeText { get => scopeText; private set => SetProperty(ref scopeText, value); }
+    public bool CanChangeCategory => !IsBusy && !isSubmitting && pendingSubmission is null;
 
     public ReviewItem? Current
     {
@@ -24,28 +34,44 @@ public sealed class ReviewViewModel : PageViewModel
         {
             SetProperty(ref current, value);
             OnPropertyChanged(nameof(HasCard));
-            OnPropertyChanged(nameof(OriginText));
-            OnPropertyChanged(nameof(MeaningOriginText));
-            OnPropertyChanged(nameof(CollocationsOriginText));
             OnPropertyChanged(nameof(Examples));
+            OnPropertyChanged(nameof(SynonymsText));
+            OnPropertyChanged(nameof(CollocationsText));
+            OnPropertyChanged(nameof(HasSynonyms));
+            OnPropertyChanged(nameof(HasNotes));
             NotifyCommands();
         }
     }
     public bool HasCard => Current is not null;
-    public bool IsAnswerVisible { get => isAnswerVisible; private set { SetProperty(ref isAnswerVisible, value); NotifyCommands(); } }
+    public bool IsAnswerVisible { get => isAnswerVisible; private set { SetProperty(ref isAnswerVisible, value); OnPropertyChanged(nameof(IsQuestionVisible)); NotifyCommands(); } }
+    public bool IsQuestionVisible => !IsAnswerVisible;
+    private static string KeyLabel(string key) => key == "Space" ? "空白鍵" : key;
+    public string FlipButtonText => $"顯示答案 · {KeyLabel(settings.FlipKey)}";
+    public string AgainButtonText => $"重來 · {KeyLabel(settings.AgainKey)}";
+    public string HardButtonText => $"困難 · {KeyLabel(settings.HardKey)}";
+    public string GoodButtonText => $"良好 · {KeyLabel(settings.GoodKey)}";
+    public string EasyButtonText => $"簡單 · {KeyLabel(settings.EasyKey)}";
+    public string SpeakButtonText => $"朗讀單字 · {KeyLabel(settings.SpeakKey)}";
+    public string SpeakExampleButtonText => $"朗讀例句 · {KeyLabel(settings.SpeakExampleKey)}";
+    public string SynonymsText => string.Join("、", Current?.Word.Synonyms ?? []);
+    public string CollocationsText => string.Join(" · ", Current?.Word.Collocations ?? []);
+    public bool HasSynonyms => Current?.Word.Synonyms.Length > 0;
+    public bool HasNotes => !string.IsNullOrWhiteSpace(Current?.Word.Notes);
+    public string KeyboardHint => $"{KeyLabel(settings.FlipKey)} 翻卡 · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
+    public ICommand? CommandForShortcut(string key) => key == settings.FlipKey ? FlipCommand :
+        key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :
+        key == settings.GoodKey ? GoodCommand : key == settings.EasyKey ? EasyCommand :
+        key == settings.SpeakKey ? SpeakCommand : key == settings.SpeakExampleKey ? SpeakExampleCommand : null;
     public string ProgressText => $"這次已複習 {completed} 個詞義";
     public string EmptyText { get => emptyText; private set => SetProperty(ref emptyText, value); }
     public string SpeechStatus => speech.Status;
-    public string OriginText => Current is null ? "" : $"詞義初始來源：{Current.Word.Origin.Note}";
-    public string MeaningOriginText => Current is null ? "" : $"解釋来源：{(Current.Word.MeaningOrigin ?? Current.Word.Origin).Note}";
-    public string CollocationsOriginText => Current is null ? "" : $"搭配來源：{(Current.Word.CollocationsOrigin ?? Current.Word.Origin).Note}";
-    public IReadOnlyList<ReviewExample> Examples => Current?.Word.Examples.Select(example =>
-        new ReviewExample(example.English, example.Chinese, $"例句來源：{(example.Origin ?? Current.Word.Origin).Note}")).ToArray() ?? [];
+    public IReadOnlyList<ExampleSentence> Examples => Current?.Word.Examples ?? [];
     public AsyncCommand AgainCommand { get; }
     public AsyncCommand HardCommand { get; }
     public AsyncCommand GoodCommand { get; }
     public AsyncCommand EasyCommand { get; }
     public AsyncCommand RefreshCommand { get; }
+    public AsyncCommand ApplyCategoryCommand { get; }
     public AsyncCommand UndoCommand { get; }
     public RelayCommand FlipCommand { get; }
     public RelayCommand SpeakCommand { get; }
@@ -68,13 +94,23 @@ public sealed class ReviewViewModel : PageViewModel
             if (pendingSubmission is not null) lastOperationId = null;
             await LoadAsync(token);
         }, () => !isSubmitting);
+        ApplyCategoryCommand = Command(async token =>
+        {
+            var category = SelectedCategory == "全部單字庫" ? null : SelectedCategory;
+            await LoadCardAsync(category, token);
+            Notice = "已切換複習範圍；到期卡優先，新詞依每日上限提供。";
+        }, () => !isSubmitting && pendingSubmission is null);
         UndoCommand = Command(UndoAsync, () => lastOperationId.HasValue && !isSubmitting && pendingSubmission is null);
         FlipCommand = new(_ => IsAnswerVisible = true, _ => Current is not null && !IsAnswerVisible && !isSubmitting);
         SpeakCommand = new(_ => Speak(), _ => Current is not null);
         StopSpeechCommand = new(_ => speech.Stop());
-        SpeakExampleCommand = new(_ => SpeakText(Current?.Word.Examples.FirstOrDefault()?.English),
+        SpeakExampleCommand = new(_ => SpeakText(string.Join(" ", Current?.Word.Examples.Select(x => x.English) ?? [])),
             _ => Current?.Word.Examples.Length > 0 && IsAnswerVisible);
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Current?.Word.Headword, message => Error = message), _ => Current is not null);
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(IsBusy)) OnPropertyChanged(nameof(CanChangeCategory));
+        };
     }
 
     public void BeginSession()
@@ -102,8 +138,25 @@ public sealed class ReviewViewModel : PageViewModel
 
     public override async Task LoadAsync(CancellationToken cancellationToken = default)
     {
+        foreach (var name in new[] { nameof(FlipButtonText), nameof(AgainButtonText), nameof(HardButtonText),
+                     nameof(GoodButtonText), nameof(EasyButtonText), nameof(KeyboardHint), nameof(SpeakButtonText), nameof(SpeakExampleButtonText) }) OnPropertyChanged(name);
+        var categories = await store.GetCategoriesAsync(cancellationToken);
+        Categories.Clear();
+        Categories.Add("全部單字庫");
+        foreach (var category in categories) Categories.Add(category);
+        if (reviewCategory is not null && !Categories.Contains(reviewCategory)) reviewCategory = null;
+        SelectedCategory = reviewCategory ?? "全部單字庫";
+        await LoadCardAsync(reviewCategory, cancellationToken);
+    }
+
+    private async Task LoadCardAsync(string? category, CancellationToken cancellationToken)
+    {
         speech.Stop();
-        var next = await store.GetNextReviewAsync(DateTimeOffset.UtcNow, settings.DailyNewLimit, cancellationToken);
+        var now = DateTimeOffset.UtcNow;
+        var next = await store.GetNextReviewAsync(now, settings.DailyNewLimit, cancellationToken, category);
+        var summary = await store.GetDashboardAsync(now, cancellationToken, category);
+        reviewCategory = category;
+        ScopeText = $"{category ?? "全部單字庫"} · {summary.DueCount} 個到期 · {summary.NewCount} 個未學新詞";
         Current = next;
         IsAnswerVisible = false;
         operationId = Guid.NewGuid();
@@ -111,10 +164,12 @@ public sealed class ReviewViewModel : PageViewModel
         NotifyCommands();
         if (next is null)
         {
-            var summary = await store.GetDashboardAsync(DateTimeOffset.UtcNow, cancellationToken);
-            EmptyText = summary.NextDue is { } due && due > DateTimeOffset.UtcNow
-                ? $"目前沒有可複習的卡片。下一張在 {due.ToLocalTime():HH:mm} 到期，再按「重新檢查」即可。"
-                : "今天可以先休息了。若想加入新詞，可到單字庫選入；每日新詞配額用完後，明天再開始。";
+            var nextDueText = summary.NextDue is { } due && due > now
+                ? $"下一張在 {due.ToLocalTime():MM/dd HH:mm} 到期，再按「重新檢查」即可。" : "";
+            EmptyText = summary.NewCount > 0
+                ? "這個範圍今天的新詞名額已用完、新詞上限設為 0，或因到期複習量而減量。可在設定查看每日上限，或明天繼續。" + nextDueText
+                : nextDueText.Length > 0 ? "這個範圍目前沒有可複習的卡片。" + nextDueText
+                    : "這個範圍目前沒有到期卡或未學新詞。可以切換主題，或到單字庫新增詞義。";
         }
     }
 
@@ -178,11 +233,11 @@ public sealed class ReviewViewModel : PageViewModel
         foreach (var command in RatingCommands) command?.NotifyCanExecuteChanged();
         UndoCommand?.NotifyCanExecuteChanged();
         RefreshCommand?.NotifyCanExecuteChanged();
+        ApplyCategoryCommand?.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(CanChangeCategory));
         FlipCommand?.NotifyCanExecuteChanged();
         SpeakCommand?.NotifyCanExecuteChanged();
         SpeakExampleCommand?.NotifyCanExecuteChanged();
         DictionaryCommand?.NotifyCanExecuteChanged();
     }
 }
-
-public sealed record ReviewExample(string English, string Chinese, string Source);

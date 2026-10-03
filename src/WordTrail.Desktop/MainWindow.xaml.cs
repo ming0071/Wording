@@ -13,21 +13,9 @@ public partial class MainWindow : Window
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
-        if (Keyboard.FocusedElement is TextBoxBase or PasswordBox or ComboBox) return;
-        if (Keyboard.Modifiers != ModifierKeys.None || e.IsRepeat) return;
         if (DataContext is not MainViewModel { CurrentPage: ReviewViewModel review }) return;
-        ICommand? command = e.Key switch
-        {
-            Key.Space => review.FlipCommand,
-            Key.D1 or Key.NumPad1 => review.AgainCommand,
-            Key.D2 or Key.NumPad2 => review.HardCommand,
-            Key.D3 or Key.NumPad3 => review.GoodCommand,
-            Key.D4 or Key.NumPad4 => review.EasyCommand,
-            _ => null
-        };
-        if (command?.CanExecute(null) != true) return;
-        command.Execute(null);
-        e.Handled = true;
+        e.Handled = ReviewKeyboard.Handle(review, e.Key, Keyboard.Modifiers, e.IsRepeat,
+            Keyboard.FocusedElement as DependencyObject);
     }
 
     private void OnClosing(object? sender, CancelEventArgs e)

@@ -45,8 +45,8 @@
             </Style.Triggers>
         </Style>
         <Style x:Key="EnrollmentLabel" TargetType="TextBlock">
-            <Setter Property="Text" Value="待篩選" />
-            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="Text" Value="學習中" />
+            <Setter Property="Foreground" Value="#28765B" />
             <Setter Property="FontSize" Value="11" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Style.Triggers>
@@ -55,7 +55,8 @@
                     <Setter Property="Foreground" Value="#28765B" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Enrollment}" Value="{x:Static core:Enrollment.Skipped}">
-                    <Setter Property="Text" Value="已略過" />
+                    <Setter Property="Text" Value="已暫停" />
+                    <Setter Property="Foreground" Value="#926A21" />
                 </DataTrigger>
                 <DataTrigger Binding="{Binding IsPaused}" Value="True">
                     <Setter Property="Text" Value="已暫停" />
@@ -80,7 +81,7 @@
                 <Button DockPanel.Dock="Right" Content="＋ 新增詞義" Style="{StaticResource PrimaryButton}" Command="{Binding NewCommand}" AutomationProperties.AutomationId="NewWord" />
                 <TextBlock Text="你的單字庫" Style="{StaticResource PageTitle}" />
             </DockPanel>
-            <TextBlock Text="把想學的詞義留在這裡，選入後再按自己的步調複習。" Style="{StaticResource MutedText}" Margin="0,0,0,16" />
+            <TextBlock Text="新詞自動加入學習；依主題查閱、編輯，或暫停不想複習的詞義。" Style="{StaticResource MutedText}" Margin="0,0,0,16" />
             <views:StatusBanner />
         </StackPanel>
         <Border Grid.Row="1" Style="{StaticResource Panel}" Padding="16,12,16,16" Margin="0,0,0,16">
@@ -101,7 +102,7 @@
                 </StackPanel>
                 <StackPanel Grid.Column="1" Margin="0,0,12,0">
                     <TextBlock Text="主題分類" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
-                    <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" AutomationProperties.Name="分類篩選" />
+                    <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" AutomationProperties.Name="分類篩選" AutomationProperties.AutomationId="LibraryCategory" />
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="0,0,12,0">
                     <TextBlock Text="學習狀態" Foreground="{StaticResource MutedBrush}" FontSize="11" Margin="0,0,0,7" />
@@ -197,9 +198,7 @@
         </Border>
         <StackPanel Grid.Row="3" Margin="0,14,0,0">
             <WrapPanel>
-                <Button Content="選入學習" Style="{StaticResource PrimaryButton}" Command="{Binding SelectCommand}" AutomationProperties.AutomationId="EnrollWord" />
-                <Button Content="編輯詞義" Command="{Binding EditCommand}" AutomationProperties.AutomationId="EditWord" />
-                <Button Content="先略過" Command="{Binding SkipCommand}" AutomationProperties.AutomationId="SkipWord" />
+                <Button Content="編輯詞義" Style="{StaticResource PrimaryButton}" Command="{Binding EditCommand}" AutomationProperties.AutomationId="EditWord" />
                 <Button Content="{Binding PauseLabel}" Command="{Binding PauseCommand}" />
                 <Button Content="封存" Command="{Binding ArchiveCommand}" AutomationProperties.AutomationId="ArchiveWord">
                     <Button.Style>

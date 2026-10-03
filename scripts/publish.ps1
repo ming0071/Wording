@@ -1,8 +1,8 @@
-param([string]$Version = '0.1.1')
+param([string]$Version = '0.1.4')
 $ErrorActionPreference = 'Stop'
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
-    $taskOutput = Join-Path (Get-Location) 'artifacts/WordTrail-win-x64'
+    $taskOutput = Join-Path (Get-Location) "artifacts/WordTrail-$Version-win-x64"
     dotnet publish src/WordTrail.Desktop/WordTrail.Desktop.csproj -c Release -r win-x64 --self-contained true -p:Version=$Version -p:PublishTrimmed=false -o $taskOutput
     if ($LASTEXITCODE -ne 0) { throw 'Publish failed' }
     Copy-Item -LiteralPath README.md,THIRD_PARTY_NOTICES.md -Destination $taskOutput

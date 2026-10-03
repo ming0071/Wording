@@ -9,6 +9,53 @@ namespace WordTrail.Tests;
 
 public sealed class BackupServiceTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task LegacyBackupUpgradesInStagingAndFailedMigrationKeepsLiveData(bool failMigration)
+    {
+        using var legacy = new StudyTestData();
+        await legacy.Store.InitializeAsync();
+        var word = await legacy.AddWordAsync("legacy");
+        var card = (await legacy.Store.GetNextReviewAsync(legacy.Clock.Now, 5))!;
+        await legacy.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, legacy.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        legacy.UseLegacyLimitsSchema();
+        legacy.Execute("PRAGMA journal_mode=DELETE;");
+        var bytes = File.ReadAllBytes(legacy.DatabasePath);
+        var archivePath = Path.Combine(legacy.DirectoryPath, "legacy.zip");
+        using (var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create))
+        {
+            archive.CreateEntryFromFile(legacy.DatabasePath, "study.sqlite");
+            using var output = archive.CreateEntry("manifest.json").Open();
+            System.Text.Json.JsonSerializer.Serialize(output, new
+            {
+                application = "WordTrail", formatVersion = 1, schemaVersion = 1, createdAt = legacy.Clock.Now,
+                files = new[] { new { name = "study.sqlite", length = bytes.Length,
+                    sha256 = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant() } }
+            });
+        }
+        using var live = new StudyTestData();
+        await live.Store.InitializeAsync();
+        var original = await live.AddWordAsync("current");
+        var service = new BackupService(live.Store);
+        if (failMigration)
+        {
+            live.FailAt = "Migration.BeforeCommit";
+            await Assert.ThrowsAsync<IOException>(() => service.RestoreBackupAsync(archivePath));
+            Assert.Equal(original.Id, Assert.Single(await live.Store.GetVocabularyAsync()).Id);
+            Assert.Equal(0L, live.Scalar("SELECT COUNT(*) FROM review_log;"));
+        }
+        else
+        {
+            await service.RestoreBackupAsync(archivePath);
+            Assert.Equal(word.Id, Assert.Single(await live.Store.GetVocabularyAsync()).Id);
+            Assert.Equal(2L, live.Scalar("PRAGMA user_version;"));
+            Assert.Equal(1L, live.Scalar("SELECT COUNT(*) FROM review_log;"));
+            Assert.Equal(1, (await live.Store.GetDashboardAsync(live.Clock.Now)).StartedToday);
+            Assert.Equal("5", live.Scalar("SELECT configured_limit FROM daily_limits;"));
+        }
+    }
+
     [Fact]
     public async Task BackupRestorePreservesStableIdsReviewHistoryAndSchedule()
     {

@@ -4,7 +4,7 @@ using WordTrail.Infrastructure;
 
 namespace WordTrail.Tests;
 
-public sealed class DesktopWorkflowTests
+public sealed partial class DesktopWorkflowTests
 {
     [Fact]
     public async Task ArchiveFilterShowsRestoreActionAndKeepsPauseAndEnrollment()
@@ -22,12 +22,12 @@ public sealed class DesktopWorkflowTests
 
         library.SelectedFilter = "全部";
         await library.LoadAsync();
-        Assert.True(Assert.Single(library.Items).IsArchived);
+        Assert.Empty(library.Items);
         library.SelectedFilter = "已封存";
         await library.LoadAsync();
         Assert.True(Assert.Single(library.Items).IsArchived);
         Assert.True(library.RestoreCommand.CanExecute(null));
-        Assert.False(library.SelectCommand.CanExecute(null));
+        Assert.False(library.PauseCommand.CanExecute(null));
         Assert.False(library.ArchiveCommand.CanExecute(null));
 
         await library.RestoreCommand.ExecuteAsync();
@@ -214,6 +214,46 @@ public sealed class DesktopWorkflowTests
         Assert.False(review.HasCard);
     }
 
+    [Fact]
+    public async Task ReviewCategoryPersistsForFollowingCardsAndUncertainRatingsCannotChangeScope()
+    {
+        var word = StudyTestData.Word();
+        var store = new RecordingStore { NextReview = new(word, 0, true, null), Categories = ["旅行", "商業"] };
+        var review = new ReviewViewModel(store, new SilentSpeech(), new AppSettings());
+        await review.LoadAsync();
+        Assert.Equal("全部單字庫", review.SelectedCategory);
+        Assert.Null(store.RequestedCategory);
+
+        review.SelectedCategory = "旅行";
+        await review.ApplyCategoryCommand.ExecuteAsync();
+        Assert.Equal("旅行", store.RequestedCategory);
+        Assert.Contains("旅行", review.ScopeText);
+        review.FlipCommand.Execute(null);
+        store.Submit = _ => throw new IOException("回應遺失");
+        await review.GoodCommand.ExecuteAsync();
+        Assert.False(review.CanChangeCategory);
+        Assert.False(review.ApplyCategoryCommand.CanExecute(null));
+
+        store.Submit = submission => Task.FromResult(new ReviewResult(submission.OperationId, submission.ReviewedAt.AddDays(2), "Review"));
+        await review.GoodCommand.ExecuteAsync();
+        Assert.Equal("旅行", store.RequestedCategory);
+        Assert.Equal("旅行", review.SelectedCategory);
+        Assert.True(review.CanChangeCategory);
+    }
+
+    [Fact]
+    public void EditorBackInvokesNavigationWithoutSavingDraft()
+    {
+        var store = new RecordingStore();
+        var returned = false;
+        var editor = new EditorViewModel(store, new FixedGenerator(), null, _ => { }, () => returned = true)
+        { Headword = "draft" };
+        editor.BackCommand.Execute(null);
+        Assert.True(returned);
+        Assert.True(editor.IsDirty);
+        Assert.Null(store.Saved);
+    }
+
     private sealed class SilentSpeech : IPronunciationService
     {
         public string Status => "test";
@@ -238,24 +278,37 @@ public sealed class DesktopWorkflowTests
     private sealed class RecordingStore : IStudyStore
     {
         public VocabularyItem? Saved { get; private set; }
+        public IReadOnlyList<VocabularyItem> SavedBatch { get; private set; } = [];
         public Task? SaveCompletion { get; set; }
         public ReviewItem? NextReview { get; set; }
+        public string[] Categories { get; set; } = [];
+        public string? RequestedCategory { get; private set; }
         public Func<ReviewSubmission, Task<ReviewResult>>? Submit { get; set; }
         public async Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default)
         {
             if (SaveCompletion is { } pending) await pending.WaitAsync(cancellationToken);
             Saved = item;
         }
+        public async Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default)
+        {
+            if (SaveCompletion is { } pending) await pending.WaitAsync(cancellationToken);
+            SavedBatch = items;
+            Saved = items[0];
+        }
         public Task InitializeAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task ImportSeedPackAsync(SeedPack pack, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task<IReadOnlyList<VocabularyItem>> GetVocabularyAsync(string? search = null, string? category = null, CancellationToken cancellationToken = default, bool includeArchived = false) => Task.FromResult<IReadOnlyList<VocabularyItem>>(Saved is null || (Saved.IsArchived && !includeArchived) ? [] : [Saved]);
-        public Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<string>>([]);
+        public Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<string>>(Categories);
         public Task AddCategoryAsync(string name, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task SetEnrollmentAsync(Guid senseId, Enrollment enrollment, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task SetPausedAsync(Guid senseId, bool paused, CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task ArchiveAsync(Guid senseId, CancellationToken cancellationToken = default) => Task.CompletedTask;
-        public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default) => Task.FromResult(new DashboardSummary(0, 0, 0, 0, 0, null));
-        public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, int dailyNewLimit, CancellationToken cancellationToken = default) => Task.FromResult(NextReview);
+        public Task<DashboardSummary> GetDashboardAsync(DateTimeOffset now, CancellationToken cancellationToken = default, string? category = null) => Task.FromResult(new DashboardSummary(0, 0, 0, 0, 0, null));
+        public Task<ReviewItem?> GetNextReviewAsync(DateTimeOffset now, System.Numerics.BigInteger dailyNewLimit, CancellationToken cancellationToken = default, string? category = null)
+        {
+            RequestedCategory = category;
+            return Task.FromResult(NextReview);
+        }
         public Task<ReviewResult> SubmitReviewAsync(ReviewSubmission submission, CancellationToken cancellationToken = default) => Submit?.Invoke(submission) ?? throw new NotSupportedException();
         public Task UndoReviewAsync(Guid operationId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
         public Task EndReviewSessionAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;

@@ -6,9 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\WordTrail.ico</ApplicationIcon>
     <AssemblyName>WordTrail</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Resource Include="Assets\WordTrail.ico" />
+    <Resource Include="Assets\WordTrail.png" />
     <ProjectReference Include="..\WordTrail.Core\WordTrail.Core.csproj" />
     <ProjectReference Include="..\WordTrail.Infrastructure\WordTrail.Infrastructure.csproj" />
     <Content Include="..\..\content\toeic-starter.json" Link="content\toeic-starter.json" CopyToOutputDirectory="PreserveNewest" />

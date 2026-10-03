@@ -14,9 +14,7 @@ public sealed class SqliteStudyStoreTests
         var word = StudyTestData.Word();
         await data.Store.ImportSeedPackAsync(new("sample", 1, [word]));
         var imported = Assert.Single(await data.Store.GetVocabularyAsync());
-        Assert.Equal(Enrollment.Candidate, imported.Enrollment);
-        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 5));
-        await data.Store.SetEnrollmentAsync(word.Id, Enrollment.Selected);
+        Assert.Equal(Enrollment.Selected, imported.Enrollment);
         var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!;
         var operation = new ReviewSubmission(word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion);
         var result = await data.Store.SubmitReviewAsync(operation);
@@ -56,7 +54,7 @@ public sealed class SqliteStudyStoreTests
         await data.Store.InitializeAsync();
         var item = StudyTestData.Word() with { Enrollment = Enrollment.Candidate };
         await data.Store.SaveVocabularyAsync(item);
-        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 5));
+        Assert.NotNull(await data.Store.GetNextReviewAsync(data.Clock.Now, 5));
         await data.Store.SaveVocabularyAsync(item with { Enrollment = Enrollment.Selected });
         var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!;
         await data.Store.SaveVocabularyAsync(card.Word with { IsPaused = true });
@@ -261,6 +259,149 @@ public sealed class SqliteStudyStoreTests
         await data.Store.SubmitReviewAsync(new(due.Word.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), due.ScheduleVersion));
         await data.NewStore().GetNextReviewAsync(data.Clock.Now, 5);
         Assert.Equal(2L, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
+    }
+
+    [Fact]
+    public async Task LegacyCandidatesAreReviewableWhileSkippedPausedAndArchivedWordsStayExcluded()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        var candidate = StudyTestData.Word("candidate") with { Enrollment = Enrollment.Candidate };
+        await data.Store.SaveVocabularyAsync(candidate);
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("skipped") with { Enrollment = Enrollment.Skipped });
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("paused") with { IsPaused = true });
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("archived") with { IsArchived = true });
+        Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).NewCount);
+        var card = (await data.NewStore().GetNextReviewAsync(data.Clock.Now, 5))!;
+        Assert.Equal(candidate.Id, card.Word.Id);
+        await data.Store.SubmitReviewAsync(new(candidate.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 5));
+        Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now.AddDays(30))).DueCount);
+    }
+
+    [Fact]
+    public async Task TopicFiltersPrioritizeItsDueCardsThenItsNewWordsAndExcludeOtherTopics()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        var travel = StudyTestData.Word("travel") with { Categories = ["旅行"] };
+        var office = StudyTestData.Word("office") with { Categories = ["職場"] };
+        await data.Store.SaveVocabularyAsync(travel);
+        await data.Store.SaveVocabularyAsync(office);
+        foreach (var category in new[] { "旅行", "職場" })
+        {
+            var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: category))!;
+            await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        }
+        data.Clock.Now = data.Clock.Now.AddDays(30);
+        var newOffice = StudyTestData.Word("new office") with { Categories = ["職場"] };
+        await data.Store.SaveVocabularyAsync(newOffice);
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("new travel") with { Categories = ["旅行"] });
+
+        var summary = await data.Store.GetDashboardAsync(data.Clock.Now, category: "職場");
+        Assert.Equal(1, summary.DueCount);
+        Assert.Equal(1, summary.NewCount);
+        var due = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: "職場"))!;
+        Assert.Equal(office.Id, due.Word.Id);
+        Assert.False(due.IsNew);
+        var result = await data.Store.SubmitReviewAsync(new(due.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), due.ScheduleVersion));
+        Assert.Equal(result.DueAt, (await data.Store.GetDashboardAsync(data.Clock.Now, category: "職場")).NextDue);
+        var next = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: "職場"))!;
+        Assert.True(next.IsNew);
+        Assert.Equal(newOffice.Id, next.Word.Id);
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: "missing' OR 1=1 --"));
+        Assert.Equal(0, (await data.Store.GetDashboardAsync(data.Clock.Now, category: "missing")).NewCount);
+        Assert.Equal(travel.Id, (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!.Word.Id);
+    }
+
+    [Fact]
+    public async Task DailyNewLimitIsSharedAcrossTopicsAndCanBeAdjustedWithoutSelectingWords()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("travel") with { Categories = ["旅行"] });
+        await data.Store.SaveVocabularyAsync(StudyTestData.Word("office") with { Categories = ["職場"] });
+        var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 1, category: "旅行"))!;
+        await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        Assert.Null(await data.NewStore().GetNextReviewAsync(data.Clock.Now, 1, category: "職場"));
+        Assert.NotNull(await data.Store.GetNextReviewAsync(data.Clock.Now, 2, category: "職場"));
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 0, category: "職場"));
+        Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+    }
+
+    [Fact]
+    public async Task ConfiguredLimitAboveFiveTakesEffectIncludingExistingDailyLimits()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        for (var index = 0; index < 8; index++) await data.AddWordAsync("word" + index);
+        await data.Store.GetNextReviewAsync(data.Clock.Now, 5);
+        // Simulate a low-workload day created by the previous release.
+        data.UseLegacyLimitsSchema();
+        await data.NewStore().InitializeAsync();
+        for (var index = 0; index < 7; index++)
+        {
+            var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 7))!;
+            await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        }
+        Assert.Equal(7, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Null(await data.NewStore().GetNextReviewAsync(data.Clock.Now, 7));
+    }
+
+    [Fact]
+    public async Task ArbitrarilyLargeLimitWorksBeyondTenAndSurvivesRestart()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        for (var index = 0; index < 13; index++) await data.AddWordAsync("word" + index);
+        var limit = System.Numerics.BigInteger.Parse("99999999999999999999999999999999999999999999999");
+        for (var index = 0; index < 12; index++)
+        {
+            var card = (await data.NewStore().GetNextReviewAsync(data.Clock.Now, limit))!;
+            await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        }
+        Assert.Equal(limit.ToString(), data.Scalar("SELECT configured_limit FROM daily_limits;"));
+        Assert.NotNull(await data.NewStore().GetNextReviewAsync(data.Clock.Now, limit));
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 12));
+        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => data.Store.GetNextReviewAsync(data.Clock.Now, -1));
+    }
+
+    [Fact]
+    public async Task ExistingDatabaseMigrationRollsBackOnFailureAndKeepsProgress()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        await data.AddWordAsync();
+        var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!;
+        await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        data.UseLegacyLimitsSchema();
+        data.FailAt = "Migration.BeforeCommit";
+        await Assert.ThrowsAsync<IOException>(() => data.NewStore().InitializeAsync());
+        Assert.Equal(1L, data.Scalar("PRAGMA user_version;"));
+        Assert.Equal(5L, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        data.FailAt = null;
+        await data.NewStore().InitializeAsync();
+        Assert.Equal(2L, data.Scalar("PRAGMA user_version;"));
+        Assert.Equal(DBNull.Value, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
+        Assert.Equal("5", data.Scalar("SELECT configured_limit FROM daily_limits;"));
+        Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+    }
+
+    [Fact]
+    public async Task OneSenseInMultipleTopicsSharesProgressAndZeroNewLimitStillAllowsDueCards()
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        await data.AddWordAsync();
+        var card = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: "旅行"))!;
+        var result = await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 5, category: "商業"));
+        var due = (await data.Store.GetNextReviewAsync(result.DueAt, 0, category: "商業"))!;
+        Assert.Equal(card.Word.Id, due.Word.Id);
+        Assert.False(due.IsNew);
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM cards;"));
     }
 
     [Fact]
