@@ -11,9 +11,9 @@ namespace Wording.Infrastructure;
 /// 單人本機詞库：短交易、明確 SQL、一個維護鎖。
 /// SQLite 的 async API 仍是同步 I/O，所以整個資料操作在背景執行緒完成。
 /// </summary>
-public sealed class SqliteStudyStore : IStudyStore
+public sealed partial class SqliteStudyStore : IStudyStore, IPracticeStore
 {
-    internal const int SchemaVersion = 2;
+    internal const int SchemaVersion = 3;
     internal static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly TimeProvider _clock;
@@ -50,11 +50,13 @@ public sealed class SqliteStudyStore : IStudyStore
                 if (tables != 0) throw new StudyDataException("無法辨識既有資料庫，請使用備份還原。");
                 using var transaction = connection.BeginTransaction();
                 Execute(connection, transaction, SchemaSql);
+                Execute(connection, transaction, PracticeSchemaSql);
                 InjectFault("Migration.BeforeCommit");
                 Execute(connection, transaction, $"PRAGMA user_version={SchemaVersion};");
                 transaction.Commit();
             }
             UpgradeConnection(connection, () => InjectFault("Migration.BeforeCommit"));
+            PurgePractice(connection, null, _clock.GetUtcNow());
             ValidateConnection(connection);
             Execute(connection, null, "PRAGMA journal_mode=WAL;");
         }, cancellationToken);
@@ -303,7 +305,10 @@ public sealed class SqliteStudyStore : IStudyStore
         }, cancellationToken);
 
     public Task<ReviewResult> SubmitReviewAsync(ReviewSubmission submission,
-        CancellationToken cancellationToken = default) => WithMaintenanceAsync(() =>
+        CancellationToken cancellationToken = default) => SubmitReviewInternalAsync(submission, null, null, cancellationToken);
+
+    private Task<ReviewResult> SubmitReviewInternalAsync(ReviewSubmission submission, Guid? exerciseId,
+        BigInteger? dailyLimit, CancellationToken cancellationToken) => WithMaintenanceAsync(() =>
         {
             if (submission.OperationId == Guid.Empty || !Enum.IsDefined(submission.Rating))
                 throw new ArgumentException("評分操作不正確。");
@@ -317,7 +322,21 @@ public sealed class SqliteStudyStore : IStudyStore
                     Ms(duplicate.ReviewedAt) != Ms(submission.ReviewedAt))
                     throw new ReviewConflictException("此操作 ID 已被不同的評分使用。");
                 if (duplicate.Undone) throw new ReviewConflictException("此評分已撤銷，請重新顯示卡片再評分。");
+                if (exerciseId is { } duplicateExercise && Scalar(connection, transaction,
+                    "SELECT 1 FROM practice_ratings WHERE exercise_id=$e AND operation_id=$o;",
+                    ("$e", Id(duplicateExercise)), ("$o", Id(submission.OperationId))) is null)
+                    throw new ReviewConflictException("此評分操作不屬於本次練習。");
                 return Result(submission.OperationId, duplicate.After);
+            }
+            if (exerciseId is { } exercise)
+            {
+                var completion = ReadPractice(connection, transaction, exercise)
+                    ?? throw new ReviewConflictException("找不到已完成的練習，請重新開始。");
+                if (!completion.TargetIds.Contains(submission.SenseId))
+                    throw new ReviewConflictException("這個詞義不屬於本次練習。");
+                if (Scalar(connection, transaction, "SELECT 1 FROM practice_ratings WHERE exercise_id=$e AND sense_id=$s;",
+                    ("$e", Id(exercise)), ("$s", Id(submission.SenseId))) is not null)
+                    throw new ReviewConflictException("這個詞義在本次練習已評分。");
             }
             var word = ReadWord(connection, transaction, submission.SenseId)
                 ?? throw new StudyDataException("找不到詞義。");
@@ -333,7 +352,7 @@ public sealed class SqliteStudyStore : IStudyStore
                 throw new ReviewConflictException("這張卡尚未到複習時間。");
 
             var day = LocalDay(now);
-            EnsureDay(connection, transaction, now, null);
+            EnsureDay(connection, transaction, now, dailyLimit);
             if (before.LastReviewAt is null)
             {
                 var wasStarted = Scalar(connection, transaction,
@@ -346,6 +365,9 @@ public sealed class SqliteStudyStore : IStudyStore
             }
             var after = _scheduler.Review(before, submission.Rating, now);
             WriteSchedule(connection, transaction, submission.SenseId, after, version);
+            if (exerciseId is { } completedExercise)
+                Execute(connection, transaction, "INSERT INTO practice_ratings(exercise_id,sense_id,operation_id) VALUES($e,$s,$o);",
+                    ("$e", Id(completedExercise)), ("$s", Id(submission.SenseId)), ("$o", Id(submission.OperationId)));
             InjectFault("Review.AfterSchedule");
             Execute(connection, transaction,
                 "INSERT INTO review_log(operation_id,sense_id,rating,reviewed_ms,local_day,before_json,after_json," +
@@ -380,6 +402,7 @@ public sealed class SqliteStudyStore : IStudyStore
             WriteSchedule(connection, transaction, log.SenseId, log.Before, currentVersion);
             InjectFault("Undo.AfterSchedule");
             Execute(connection, transaction, "UPDATE review_log SET undone=1 WHERE operation_id=$op;", ("$op", Id(operationId)));
+            Execute(connection, transaction, "DELETE FROM practice_ratings WHERE operation_id=$op;", ("$op", Id(operationId)));
             transaction.Commit();
             _lastUndoOperation = null;
         }, cancellationToken);
@@ -433,7 +456,7 @@ public sealed class SqliteStudyStore : IStudyStore
         ValidateConnection(connection, allowLegacy: true);
         if (version == SchemaVersion) return;
         using var transaction = connection.BeginTransaction();
-        Execute(connection, transaction, """
+        if (version == 1) Execute(connection, transaction, """
             ALTER TABLE daily_limits RENAME TO daily_limits_v1;
             CREATE TABLE daily_limits(local_day TEXT NOT NULL PRIMARY KEY,
               adaptive_limit INTEGER CHECK(adaptive_limit IN(0,2)),
@@ -443,6 +466,7 @@ public sealed class SqliteStudyStore : IStudyStore
               CAST(configured_limit AS TEXT) FROM daily_limits_v1;
             DROP TABLE daily_limits_v1;
             """);
+        Execute(connection, transaction, PracticeSchemaSql);
         beforeCommit?.Invoke();
         Execute(connection, transaction, $"PRAGMA user_version={SchemaVersion};");
         transaction.Commit();
@@ -451,7 +475,7 @@ public sealed class SqliteStudyStore : IStudyStore
     internal static void ValidateConnection(SqliteConnection connection, bool allowLegacy = false)
     {
         var version = Convert.ToInt32(Scalar(connection, null, "PRAGMA user_version;"));
-        if (version != SchemaVersion && !(allowLegacy && version == 1))
+        if (version != SchemaVersion && !(allowLegacy && version is 1 or 2))
             throw new StudyDataException("不支援此資料庫版本，原有資料未被修改。");
         if (!string.Equals(Scalar(connection, null, "PRAGMA integrity_check;") as string, "ok", StringComparison.Ordinal))
             throw new StudyDataException("資料庫完整性檢查失敗。");
@@ -470,6 +494,14 @@ public sealed class SqliteStudyStore : IStudyStore
         Scalar(connection, null, "SELECT COUNT(*) FROM new_starts WHERE first_day IS NOT NULL;");
         Scalar(connection, null, "SELECT COUNT(*) FROM sense_categories;");
         Scalar(connection, null, "SELECT COUNT(*) FROM content_packs WHERE version>0;");
+        if (version >= 3)
+        {
+            using var command = Command(connection, null, "SELECT id,completed_ms,mode,topics_json,targets_json FROM practice_sessions;");
+            using var reader = command.ExecuteReader();
+            while (reader.Read()) DecodePractice(reader);
+            if (Count(connection, null, "SELECT COUNT(*) FROM practice_ratings p LEFT JOIN review_log r ON p.operation_id=r.operation_id WHERE r.operation_id IS NULL OR r.undone<>0 OR r.sense_id<>p.sense_id;") != 0)
+                throw new StudyDataException("練習評分與複習紀錄不一致。");
+        }
         if (Count(connection, null, "SELECT COUNT(*) FROM senses s LEFT JOIN cards c ON c.sense_id=s.id WHERE c.sense_id IS NULL;") != 0)
             throw new StudyDataException("部分詞義缺少卡片排程。");
         if (Count(connection, null, "SELECT COUNT(*) FROM sqlite_master WHERE type IN('trigger','view');") != 0)

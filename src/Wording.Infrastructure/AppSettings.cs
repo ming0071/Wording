@@ -8,6 +8,7 @@ namespace Wording.Infrastructure;
 
 public sealed class AppSettings
 {
+    public Wording.Core.PracticeOptions Practice { get; set; } = new();
     [JsonConverter(typeof(NewWordLimitConverter))]
     public BigInteger DailyNewLimit { get; set; } = 5;
     public string FlipKey { get; set; } = "Space";
@@ -59,6 +60,8 @@ public sealed class AppSettings
 
     public void Validate()
     {
+        Practice ??= new();
+        Practice.Validate();
         if (DailyNewLimit < 0 || DailyGenerationLimit is < 0 or > 50)
             throw new ArgumentException("每日新詞須為非負整數，AI 次數須為 0–50。");
         var keys = new[] { FlipKey, AgainKey, HardKey, GoodKey, EasyKey, SpeakKey, SpeakExampleKey };

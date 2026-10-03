@@ -1,0 +1,161 @@
+{
+  "targets": [
+    {
+      "id": "75ea0131-6986-4db0-a3e8-cf97627b893b",
+      "headword": "appointment",
+      "meaning": "預約",
+      "partOfSpeech": "noun"
+    },
+    {
+      "id": "40cc8f0e-007b-4f23-83bd-19863a7ee5f6",
+      "headword": "confirm",
+      "meaning": "確認",
+      "partOfSpeech": "verb"
+    },
+    {
+      "id": "e0954842-6352-4d82-b1b2-2c4d7832feba",
+      "headword": "available",
+      "meaning": "可用的",
+      "partOfSpeech": "adjective"
+    },
+    {
+      "id": "696e6ba5-9aa7-4b62-80d3-2621494bbb11",
+      "headword": "reservation",
+      "meaning": "預訂",
+      "partOfSpeech": "noun"
+    },
+    {
+      "id": "7288fc42-1dd5-4956-93a1-618ac39bac06",
+      "headword": "accommodate",
+      "meaning": "容納；配合需求",
+      "partOfSpeech": "verb"
+    },
+    {
+      "id": "b0ce04b7-7e88-4dca-a6e6-6427e9b9d2e6",
+      "headword": "convenient",
+      "meaning": "方便的",
+      "partOfSpeech": "adjective"
+    }
+  ],
+  "material": {
+    "title": "Updated Plans for Thursday’s Visit",
+    "passage": "Subject: Thursday’s Visit to Harbor Office\n\nDear Maya,\n\nI have updated the schedule for your visit on Thursday. Your appointment with our design team will begin at 10:30 a.m., thirty minutes later than originally planned. This change will give you extra time to travel from the station.\n\nMeeting Room B is available that morning, and it can accommodate all eight visitors. It also has a large screen for your presentation. I have made a lunch reservation at the café across the street for 12:30 p.m. The café offers vegetarian meals, so everyone in your group should find something suitable.\n\nPlease confirm the number of visitors by Tuesday afternoon. If arriving at the station at 9:45 a.m. is convenient for you, I will arrange for our driver to meet you there. Otherwise, please suggest another arrival time. The office tour will follow lunch and finish by 3:00 p.m.\n\nBest regards,\nDaniel",
+    "translation": "主旨：週四造訪港灣辦公室\n\n親愛的 Maya：\n\n我已更新您週四來訪的行程。您與我們設計團隊的預約會面將於上午十點半開始，比原訂時間晚三十分鐘。這項調整會讓您有更多時間從車站前往辦公室。\n\n當天上午會議室 B 可供使用，而且能容納全部八位訪客。會議室也有供您簡報使用的大螢幕。我已在街道對面的咖啡館預訂中午十二點半的午餐。咖啡館提供素食餐點，因此您的團隊中每個人應該都能找到合適的餐點。\n\n請於週二下午之前確認訪客人數。如果上午九點四十五分抵達車站對您而言方便，我會安排我們的司機到那裡接您。否則，請提出其他抵達時間。辦公室導覽將在午餐後進行，並於下午三點之前結束。\n\n祝好，\nDaniel",
+    "questions": [
+      {
+        "kind": "comprehension",
+        "prompt": "Why was the appointment moved to a later time?",
+        "options": [
+          "To allow more time for lunch",
+          "To give Maya more time to travel from the station",
+          "To let the driver finish the office tour",
+          "To allow the team to prepare vegetarian meals"
+        ],
+        "answerIndex": 1,
+        "explanation": "信中明確說明，延後會面是為了讓 Maya 有更多時間從車站前往辦公室。",
+        "evidence": "This change will give you extra time to travel from the station.",
+        "optionExplanations": [
+          "文中沒有說調整會面時間是為了延長午餐時間。",
+          "這與信中所述的調整原因完全一致。",
+          "文中沒有提到司機會參與或完成辦公室導覽。",
+          "素食餐點由咖啡館提供，並非團隊需要準備，也不是延後會面的原因。"
+        ]
+      },
+      {
+        "kind": "vocabulary",
+        "prompt": "What does “accommodate” mean in the description of Meeting Room B?",
+        "options": [
+          "Transport the visitors",
+          "Choose the visitors",
+          "Contact the visitors",
+          "Provide enough space for the visitors"
+        ],
+        "answerIndex": 3,
+        "explanation": "此處主詞是會議室，accommodate 表示空間足以容納全部八位訪客。",
+        "evidence": "Meeting Room B is available that morning, and it can accommodate all eight visitors.",
+        "optionExplanations": [
+          "會議室的功能不是運送訪客；接送安排在信中另有說明。",
+          "這句話談的是會議室容量，沒有挑選訪客的意思。",
+          "這句話沒有描述聯絡訪客的行動。",
+          "這正是此處 accommodate 的意思：提供足夠空間容納訪客。"
+        ]
+      },
+      {
+        "kind": "grammar",
+        "prompt": "Choose the grammatically correct completion: “If arriving at the station at 9:45 a.m. ___ convenient for you, I will arrange for our driver to meet you there.”",
+        "options": [
+          "is",
+          "are",
+          "be",
+          "being"
+        ],
+        "answerIndex": 0,
+        "explanation": "動名詞片語 arriving at the station at 9:45 a.m. 作為主詞時視為單數，因此應搭配現在式單數動詞 is。",
+        "evidence": "If arriving at the station at 9:45 a.m. is convenient for you, I will arrange for our driver to meet you there.",
+        "optionExplanations": [
+          "is 是單數現在式動詞，能與作為單數主詞的動名詞片語搭配。",
+          "are 用於複數主詞等情況，不符合此處的單數動名詞片語主詞。",
+          "be 是原形，此處沒有助動詞或其他可使其使用原形的結構。",
+          "being 是分詞形式，無法單獨充當此 if 子句所需的限定動詞。"
+        ]
+      },
+      {
+        "kind": "detail",
+        "prompt": "What does Daniel ask Maya to do by Tuesday afternoon?",
+        "options": [
+          "Send her presentation",
+          "Choose a vegetarian meal",
+          "Confirm how many visitors will attend",
+          "Complete the office tour"
+        ],
+        "answerIndex": 2,
+        "explanation": "Daniel 要求 Maya 在週二下午之前確認訪客人數。",
+        "evidence": "Please confirm the number of visitors by Tuesday afternoon.",
+        "optionExplanations": [
+          "信中提到簡報用的大螢幕，但沒有要求週二前寄送簡報。",
+          "信中提到咖啡館提供素食，沒有要求提前選餐。",
+          "這正是信中明確提出且附有週二下午期限的要求。",
+          "辦公室導覽安排在週四午餐後，不是週二前要完成的事項。"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "senseId": "75ea0131-6986-4db0-a3e8-cf97627b893b",
+        "surface": "appointment",
+        "meaning": "預約；事先安排的會面",
+        "evidence": "Your appointment with our design team will begin at 10:30 a.m., thirty minutes later than originally planned."
+      },
+      {
+        "senseId": "40cc8f0e-007b-4f23-83bd-19863a7ee5f6",
+        "surface": "confirm",
+        "meaning": "確認",
+        "evidence": "Please confirm the number of visitors by Tuesday afternoon."
+      },
+      {
+        "senseId": "e0954842-6352-4d82-b1b2-2c4d7832feba",
+        "surface": "available",
+        "meaning": "可用的；可供使用的",
+        "evidence": "Meeting Room B is available that morning, and it can accommodate all eight visitors."
+      },
+      {
+        "senseId": "696e6ba5-9aa7-4b62-80d3-2621494bbb11",
+        "surface": "reservation",
+        "meaning": "預訂",
+        "evidence": "I have made a lunch reservation at the café across the street for 12:30 p.m."
+      },
+      {
+        "senseId": "7288fc42-1dd5-4956-93a1-618ac39bac06",
+        "surface": "accommodate",
+        "meaning": "容納",
+        "evidence": "Meeting Room B is available that morning, and it can accommodate all eight visitors."
+      },
+      {
+        "senseId": "b0ce04b7-7e88-4dca-a6e6-6427e9b9d2e6",
+        "surface": "convenient",
+        "meaning": "方便的；適合安排的",
+        "evidence": "If arriving at the station at 9:45 a.m. is convenient for you, I will arrange for our driver to meet you there."
+      }
+    ]
+  }
+}

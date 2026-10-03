@@ -250,4 +250,5 @@ internal static class OffscreenWpf
     });
 
     public static void Invoke(Action action) => DispatcherThread.Value.Invoke(action);
+    public static Task InvokeAsync(Func<Task> action) => DispatcherThread.Value.InvokeAsync(action).Task.Unwrap();
 }

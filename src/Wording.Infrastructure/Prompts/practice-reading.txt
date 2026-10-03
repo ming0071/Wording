@@ -1,0 +1,5 @@
+Create one reading passage of the requested type. Email, Notice, Advertisement and Business use realistic TOEIC-style situations without claiming to be official exam material.
+Story may be humorous, a light mystery, science fiction or fantasy. Prioritize curiosity, a satisfying small twist, and an enjoyable story while incorporating the target vocabulary naturally.
+Include at least one comprehension, one vocabulary and one grammar question; remaining questions may use any of these kinds.
+For grammar, keep the passage complete. In the question quote/adapt a sentence with a blank and ask the learner to choose the grammatically correct completion. Evidence quotes the original complete sentence. All four options must be genuine competing grammatical forms.
+Vocabulary questions test the meaning in this specific context. Comprehension may test detail, main idea, purpose or inference; all of these use kind "comprehension". Reading kind must be exactly "comprehension", "vocabulary" or "grammar".

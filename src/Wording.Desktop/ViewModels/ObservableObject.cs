@@ -52,4 +52,5 @@ public abstract class PageViewModel : ObservableObject
     }
 
     public virtual Task LoadAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
+    protected void ForgetCommand(AsyncCommand command) => commands.Remove(command);
 }

@@ -1,0 +1,4 @@
+Create one spoken English passage: Dialogue is a natural conversation between two people with short speaker labels; Monologue is an announcement, message or short talk.
+Use lively but believable situations, occasional gentle humor, and natural spoken phrasing. Avoid visual tables, spelling puzzles and instructions that require reading the transcript.
+The passage is the complete transcript for speech synthesis. Do not insert sound effects or stage directions.
+Questions test comprehension, detail, purpose and inference. Do not use grammar or vocabulary cloze questions that require seeing the transcript.

@@ -5,16 +5,17 @@ namespace Wording.Desktop.ViewModels;
 
 public sealed record ActivityCell(DateOnly Day, int Count, bool InRange)
 {
-    public string Description => $"{Day:yyyy/MM/dd} · 複習 {Count} 個詞義";
+    public string Unit { get; init; } = "個詞義";
+    public string Description => $"{Day:yyyy/MM/dd} · 完成 {Count} {Unit}";
     public string Color => !InRange ? "Transparent" : Count switch
         { 0 => "#EDF0F5", < 5 => "#C3E7D0", < 10 => "#81CC9D", < 20 => "#3AA66A", _ => "#207448" };
 }
 public sealed record ActivityWeek(string MonthLabel, IReadOnlyList<ActivityCell> Days);
 public sealed record LearningActivity(IReadOnlyList<ActivityWeek> Weeks, int Total, int ActiveDays, int Streak)
 {
-    public static LearningActivity Build(IReadOnlyList<StudyActivity> history, DateOnly today)
+    public static LearningActivity Build(IReadOnlyList<StudyActivity> history, DateOnly today, DateOnly? start = null, string unit = "個詞義")
     {
-        var from = today.AddDays(-364);
+        var from = start ?? today.AddDays(-364);
         var counts = history.Where(x => x.Day >= from && x.Day <= today).GroupBy(x => x.Day)
             .ToDictionary(x => x.Key, x => x.Sum(y => y.ReviewedCount));
         var firstSunday = from.AddDays(-(int)from.DayOfWeek);
@@ -22,7 +23,7 @@ public sealed record LearningActivity(IReadOnlyList<ActivityWeek> Weeks, int Tot
         for (var sunday = firstSunday; sunday <= today; sunday = sunday.AddDays(7))
         {
             var days = Enumerable.Range(0, 7).Select(offset => sunday.AddDays(offset))
-                .Select(day => new ActivityCell(day, counts.GetValueOrDefault(day), day >= from && day <= today)).ToArray();
+                .Select(day => new ActivityCell(day, counts.GetValueOrDefault(day), day >= from && day <= today) { Unit = unit }).ToArray();
             var monthStart = days.FirstOrDefault(x => x.InRange && x.Day.Day == 1);
             var label = monthStart is not null ? monthStart.Day.ToString("MMM", CultureInfo.InvariantCulture)
                 : weeks.Count == 0 ? from.ToString("MMM", CultureInfo.InvariantCulture) : "";

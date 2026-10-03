@@ -12,6 +12,7 @@ WPF 畫面與操作流程位於此專案。資料模型與服務契約在 `Wordi
 | 切換畫面 | [MainViewModel](ViewModels/MainViewModel.cs) | 管理今日學習、單字庫、複習、編輯與設定；返回單字庫時保留篩選 |
 | 新增／編輯詞義 | [LibraryViewModel](ViewModels/LibraryViewModel.cs) → [EditorViewModel](ViewModels/EditorViewModel.cs) | 以 `SenseEditor` 收集多詞義草稿，再用單一交易保存 |
 | 複習 | [ReviewViewModel](ViewModels/ReviewViewModel.cs) | 依已套用的主題取卡；保存評分成功後換下一張 |
+| 情境練習 | [PracticeViewModel](ViewModels/PracticeViewModel.cs) | 共用閱讀／聽力、作答解析、單字評分與三個月活動紀錄；導航保留當次文章與答案 |
 | 快捷鍵 | [ReviewKeyboard](ReviewKeyboard.cs) | 翻卡、1–4 評分、朗讀單字與全部例句；支援自訂單鍵與數字鍵盤 |
 | AI 內容 | [EditorViewModel](ViewModels/EditorViewModel.cs) | `GenerateCommand` 建立預覽，`ApplyPreviewCommand` 套用欄位，`SaveCommand` 保存 |
 | 設定與檔案 | [SettingsViewModel](ViewModels/SettingsViewModel.cs) | 保存設定、匯入／匯出 JSON、備份與還原確認 |
@@ -55,6 +56,7 @@ MainViewModel 的非同步導航方法自行接住例外。評分未確認保存
 | [DesktopWorkflowTests.cs](../../tests/Wording.Tests/DesktopWorkflowTests.cs) | AI 預覽與保存分離、舊預覽拒絕、來源更新、命令防重入與評分重試 |
 | [LearningFlowUpdateTests.cs](../../tests/Wording.Tests/LearningFlowUpdateTests.cs) | 自動朗讀、多主題、學習入口與學習紀錄 |
 | [ResponsiveDashboardTests.cs](../../tests/Wording.Tests/ResponsiveDashboardTests.cs) | 今日學習版面與熱力圖月份標籤 |
+| [PracticeInteractionTests.cs](../../tests/Wording.Tests/PracticeInteractionTests.cs) | 情境練習最小視窗、作答、聽力逐字稿與翻譯顯示時機 |
 
 介面測試在背景 STA dispatcher 建立真實 WPF 控制項；版面截圖輸出至 `artifacts/layout-check`，測試報告輸出至 `artifacts/test-results`。測試使用獨立資料或替身，不開啟正式單字庫，也不消耗真實 AI 額度。CI 執行完整套件。
 

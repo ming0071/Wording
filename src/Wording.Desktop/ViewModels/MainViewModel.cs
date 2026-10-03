@@ -14,6 +14,7 @@ public sealed class MainViewModel : ObservableObject
     public DashboardViewModel Dashboard { get; }
     public LibraryViewModel Library { get; }
     public ReviewViewModel Review { get; }
+    public PracticeViewModel? Practice { get; }
     public SettingsViewModel Settings { get; }
     public PageViewModel CurrentPage { get => currentPage; private set => SetProperty(ref currentPage, value); }
     public string CurrentSection
@@ -26,12 +27,14 @@ public sealed class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(IsLibrarySelected));
             OnPropertyChanged(nameof(IsReviewSelected));
             OnPropertyChanged(nameof(IsSettingsSelected));
+            OnPropertyChanged(nameof(IsPracticeSelected));
         }
     }
     public bool IsTodaySelected => CurrentSection == "今日學習";
     public bool IsLibrarySelected => CurrentSection is "單字庫" or "新增詞義" or "編輯詞義";
     public bool IsReviewSelected => CurrentSection == "複習";
     public bool IsSettingsSelected => CurrentSection == "設定與備份";
+    public bool IsPracticeSelected => CurrentSection == "情境練習";
     public RelayCommand NavigateCommand { get; }
 
     public MainViewModel(IStudyStore store, IBackupService backup, IContentGenerator generator,
@@ -42,7 +45,9 @@ public sealed class MainViewModel : ObservableObject
         Dashboard = new(store, () => Navigate("review"), () => Navigate("library"));
         Library = new(store, OpenEditor);
         Review = new(store, speech, settings);
-        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => Review.EndSession(), store);
+        if (store is IPracticeStore practiceStore && generator is IPracticeGenerator practiceGenerator && speech is IPracticeSpeech practiceSpeech)
+            Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor, openSettings: () => Navigate("settings"));
+        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => { Review.EndSession(); Practice?.Reset(); }, store);
         currentPage = Dashboard;
         NavigateCommand = new(parameter => Navigate(parameter as string ?? "today"));
     }
@@ -62,16 +67,18 @@ public sealed class MainViewModel : ObservableObject
         try
         {
             if (CurrentPage == Review) await Review.EndSessionAsync();
+            if (CurrentPage == Practice) Practice?.StopSpeech();
             var page = section switch
             {
                 "library" => (PageViewModel)Library,
                 "review" => Review,
                 "settings" => Settings,
+                "practice" when Practice is not null => Practice,
                 _ => Dashboard
             };
             CurrentSection = section switch
             {
-                "library" => "單字庫", "review" => "複習", "settings" => "設定與備份", _ => "今日學習"
+                "library" => "單字庫", "review" => "複習", "practice" when Practice is not null => "情境練習", "settings" => "設定與備份", _ => "今日學習"
             };
             if (page == Review) Review.BeginSession();
             CurrentPage = page;
@@ -84,6 +91,7 @@ public sealed class MainViewModel : ObservableObject
     private async void OpenEditor(VocabularyItem? item)
     {
         if (CurrentPage.IsBusy) return;
+        if (CurrentPage == Practice) Practice?.StopSpeech();
         var editor = new EditorViewModel(store, generator, item, _ => { }, () => Navigate("library"),
             () => Application.Current.Dispatcher.BeginInvoke(() => OpenEditor(null)));
         CurrentSection = item is null ? "新增詞義" : "編輯詞義";

@@ -3,7 +3,7 @@ using Wording.Core;
 
 namespace Wording.Infrastructure;
 
-public sealed class CodexContentGenerator : IContentGenerator
+public sealed partial class CodexContentGenerator : IContentGenerator, IPracticeGenerator
 {
     private const string PromptVersion = "word-enrichment-v2";
     private readonly AiSettings settings;
@@ -109,6 +109,12 @@ public sealed class CodexContentGenerator : IContentGenerator
 
     public static AiEnrichment ParseResponse(string jsonLines, Guid expectedSense, string model, DateTimeOffset now)
     {
+        using var content = JsonDocument.Parse(ExtractFinal(jsonLines));
+        return ParseEnrichment(content.RootElement, expectedSense, model, now);
+    }
+
+    private static string ExtractFinal(string jsonLines)
+    {
         string? final = null;
         var completed = false;
         foreach (var line in jsonLines.Split('\n', StringSplitOptions.RemoveEmptyEntries))
@@ -127,8 +133,11 @@ public sealed class CodexContentGenerator : IContentGenerator
         }
         if (!completed || string.IsNullOrWhiteSpace(final))
             throw new InvalidDataException("Codex 回應不完整，沒有保存內容。");
-        using var content = JsonDocument.Parse(final);
-        var value = content.RootElement;
+        return final;
+    }
+
+    private static AiEnrichment ParseEnrichment(JsonElement value, Guid expectedSense, string model, DateTimeOffset now)
+    {
         if (!Guid.TryParse(value.GetProperty("senseId").GetString(), out var id) || id != expectedSense)
             throw new InvalidDataException("回應的詞義 ID 不相符。");
         var meaning = RequiredString(value, "meaning", 1000);
