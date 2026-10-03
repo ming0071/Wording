@@ -146,13 +146,17 @@ public sealed class SqliteStudyStore : IStudyStore
     public Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default) =>
         SaveVocabularyBatchAsync([item], cancellationToken);
 
-    public Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default)
+    public Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default,
+        IReadOnlyDictionary<Guid, bool>? starOverrides = null)
     {
         var snapshot = items.ToArray();
+        var stars = starOverrides?.ToDictionary(x => x.Key, x => x.Value) ?? [];
         return WithMaintenanceAsync(() =>
         {
             if (snapshot.Length == 0 || snapshot.Select(x => x.Id).Distinct().Count() != snapshot.Length)
                 throw new ArgumentException("請保存至少一個詞義，詞義 ID 不可重複。");
+            if (stars.Keys.Except(snapshot.Select(x => x.Id)).Any())
+                throw new ArgumentException("星號設定必須對應這次保存的詞義。");
             foreach (var item in snapshot) ValidateVocabulary(item);
             using var connection = OpenConnection();
             using var transaction = connection.BeginTransaction();
@@ -160,12 +164,14 @@ public sealed class SqliteStudyStore : IStudyStore
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 var item = Normalize(source);
+                var explicitStar = stars.TryGetValue(item.Id, out var starred);
+                if (explicitStar) item = item with { IsStarred = starred };
                 var existing = ReadWord(connection, transaction, item.Id);
                 if (existing is null)
                     InsertWord(connection, transaction, item with { IsUserEdited = true }, null);
                 else
                 {
-                    WriteContent(connection, transaction, item, userEdited: true);
+                    WriteContent(connection, transaction, item, userEdited: true, preserveStar: !explicitStar);
                     Execute(connection, transaction,
                         "UPDATE senses SET enrollment=$enrollment,archived=$archived,paused=$paused WHERE id=$id;",
                         ("$enrollment", (int)item.Enrollment), ("$archived", item.IsArchived ? 1 : 0),
@@ -500,10 +506,10 @@ public sealed class SqliteStudyStore : IStudyStore
     }
 
     private static void WriteContent(SqliteConnection connection, SqliteTransaction transaction,
-        VocabularyItem item, bool userEdited)
+        VocabularyItem item, bool userEdited, bool preserveStar = true)
     {
         var existing = ReadWord(connection, transaction, item.Id);
-        if (existing is not null) item = item with { IsStarred = existing.IsStarred, CreatedAt = existing.CreatedAt };
+        if (existing is not null) item = item with { IsStarred = preserveStar ? existing.IsStarred : item.IsStarred, CreatedAt = existing.CreatedAt };
         Execute(connection, transaction,
             "UPDATE senses SET headword=$word,content_json=$json,user_edited=$edited WHERE id=$id;",
             ("$word", item.Headword), ("$json", JsonSerializer.Serialize(item, JsonOptions)),

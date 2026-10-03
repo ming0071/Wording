@@ -4,11 +4,11 @@
 
 ## 從一次操作開始讀
 
-- `App.xaml.cs` 建立資料目錄、匯入候選教材並組裝服務；`--data-dir <路徑>` 可指定獨立測試資料，避免碰到正式單字庫。
+- `App.xaml.cs` 建立資料目錄和空白資料庫並組裝服務；已有資料庫時直接沿用，不自動匯入教材。`--data-dir <路徑>` 可指定獨立測試資料，避免碰到正式單字庫。
 - `MainViewModel` 切換五個畫面。編輯頁「返回單字庫」共用導航與未保存修改確認，保留單字庫篩選。`MainWindow.xaml.cs` 只保留需要視窗處理的快捷鍵與關閉提示。
 - 新增詞義：`LibraryViewModel.NewCommand` → `EditorViewModel` → `IStudyStore.SaveVocabularyAsync / SaveVocabularyBatchAsync`。詞性使用選單；同詞的新義項以 `SenseEditor` 草稿收集，一個交易保存全部義項，穩定的詞義 ID 避免重試建立重複卡片。同義詞與筆記存在詞義 JSON，舊資料預設為空，無需新增 schema migration。
 - 複習：`ReviewViewModel` → `IStudyStore.GetNextReviewAsync / SubmitReviewAsync`。取卡與到期／新詞數量使用已套用的主題範圍；每日新詞配額跨主題共用。資料交易成功才換下一張，評分未確認時不能切換範圍。
-- `ReviewKeyboard` 處理翻卡、四個評分、朗讀單字與全部例句的可設定單鍵操作及數字鍵盤別名。輸入欄位、展開中的選單、組合鍵不觸發；長按與暫不可執行的快捷鍵會被消耗，避免焦點按鈕誤執行。舊快捷鍵若已使用 S／E，載入時為新增朗讀操作挑選尚未使用的鍵。
+- `ReviewKeyboard` 處理翻卡、四個評分、朗讀單字與全部例句的可設定單鍵操作及數字鍵盤別名。輸入欄位、展開中的選單、組合鍵不觸發；長按與暫不可執行的快捷鍵會被消耗，避免焦點按鈕誤執行。快捷鍵設定會檢查衝突，朗讀操作使用尚未占用的鍵。
 - AI：`EditorViewModel.GenerateCommand` 只建立預覽；`ApplyPreviewCommand` 改編輯欄位；`SaveCommand` 才寫入資料庫。
 - `SettingsViewModel` 保存小型設定與呼叫備份服務。檔案選擇和整庫還原確認在這一處。
 

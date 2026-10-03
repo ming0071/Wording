@@ -1,8 +1,6 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 using Wording.Core;
 using Wording.Desktop.ViewModels;
@@ -41,15 +39,6 @@ public partial class App : Application
             {
                 Shutdown(await VocabularyFileCommand.ExecuteAsync(e.Args, store));
                 return;
-            }
-            var seedPath = Path.Combine(AppContext.BaseDirectory, "content", "toeic-starter.json");
-            if (File.Exists(seedPath))
-            {
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                options.Converters.Add(new JsonStringEnumConverter());
-                var pack = JsonSerializer.Deserialize<SeedPack>(await File.ReadAllTextAsync(seedPath), options)
-                    ?? throw new InvalidDataException("起始教材格式無法讀取。");
-                await store.ImportSeedPackAsync(pack);
             }
             var backup = new BackupService(store);
             var generator = new CodexContentGenerator(aiSettings, Path.Combine(dataDirectory, "AiWorkspace"));

@@ -290,11 +290,12 @@ public sealed partial class DesktopWorkflowTests
             if (SaveCompletion is { } pending) await pending.WaitAsync(cancellationToken);
             Saved = item;
         }
-        public async Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default)
+        public async Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default,
+            IReadOnlyDictionary<Guid, bool>? starOverrides = null)
         {
             if (SaveCompletion is { } pending) await pending.WaitAsync(cancellationToken);
-            SavedBatch = items;
-            Saved = items[0];
+            SavedBatch = items.Select(x => starOverrides?.TryGetValue(x.Id, out var starred) == true ? x with { IsStarred = starred } : x).ToArray();
+            Saved = SavedBatch[0];
         }
         public Task InitializeAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
         public Task ImportSeedPackAsync(SeedPack pack, CancellationToken cancellationToken = default) => Task.CompletedTask;

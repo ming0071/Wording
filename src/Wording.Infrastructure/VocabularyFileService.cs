@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Wording.Core;
 
 namespace Wording.Infrastructure;
@@ -12,6 +13,8 @@ public sealed record VocabularyDocument(int Version, VocabularyEntry[] Items);
 public sealed record VocabularyEntry
 {
     public Guid Id { get; init; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IsStarred { get; init; }
     public string Headword { get; init; } = "";
     public string PartOfSpeech { get; init; } = "";
     public string Meaning { get; init; } = "";
@@ -26,7 +29,7 @@ public sealed record VocabularyEntry
 
     public static VocabularyEntry From(VocabularyItem item) => new()
     {
-        Id = item.Id, Headword = item.Headword, PartOfSpeech = item.PartOfSpeech, Meaning = item.Meaning,
+        Id = item.Id, IsStarred = item.IsStarred, Headword = item.Headword, PartOfSpeech = item.PartOfSpeech, Meaning = item.Meaning,
         EnglishDefinition = item.EnglishDefinition, Cue = item.Cue, Level = item.Level, Categories = item.Categories,
         Collocations = item.Collocations, Synonyms = item.Synonyms, Notes = item.Notes,
         Examples = item.Examples.Select(x => x with { Origin = null }).ToArray()
@@ -64,6 +67,7 @@ public sealed class VocabularyFileService(IStudyStore store)
         var existing = (await store.GetVocabularyAsync(cancellationToken: token, includeArchived: true)).ToDictionary(x => x.Id);
         var imported = new List<VocabularyItem>();
         var identifiers = new HashSet<Guid>();
+        var starOverrides = new Dictionary<Guid, bool>();
         var origin = new ContentOrigin("user", "JSON 匯入");
         foreach (var entry in document.Items)
         {
@@ -77,6 +81,7 @@ public sealed class VocabularyFileService(IStudyStore store)
                 id = new Guid(SHA256.HashData(Encoding.UTF8.GetBytes(identity)).AsSpan(0, 16));
             }
             if (!identifiers.Add(id)) throw new InvalidDataException($"第 {imported.Count + 1} 筆的 ID 或詞義重複，請合併後再匯入。");
+            if (entry.IsStarred is { } starred) starOverrides.Add(id, starred);
             var original = existing.GetValueOrDefault(id) ?? new VocabularyItem { Id = id, Enrollment = Enrollment.Selected, Origin = origin };
             imported.Add(original with
             {
@@ -92,7 +97,7 @@ public sealed class VocabularyFileService(IStudyStore store)
             });
         }
         // Validation and writes share a transaction; a bad entry leaves the entire library unchanged.
-        await store.SaveVocabularyBatchAsync(imported, token);
+        await store.SaveVocabularyBatchAsync(imported, token, starOverrides);
         return imported.Count;
     }
 }

@@ -20,5 +20,6 @@
     <Using Include="System.IO" />
     <None Include="Fixtures/**/*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../content/toeic-starter.json" Link="content/toeic-starter.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../content/toeic-vocabulary.json" Link="content/toeic-vocabulary.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

@@ -22,6 +22,4 @@ dotnet test --filter FullyQualifiedName~FsrsSchedulerTests
 
 沒有 Python 時仍可直接執行 C# 測試，因為參考資料已提交。
 
-2026-09-26 在未安裝 .NET SDK 的開發電腦，使用既有 PowerShell 7.6.5 的 .NET 10.0.11 執行環境與 Add-Type，載入實際 NuGet FSRS.Core 1.0.7、編譯正式 adapter，58 個參考案例全部通過。這是排程 adapter 的局部驗證；整個 solution 建置及 xUnit 結果另以 Windows CI 為準。
-
 來源：[FSRS.Core](https://www.nuget.org/packages/FSRS.Core/1.0.7)、[官方 py-fsrs](https://github.com/open-spaced-repetition/py-fsrs)。

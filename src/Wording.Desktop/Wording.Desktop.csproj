@@ -15,6 +15,5 @@
     <Resource Include="Assets\Wording.png" />
     <ProjectReference Include="..\Wording.Core\Wording.Core.csproj" />
     <ProjectReference Include="..\Wording.Infrastructure\Wording.Infrastructure.csproj" />
-    <Content Include="..\..\content\toeic-starter.json" Link="content\toeic-starter.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

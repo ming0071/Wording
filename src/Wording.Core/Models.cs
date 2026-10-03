@@ -64,7 +64,9 @@ public interface IStudyStore
     Task<IReadOnlyList<string>> GetCategoriesAsync(CancellationToken cancellationToken = default);
     Task AddCategoryAsync(string name, CancellationToken cancellationToken = default);
     Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default);
-    Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default);
+    // Explicit overrides are used by JSON imports; regular editing preserves stored stars.
+    Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default,
+        IReadOnlyDictionary<Guid, bool>? starOverrides = null);
     Task SetEnrollmentAsync(Guid senseId, Enrollment enrollment, CancellationToken cancellationToken = default);
     Task SetPausedAsync(Guid senseId, bool paused, CancellationToken cancellationToken = default);
     Task SetStarredAsync(Guid senseId, bool starred, CancellationToken cancellationToken = default);
