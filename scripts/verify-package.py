@@ -15,9 +15,10 @@ import zipfile
 REQUIRED = {
     "Wording.exe", "Wording.dll", "Wording.deps.json", "Wording.runtimeconfig.json",
     "coreclr.dll", "hostfxr.dll", "hostpolicy.dll", "e_sqlite3.dll", "System.Speech.dll",
-    "README.md", "THIRD_PARTY_NOTICES.md", "docs/scenario-practice.md",
+    "README.md", "THIRD_PARTY_NOTICES.md", "docs/scenario-practice.md", "docs/configuration.md",
     "docs/licenses/WebView2-LICENSE.txt", "docs/licenses/WebView2-NOTICE.txt",
     "Prompts/practice-common.txt", "Prompts/practice-reading.txt", "Prompts/practice-listening.txt",
+    "Configuration/app-defaults.json",
 }
 
 
@@ -44,6 +45,10 @@ def verify_package(path, version):
             missing = REQUIRED - set(names)
             if missing:
                 errors.append(f"missing required files: {sorted(missing)}")
+            if "Configuration/app-defaults.json" in names:
+                config = json.loads(archive.read("Configuration/app-defaults.json"))
+                if not isinstance(config, dict) or not {"Review", "Shortcuts", "Speech", "Ai", "Practice"} <= config.keys():
+                    errors.append("product defaults must contain the required configuration sections")
             for name in names:
                 entry = PurePosixPath(name)
                 if "\\" in name or ":" in name or entry.is_absolute() or ".." in entry.parts:

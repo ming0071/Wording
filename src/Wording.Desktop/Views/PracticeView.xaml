@@ -111,7 +111,7 @@
                                         </WrapPanel>
                                         <Expander Header="更細的評分" Visibility="{Binding CanOfferRating, Converter={StaticResource BoolVisibility}}"><WrapPanel Margin="0,8"><Button Content="2 · 勉強想起" Command="{Binding HardCommand}" /><Button Content="4 · 輕鬆理解" Command="{Binding EasyCommand}" /></WrapPanel></Expander>
                                         <Button Content="查看每日新詞設定" Command="{Binding DataContext.OpenSettingsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Left" Margin="0,12,0,0" Visibility="{Binding IsNewLimitBlocked, Converter={StaticResource BoolVisibility}}" />
-                                        <WrapPanel Margin="0,12,0,0"><Button Content="{Binding StarText}" Command="{Binding StarCommand}" /><Button Content="編輯這個詞義" Command="{Binding EditCommand}" /></WrapPanel>
+                                        <WrapPanel Margin="0,12,0,0"><Button Style="{StaticResource StarButton}" Tag="{Binding Eligibility.IsStarred}" Command="{Binding StarCommand}" Margin="0,0,6,8" /><TextBlock Text="{Binding StarText}" VerticalAlignment="Center" Margin="0,0,16,8" /><Button Content="編輯這個詞義" Command="{Binding EditCommand}" /></WrapPanel>
                                     </StackPanel></Border>
                                 </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
                                 <WrapPanel><Button Content="撤銷上次單字評分" Command="{Binding UndoCommand}" /><Button Content="重新檢查評分資格" Command="{Binding RefreshCommand}" /></WrapPanel>
@@ -124,7 +124,7 @@
         </Grid>
         <Border x:Name="HistoryPane" Background="White" CornerRadius="14" Padding="16,12" Margin="0,12,0,0">
             <StackPanel>
-                <TextBlock Text="最近三個月 · 主題練習足跡" Style="{StaticResource SectionTitle}" />
+                <TextBlock Text="{Binding HistoryTitle}" Style="{StaticResource SectionTitle}" />
                     <StackPanel Margin="0,12,12,0">
                         <TextBlock Text="{Binding HistorySummary}" Style="{StaticResource MutedText}" Margin="0,0,0,8" />
                         <TextBlock Text="顏色越深，練習越多；灰色表示尚未練習。" Style="{StaticResource MutedText}" Margin="0,0,0,12" />
@@ -142,7 +142,7 @@
                             </DataTemplate></ItemsControl.ItemTemplate>
                         </ItemsControl>
                         <TextBlock Text="每篇完成練習在各選定主題各計一次；同一篇的多個主題次數加總可能高於總練習次數。" Style="{StaticResource MutedText}" Margin="0,0,0,8" />
-                        <TextBlock Text="只保留最近三個月的完成時間、主題與目標詞義，協助安排下次練習。文章、答案和分數不存入歷史紀錄。" Style="{StaticResource MutedText}" />
+                        <TextBlock Text="{Binding HistoryHelp}" Style="{StaticResource MutedText}" />
                     </StackPanel>
             </StackPanel>
         </Border>

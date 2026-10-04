@@ -55,7 +55,7 @@ cd Wording
 
 1 重來、2 困難、3 良好、4 簡單，依這次能否想起答案評分。新詞第一次選 3，會在 **10 分鐘後**再複習；到期後再次選 3，便進入以天計算的長期排程。後續間隔由 FSRS 依每個詞義的評分與複習歷史計算，評分後會顯示下一次複習時間。
 
-每日預設加入 5 個新詞，所有主題共用名額；到期複習較多時會減少新詞。完整規則見 [評分與複習排程](docs/review-scheduling.md)。
+每日預設加入 25 個新詞，所有主題共用名額；到期複習較多時會減少新詞。完整規則見 [評分與複習排程](docs/review-scheduling.md)。
 
 ### Scenario Practice
 
@@ -82,6 +82,8 @@ codex login status
 ```
 
 生成使用自己的 Codex 訂閱額度；一般單字管理與複習可離線使用。Windows 朗讀使用電腦上的英文合成語音。
+
+「設定與備份」可選生成模型與速度，選單會查詢目前 CLI 提供的清單。速度預設為標準，Fast 等模式會消耗較多額度；閱讀、聽力與詞義生成共用此設定。詳見[程式設定與預設值](docs/configuration.md#codex-speed)。
 
 ## Tests
 
@@ -116,6 +118,7 @@ Wording/
 | 文件 | 內容 |
 | --- | --- |
 | [評分與複習排程](docs/review-scheduling.md) | 1–4 評分、新詞學習步驟、長期複習與每日新詞名額 |
+| [設定與版本來源](docs/configuration.md) | JSON 預設值、個人設定、英文輸入法與版本號來源 |
 | [閱讀與聽力情境練習](docs/scenario-practice.md) | 生成選項、選字、中文解析、單字回饋與提示詞調整 |
 | [JSON 格式與檔案操作](docs/vocabulary-files.md) | 資料位置、欄位、穩定 ID 與匯入／匯出指令 |
 | [教材說明](content/README.md) | 選用詞庫、主題、星號與教材維護 |

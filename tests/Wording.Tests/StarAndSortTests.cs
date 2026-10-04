@@ -78,6 +78,9 @@ public sealed partial class DesktopWorkflowTests
             library.LoadAsync().GetAwaiter().GetResult();
             var view = new LibraryView { DataContext = library };
             Layout(view, 959, 710);
+            var star = Descendants(view).OfType<System.Windows.Controls.Button>().Single(x => x.Tag is bool);
+            Assert.Equal("取消星號", System.Windows.Automation.AutomationProperties.GetName(star));
+            Assert.Equal(System.Windows.Media.Colors.White, ((System.Windows.Media.SolidColorBrush)((System.Windows.Shapes.Path)star.Template.FindName("Star", star)).Fill).Color);
             Render(view, "library-stars-v019.png");
             store.NextReview = new(store.Saved!, 0, true, null);
             var review = new ReviewViewModel(store, new SilentSpeech(), new AppSettings());
@@ -85,6 +88,12 @@ public sealed partial class DesktopWorkflowTests
             var card = new ReviewView { DataContext = review };
             Layout(card, 959, 710);
             Render(card, "review-stars-v019.png");
+            review.StarCommand.ExecuteAsync().GetAwaiter().GetResult();
+            Layout(card, 959, 710);
+            var unstarred = Descendants(card).OfType<System.Windows.Controls.Button>().Single(x => x.Tag is bool);
+            Assert.Equal("標為不熟悉", System.Windows.Automation.AutomationProperties.GetName(unstarred));
+            Assert.NotEqual(System.Windows.Media.Colors.White, ((System.Windows.Media.SolidColorBrush)((System.Windows.Shapes.Path)unstarred.Template.FindName("Star", unstarred)).Fill).Color);
+            Render(card, "review-star-unselected.png");
         });
     }
 }

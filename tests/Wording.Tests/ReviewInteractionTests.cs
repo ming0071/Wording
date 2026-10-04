@@ -94,7 +94,7 @@ public sealed partial class DesktopWorkflowTests
     public async Task SettingsSaveLargeLimitsAndShortcutsWithoutChangingActiveSettingsOnFailure()
     {
         using var data = new StudyTestData();
-        var settings = new AppSettings();
+        var settings = new AppSettings { Practice = new() { Mode = PracticeMode.Listening, Level = PracticeLevel.Hard, QuestionCount = 5 } };
         var viewModel = new SettingsViewModel(new BackupService(data.Store), new FixedGenerator(), new SilentSpeech(),
             settings, new AiSettings(), data.DirectoryPath, () => { });
         viewModel.DailyNewLimit = "99999999999999999999999999999999999";
@@ -108,6 +108,10 @@ public sealed partial class DesktopWorkflowTests
         Assert.Equal("F1", AppSettings.Load(data.DirectoryPath).FlipKey);
         Assert.Equal("F7", settings.SpeakKey);
         Assert.Equal("F8", AppSettings.Load(data.DirectoryPath).SpeakExampleKey);
+        var savedPractice = AppSettings.Load(data.DirectoryPath).Practice;
+        Assert.Equal(PracticeMode.Listening, savedPractice.Mode);
+        Assert.Equal(PracticeLevel.Hard, savedPractice.Level);
+        Assert.Equal(5, savedPractice.QuestionCount);
         viewModel.GoodKey = "F1";
         viewModel.DailyNewLimit = "20";
         await viewModel.SaveCommand.ExecuteAsync();

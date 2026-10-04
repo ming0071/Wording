@@ -12,7 +12,7 @@
                     <TextBlock Text="每日學習" Style="{StaticResource SectionTitle}" />
                     <TextBlock Text="每天最多開始幾個新詞" Style="{StaticResource FieldLabel}" />
                     <TextBox Text="{Binding DailyNewLimit, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" HorizontalAlignment="Left" AutomationProperties.Name="每日新詞上限" AutomationProperties.AutomationId="DailyNewLimit" />
-                    <TextBlock Text="預設 5 個，可填入任意非負整數，沒有固定數量上限；0 代表只複習已開始的卡。到期少於 10 張時依你設定；10–19 張時最多 2 個，20 張以上先不加新詞。所有主題共用每日名額。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0" />
+                    <TextBlock Text="{Binding DailyNewLimitHelp}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0" />
                 </StackPanel>
             </Border>
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
@@ -42,10 +42,22 @@
                     <TextBox Text="{Binding CodexPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 執行檔路徑" AutomationProperties.AutomationId="CodexPath" />
                     <WrapPanel Margin="0,8,0,0"><Button Content="自動尋找" Command="{Binding FindCodexCommand}" /><Button Content="選擇執行檔…" Command="{Binding BrowseCodexCommand}" /></WrapPanel>
                     <TextBlock Text="填入 codex 可在每次執行時自動尋找，支援 Codex 桌面版的版本目錄。也可以指定完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0" />
-                    <TextBlock Text="模型（留空使用 CLI 預設）" Style="{StaticResource FieldLabel}" />
-                    <TextBox Text="{Binding CodexModel, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 模型" />
-                    <TextBlock Text="每日 AI 生成上限（0–50）" Style="{StaticResource FieldLabel}" />
-                    <TextBox Text="{Binding DailyGenerationLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" MaxLength="2" AutomationProperties.Name="每日 AI 生成上限" />
+                    <TextBlock Text="生成模型" Style="{StaticResource FieldLabel}" />
+                    <ComboBox ItemsSource="{Binding ModelChoices}" DisplayMemberPath="Label" SelectedValuePath="Model"
+                              SelectedValue="{Binding CodexModel, Mode=TwoWay}" AutomationProperties.Name="Codex 模型" AutomationProperties.AutomationId="CodexModelPicker" />
+                    <TextBlock Text="{Binding ModelDescription}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,6,0,0" />
+                    <WrapPanel Margin="0,8,0,0">
+                        <Button Content="更新模型清單" Command="{Binding RefreshModelsCommand}" AutomationProperties.AutomationId="RefreshCodexModels" />
+                        <Button Content="取消更新" Command="{Binding CancelModelRefreshCommand}" Visibility="{Binding RefreshModelsCommand.IsRunning, Converter={StaticResource BoolVisibility}}" />
+                    </WrapPanel>
+                    <TextBlock Text="{Binding ModelStatus}" Style="{StaticResource MutedText}" FontSize="11" Margin="0,6,0,0" />
+                    <TextBlock Text="生成速度" Style="{StaticResource FieldLabel}" />
+                    <ComboBox ItemsSource="{Binding SpeedChoices}" DisplayMemberPath="Label" SelectedValuePath="Id"
+                              SelectedValue="{Binding CodexServiceTier, Mode=TwoWay}" AutomationProperties.Name="Codex 生成速度" AutomationProperties.AutomationId="CodexSpeedPicker" />
+                    <TextBlock Text="{Binding SpeedDescription}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,6,0,0" />
+                    <TextBlock Text="加速選項與速度說明由所選模型提供。Fast 等加速模式會消耗較多訂閱額度；倍數是模型速度資訊，實際等待時間仍依內容而異。保存後套用到閱讀、聽力與詞義生成。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,6,0,0" />
+                    <TextBlock Text="{Binding DailyGenerationLimitHelp}" Style="{StaticResource FieldLabel}" />
+                    <TextBox Text="{Binding DailyGenerationLimit, UpdateSourceTrigger=PropertyChanged}" Width="100" HorizontalAlignment="Left" AutomationProperties.Name="每日 AI 生成上限" />
                     <WrapPanel Margin="0,20,0,0">
                         <Button Content="保存並檢查 Codex" Command="{Binding CheckAiCommand}" />
                     </WrapPanel>

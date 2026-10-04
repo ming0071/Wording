@@ -13,7 +13,7 @@ public partial class ReviewView : UserControl
         InitializeComponent();
         Focusable = true;
         IsTabStop = false;
-        Loaded += (_, _) => { Observe(); RequestKeyboardFocus(); };
+        Loaded += (_, _) => { ReviewInputLanguage.Configure(this); Observe(); RequestKeyboardFocus(); };
         Unloaded += (_, _) => StopObserving();
         DataContextChanged += (_, _) => { if (IsLoaded) { Observe(); RequestKeyboardFocus(); } };
     }

@@ -20,6 +20,8 @@ Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.
 | --- | --- |
 | [練習可靠性](../tests/Wording.Tests/PracticeReliabilityTests.cs) | 取消後晚回傳不能覆蓋答案、重按不會重複生成、取消後能重新操作、相同 ID 的不同完成紀錄不能覆寫、三個月保存邊界、無效設定不能覆蓋舊檔 |
 | [選用教材](../tests/Wording.Tests/OptionalVocabularyTests.cs) | 三份教材／範例能匯入，重複匯入保留 ID 與學習進度；作者的學習紀錄不會帶入 |
+| [設定與輸入法](../tests/Wording.Tests/ApplicationConfigurationTests.cs) | 新預設與已保存偏好分開、JSON 格式與範圍檢查、減量門檻邊界、英文鍵盤選擇與複習頁 IME 範圍 |
+| [Codex 模型清單](../tests/Wording.Tests/CodexModelCatalogTests.cs)、[模型選單](../tests/Wording.Tests/ModelPickerTests.cs) | 初始化順序、分頁、新模型與未知欄位、隱藏／非文字模型、ChatGPT 登入、錯誤輸出遮蔽、查詢失敗、舊路徑晚到回應及選擇保存 |
 | [發行包](../scripts/verify-package.py) | SHA-256、必要檔案、Windows x64 EXE、.NET／WPF 自包含 runtime、三個專案版本、提示詞、授權；排除重複路徑、使用者資料與暫存檔 |
 | [發行驗證器測試](../scripts/tests/test_verify_package.py) | 缺提示詞／授權、錯誤校驗碼、錯版本、非自包含包、錯誤 EXE、非法路徑、重複項目、損毀 ZIP 都應失敗 |
 

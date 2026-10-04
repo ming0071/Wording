@@ -300,8 +300,22 @@ public sealed class PracticeTests
         Assert.Contains("下次複習", vm.Targets[0].Status);
     }
 
+    [Theory]
+    [InlineData(PracticeMode.Reading)]
+    [InlineData(PracticeMode.Listening)]
+    public async Task ReadingAndListeningGenerationUseSelectedSpeedTier(PracticeMode mode)
+    {
+        using var data = new StudyTestData();
+        var request = new PracticeRequest(new() { Mode = mode }, [StudyTestData.Word()]);
+        var runner = new PracticeRunner(PracticeFixtures.Material(request));
+        await new CodexContentGenerator(new() { ServiceTier = "priority" }, data.DirectoryPath, runner).GeneratePracticeAsync(request);
+        Assert.Contains("service_tier=\"priority\"", runner.Arguments);
+        Assert.Contains("forced_login_method=\"chatgpt\"", runner.Arguments);
+    }
+
     private sealed class PracticeRunner(PracticeMaterial material) : ICodexProcessRunner
     {
+        public IReadOnlyList<string> Arguments { get; private set; } = [];
         public string Input { get; private set; } = "";
         public string Schema { get; private set; } = "";
         public Task<CodexRunResult> RunAsync(string executable, IReadOnlyList<string> arguments, string input, string directory, TimeSpan timeout, CancellationToken token)
@@ -309,6 +323,7 @@ public sealed class PracticeTests
             if (arguments[0] == "--version") return Task.FromResult(new CodexRunResult(0, "codex-cli 0.153.4", ""));
             if (arguments[0] == "login") return Task.FromResult(new CodexRunResult(0, "", "Logged in using ChatGPT"));
             Input = input;
+            Arguments = arguments;
             Schema = File.ReadAllText(arguments[arguments.ToList().IndexOf("--output-schema") + 1]);
             return Task.FromResult(new CodexRunResult(0, JsonSerializer.Serialize(new { type = "item.completed", item = new { type = "agent_message", text = JsonSerializer.Serialize(material) } }) + "\n{\"type\":\"turn.completed\"}", ""));
         }

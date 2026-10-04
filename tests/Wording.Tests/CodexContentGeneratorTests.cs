@@ -103,6 +103,21 @@ public sealed class CodexContentGeneratorTests : IDisposable
 
     private static VocabularyItem Word() => new() { Id = SenseId, Headword = "invoice", Meaning = "發票；帳單" };
 
+    [Theory]
+    [InlineData("", "default")]
+    [InlineData("priority", "priority")]
+    [InlineData("future_speed", "future_speed")]
+    public async Task WordGenerationUsesSelectedServiceTierWithoutChangingModelOrSafety(string selected, string expected)
+    {
+        var runner = new StubRunner(Response(SenseId));
+        await new CodexContentGenerator(new() { Model = "future-model", ServiceTier = selected }, directory, runner).GenerateAsync(Word());
+        Assert.Contains($"service_tier=\"{expected}\"", runner.LastArguments!);
+        Assert.Contains("future-model", runner.LastArguments!);
+        Assert.Contains("fast_mode", runner.LastArguments!);
+        Assert.Contains("--ignore-user-config", runner.LastArguments!);
+        Assert.Contains("forced_login_method=\"chatgpt\"", runner.LastArguments!);
+    }
+
     private static string Response(Guid senseId, int exampleCount = 2)
     {
         var payload = JsonSerializer.Serialize(new {

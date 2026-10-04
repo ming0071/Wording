@@ -32,7 +32,7 @@ public partial class App : Application
                 return;
             }
             var settings = AppSettings.Load(dataDirectory);
-            var aiSettings = new AiSettings { ExecutablePath = settings.CodexExecutablePath, Model = settings.CodexModel, DailyGenerationLimit = settings.DailyGenerationLimit };
+            var aiSettings = new AiSettings { ExecutablePath = settings.CodexExecutablePath, Model = settings.CodexModel, ServiceTier = settings.CodexServiceTier, DailyGenerationLimit = settings.DailyGenerationLimit };
             var store = new SqliteStudyStore(AppDataPaths.DatabasePath(dataDirectory));
             AppDiagnostics.Write($"Database path={store.DatabasePath}; existing={File.Exists(store.DatabasePath)}; bytes={(File.Exists(store.DatabasePath) ? new FileInfo(store.DatabasePath).Length : 0)}; user={System.Security.Principal.WindowsIdentity.GetCurrent().Name}; exe={Environment.ProcessPath}");
             await store.InitializeAsync();

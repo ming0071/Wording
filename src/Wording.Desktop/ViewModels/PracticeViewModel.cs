@@ -51,7 +51,7 @@ public sealed class PracticeTargetViewModel : ObservableObject
     public PracticeEligibility? Eligibility { get => eligibility; set { eligibility = value; OnPropertyChanged(""); } }
     internal ReviewSubmission? Pending { get; set; }
     public string Status => Eligibility?.Message ?? "正在檢查評分資格…";
-    public string StarText => Eligibility?.IsStarred == true ? "★ 已標星" : "☆ 標為不熟悉";
+    public string StarText => Eligibility?.IsStarred == true ? "已標星" : "標為不熟悉";
     public bool CanOfferRating => Pending is not null || Eligibility?.CanRate == true || Eligibility?.IsNewLimitBlocked == true;
     public bool IsNewLimitBlocked => Eligibility?.IsNewLimitBlocked == true;
     public AsyncCommand AgainCommand { get; }
@@ -123,7 +123,9 @@ public sealed class PracticeViewModel : PageViewModel
     public PracticeTargetViewModel[] Targets { get; private set; } = [];
     public PracticeTopicActivity[] TopicActivities { get; private set; } = [];
     public int CompletedCount { get; private set; }
-    public string HistorySummary { get; private set; } = "最近三個月尚無完成的練習";
+    public string HistoryTitle => $"最近 {ApplicationConfiguration.Current.Practice.HistoryMonths} 個月 · 主題練習足跡";
+    public string HistoryHelp => $"只保留最近 {ApplicationConfiguration.Current.Practice.HistoryMonths} 個月的完成時間、主題與目標詞義，協助安排下次練習。文章、答案和分數不存入歷史紀錄。";
+    public string HistorySummary { get; private set; } = $"最近 {ApplicationConfiguration.Current.Practice.HistoryMonths} 個月尚無完成的練習";
     public AsyncCommand GenerateCommand { get; }
     public AsyncCommand SubmitCommand { get; }
     public AsyncCommand UndoCommand { get; }
@@ -148,7 +150,12 @@ public sealed class PracticeViewModel : PageViewModel
         this.confirmReplace = confirmReplace ?? (() => Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.ReplacePractice));
         var options = settings.Practice; mode = options.Mode; questionCount = options.QuestionCount; SpeechRate = options.SpeechRate;
         Difficulty = new([(PracticeLevel.Easy, "輕鬆"), (PracticeLevel.Medium, "適中"), (PracticeLevel.Hard, "挑戰")], options.Level);
-        Length = new([(PracticeLength.Short, "短篇 · 120–180 字"), (PracticeLength.Medium, "中篇 · 220–300 字"), (PracticeLength.Long, "長篇 · 350–500 字")], options.Length);
+        string LengthLabel(PracticeLength length, string label)
+        {
+            var range = CodexContentGenerator.WordRange(length);
+            return $"{label} · {range.Minimum}–{range.Maximum} 字";
+        }
+        Length = new([(PracticeLength.Short, LengthLabel(PracticeLength.Short, "短篇")), (PracticeLength.Medium, LengthLabel(PracticeLength.Medium, "中篇")), (PracticeLength.Long, LengthLabel(PracticeLength.Long, "長篇"))], options.Length);
         Density = new([(WordDensity.Low, "少量"), (WordDensity.Medium, "適中"), (WordDensity.High, "較多")], options.Density);
         SetKinds(options.Kind);
         GenerateCommand = Command(GenerateAsync);
@@ -208,12 +215,12 @@ public sealed class PracticeViewModel : PageViewModel
     private async Task RefreshHistory(CancellationToken token)
     {
         var now = clock.GetLocalNow();
-        var cutoff = new DateTimeOffset(now.Date.AddMonths(-3), now.Offset);
+        var cutoff = new DateTimeOffset(now.Date.AddMonths(-ApplicationConfiguration.Current.Practice.HistoryMonths), now.Offset);
         var history = (await store.GetPracticeHistoryAsync(now, token)).Where(x => x.CompletedAt >= cutoff && x.CompletedAt <= now).ToArray();
         var availableTopics = await study.GetCategoriesAsync(token);
         TopicActivities = PracticeTopicActivity.Build(availableTopics, history);
         CompletedCount = history.Length;
-        HistorySummary = $"最近三個月 · 共 {CompletedCount} 次 · 閱讀 {history.Count(x => x.Mode == PracticeMode.Reading)} 次 · 聽力 {history.Count(x => x.Mode == PracticeMode.Listening)} 次";
+        HistorySummary = $"最近 {ApplicationConfiguration.Current.Practice.HistoryMonths} 個月 · 共 {CompletedCount} 次 · 閱讀 {history.Count(x => x.Mode == PracticeMode.Reading)} 次 · 聽力 {history.Count(x => x.Mode == PracticeMode.Listening)} 次";
         OnPropertyChanged(nameof(TopicActivities)); OnPropertyChanged(nameof(CompletedCount)); OnPropertyChanged(nameof(HistorySummary));
     }
     private async Task GenerateAsync(CancellationToken token)
@@ -233,7 +240,7 @@ public sealed class PracticeViewModel : PageViewModel
         Questions = next.Questions.Select((x, i) => new PracticeQuestionViewModel(x, i + 1)).ToArray();
         foreach (var question in Questions) question.Changed += () => SubmitCommand.NotifyCanExecuteChanged();
         recentWords.Enqueue(nextRequest.Targets.Select(x => x.Id).ToArray());
-        while (recentWords.Count > 3) recentWords.Dequeue();
+        while (recentWords.Count > ApplicationConfiguration.Current.Practice.RecentSessionCount) recentWords.Dequeue();
         Notice = ""; NotifyState();
     }
     private async Task SubmitAsync(CancellationToken token)

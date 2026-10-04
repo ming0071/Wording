@@ -17,21 +17,7 @@ public sealed class CodexProcessRunner : ICodexProcessRunner
     public async Task<CodexRunResult> RunAsync(string executable, IReadOnlyList<string> arguments,
         string input, string workingDirectory, TimeSpan timeout, CancellationToken cancellationToken)
     {
-        var start = new ProcessStartInfo(CodexExecutableLocator.Resolve(executable))
-        {
-            WorkingDirectory = workingDirectory,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            StandardInputEncoding = new UTF8Encoding(false),
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8
-        };
-        foreach (var argument in arguments) start.ArgumentList.Add(argument);
-        start.Environment.Remove("OPENAI_API_KEY");
-        start.Environment.Remove("CODEX_API_KEY");
+        var start = CreateStartInfo(executable, arguments, workingDirectory);
         using var process = new Process { StartInfo = start };
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(timeout);
@@ -105,6 +91,26 @@ public sealed class CodexProcessRunner : ICodexProcessRunner
                     operationFailure is null ? cleanupFailure : new AggregateException(operationFailure, cleanupFailure));
             }
         }
+    }
+
+    internal static ProcessStartInfo CreateStartInfo(string executable, IReadOnlyList<string> arguments, string workingDirectory)
+    {
+        var start = new ProcessStartInfo(CodexExecutableLocator.Resolve(executable))
+        {
+            WorkingDirectory = workingDirectory,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            StandardInputEncoding = new UTF8Encoding(false),
+            StandardOutputEncoding = Encoding.UTF8,
+            StandardErrorEncoding = Encoding.UTF8
+        };
+        foreach (var argument in arguments) start.ArgumentList.Add(argument);
+        start.Environment.Remove("OPENAI_API_KEY");
+        start.Environment.Remove("CODEX_API_KEY");
+        return start;
     }
 
     private static async Task<string> ReadBoundedAsync(StreamReader reader, CancellationToken cancellationToken,

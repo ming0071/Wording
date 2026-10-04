@@ -1,0 +1,36 @@
+{
+  "Review": {
+    "DailyNewLimit": "25",
+    "PreferredInputLanguage": "en-US",
+    "ReduceNewAtDueCount": 10,
+    "ReducedNewLimit": 2,
+    "PauseNewAtDueCount": 20
+  },
+  "Shortcuts": {
+    "Flip": "Space", "Again": "1", "Hard": "2", "Good": "3", "Easy": "4",
+    "Speak": "S", "SpeakExample": "E"
+  },
+  "Speech": { "AutoSpeakWord": true, "AutoSpeakExamples": true },
+  "Ai": {
+    "ExecutablePath": "codex", "Model": "", "ServiceTier": "",
+    "DailyGenerationLimit": 10, "MaximumDailyGenerations": 50,
+    "TimeoutSeconds": 120, "MinimumTimeoutSeconds": 10, "MaximumTimeoutSeconds": 300,
+    "PracticeTimeoutSeconds": 300, "AvailabilityTimeoutSeconds": 15, "ModelCatalogTimeoutSeconds": 30
+  },
+  "Practice": {
+    "Defaults": {
+      "Mode": "Reading", "Kind": "Random", "Level": "Medium", "Length": "Short",
+      "Density": "Medium", "QuestionCount": 4, "SpeechRate": 0
+    },
+    "HistoryMonths": 3, "TopicLookbackDays": 14, "RecentSessionCount": 3,
+    "ExposureRecoveryDays": 7, "RecentExposureMinimumWeight": 0.12,
+    "StarredWeight": 1.6, "LearnedBaseWeight": 0.15,
+    "StabilityWeight": 3, "StabilityScaleDays": 7, "RetrievabilityWeight": 2,
+    "DensityWordIncrement": 2,
+    "Lengths": {
+      "Short": { "MinimumWords": 120, "MaximumWords": 180, "TargetWords": 4 },
+      "Medium": { "MinimumWords": 220, "MaximumWords": 300, "TargetWords": 6 },
+      "Long": { "MinimumWords": 350, "MaximumWords": 500, "TargetWords": 8 }
+    }
+  }
+}

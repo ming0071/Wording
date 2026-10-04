@@ -30,7 +30,7 @@ public sealed partial class CodexContentGenerator
                 targets = request.Targets.Select(x => new { senseId = x.Id, headword = x.Headword, partOfSpeech = x.PartOfSpeech, intendedMeaning = x.Meaning }) };
             var response = await runner.RunAsync(settings.ExecutablePath, BuildArguments(schemaPath),
                 common + "\n" + modePrompt + "\nINPUT DATA:\n" + JsonSerializer.Serialize(input, new JsonSerializerOptions(JsonSerializerDefaults.Web)), workDirectory,
-                TimeSpan.FromSeconds(300), token);
+                TimeSpan.FromSeconds(ApplicationConfiguration.Current.Ai.PracticeTimeoutSeconds), token);
             token.ThrowIfCancellationRequested();
             if (response.ExitCode != 0) throw new InvalidOperationException(DescribeFailure(response.StandardError));
             return ParsePracticeResponse(ExtractFinal(response.StandardOutput), request);
@@ -42,10 +42,11 @@ public sealed partial class CodexContentGenerator
         }
     }
 
-    public static (int Minimum, int Maximum) WordRange(PracticeLength length) => length switch
+    public static (int Minimum, int Maximum) WordRange(PracticeLength length)
     {
-        PracticeLength.Short => (120, 180), PracticeLength.Medium => (220, 300), _ => (350, 500)
-    };
+        var range = ApplicationConfiguration.Current.Practice.Lengths[length];
+        return (range.MinimumWords, range.MaximumWords);
+    }
 
     public static PracticeMaterial ParsePracticeResponse(string json, PracticeRequest request)
     {

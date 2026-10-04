@@ -119,7 +119,7 @@
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="星號" Width="70" CanUserSort="False">
                                 <DataGridTemplateColumn.CellTemplate><DataTemplate>
-                                    <Button Content="{Binding StarLabel}" FontSize="24" Foreground="#B88416" Padding="5,0" Margin="10,0" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Command="{Binding DataContext.StarRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" AutomationProperties.Name="切換星號" />
+                                    <Button Style="{StaticResource StarButton}" Tag="{Binding IsStarred}" Margin="10,0" VerticalAlignment="Center" Command="{Binding DataContext.StarRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
                                 </DataTemplate></DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" ClipboardContentBinding="{Binding Headword}" Width="1.15*" MinWidth="150">

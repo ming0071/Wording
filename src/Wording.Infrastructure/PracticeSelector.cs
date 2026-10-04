@@ -10,20 +10,21 @@ public sealed class PracticeSelector(Random? random = null)
         IReadOnlyList<PracticeCompletion> history, DateTimeOffset now, IReadOnlyCollection<Guid>? recentSessionWords = null)
     {
         options.Validate();
+        var config = ApplicationConfiguration.Current.Practice;
         var eligible = candidates.Where(x => !x.Word.IsArchived && !x.Word.IsPaused && x.Word.Enrollment != Enrollment.Skipped).ToArray();
         var topics = options.Topics;
         if (topics.Length == 0)
         {
             var available = eligible.SelectMany(x => x.Word.Categories).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
             if (available.Length > 0)
-                topics = [Draw(available, topic => 1.0 / (1 + history.Where(x => x.CompletedAt > now.AddDays(-14))
+                topics = [Draw(available, topic => 1.0 / (1 + history.Where(x => x.CompletedAt > now.AddDays(-config.TopicLookbackDays))
                     .Count(x => x.Topics.Contains(topic, StringComparer.OrdinalIgnoreCase))))];
             else topics = ["自由情境"];
         }
         var pool = eligible.Where(x => x.Word.Categories.Any(c => topics.Contains(c, StringComparer.OrdinalIgnoreCase)) ||
             options.Topics.Length == 0 && topics.SequenceEqual(new[] { "自由情境" })).ToArray();
         if (pool.Length == 0) throw new InvalidOperationException("這些主題沒有可用詞彙，請選其他主題或先新增單字。");
-        var count = Math.Min(pool.Length, (options.Length switch { PracticeLength.Short => 4, PracticeLength.Medium => 6, _ => 8 }) + (int)options.Density * 2);
+        var count = Math.Min(pool.Length, config.Lengths[options.Length].TargetWords + (int)options.Density * config.DensityWordIncrement);
         var exposures = history.SelectMany(x => x.TargetIds.Select(id => (Id: id, At: x.CompletedAt)))
             .GroupBy(x => x.Id).ToDictionary(x => x.Key, x => x.Max(y => y.At));
         var decay = -FsrsScheduler.GetParameters()[20];
@@ -34,11 +35,11 @@ public sealed class PracticeSelector(Random? random = null)
             var elapsed = schedule.LastReviewAt is { } last ? Math.Max(0, (now - last).TotalDays) : 0;
             var stability = schedule.Stability ?? 0;
             var retrievability = stability > 0 ? Math.Pow(1 + factor * elapsed / stability, decay) : 0;
-            var weight = schedule.LastReviewAt is null ? 1 : 0.15 + 3 / (1 + stability / 7) + 2 * (1 - retrievability);
-            if (candidate.Word.IsStarred) weight *= 1.6;
+            var weight = schedule.LastReviewAt is null ? 1 : config.LearnedBaseWeight + config.StabilityWeight / (1 + stability / config.StabilityScaleDays) + config.RetrievabilityWeight * (1 - retrievability);
+            if (candidate.Word.IsStarred) weight *= config.StarredWeight;
             if (exposures.TryGetValue(candidate.Word.Id, out var exposure))
-                weight *= Math.Clamp((now - exposure).TotalDays / 7, 0.12, 1);
-            if (recentSessionWords?.Contains(candidate.Word.Id) == true) weight *= 0.12;
+                weight *= Math.Clamp((now - exposure).TotalDays / config.ExposureRecoveryDays, config.RecentExposureMinimumWeight, 1);
+            if (recentSessionWords?.Contains(candidate.Word.Id) == true) weight *= config.RecentExposureMinimumWeight;
             return weight;
         }
         // Reserve space for both new and learned vocabulary when both are available.

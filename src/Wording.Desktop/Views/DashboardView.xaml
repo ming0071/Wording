@@ -58,7 +58,7 @@
             <Border Background="#EDF0FA" CornerRadius="12" Padding="22">
                 <StackPanel>
                     <TextBlock Text="打開就能學，不用先挑單字" FontWeight="SemiBold" Margin="0,0,0,6" />
-                    <TextBlock Text="單字庫中的新詞會自動加入學習。先複習到期卡，再依每日上限認識新詞；可在複習頁選擇主題或全部單字庫。預設每天最多 5 個新詞，可在設定調整，到期較多時會減量。" Style="{StaticResource MutedText}" />
+                    <TextBlock Text="{Binding NewWordHelp}" Style="{StaticResource MutedText}" />
                 </StackPanel>
             </Border>
             <Button Content="重新整理" Command="{Binding RefreshCommand}" HorizontalAlignment="Left" Margin="0,18,0,0" />

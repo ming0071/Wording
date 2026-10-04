@@ -22,7 +22,7 @@
                 <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                     <StackPanel Width="{Binding ActualWidth, ElementName=ContentHost}">
                         <DockPanel HorizontalAlignment="Center">
-                            <Button DockPanel.Dock="Right" Content="{Binding Current.Word.StarLabel}" Command="{Binding StarCommand}" FontSize="24" Foreground="#B88416" Padding="8,0" Margin="12,0,0,0" AutomationProperties.Name="切換星號" />
+                            <Button DockPanel.Dock="Right" Style="{StaticResource StarButton}" Tag="{Binding Current.Word.IsStarred}" Command="{Binding StarCommand}" Margin="12,0,0,0" />
                             <TextBlock Text="{Binding Current.Word.Headword}" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewHeadword" />
                         </DockPanel>
                         <TextBlock Text="{Binding Current.Word.PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />

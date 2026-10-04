@@ -11,14 +11,14 @@ public enum PlaybackState { Stopped, Playing, Paused }
 
 public sealed record PracticeOptions
 {
-    public PracticeMode Mode { get; init; }
-    public PassageKind Kind { get; init; }
-    public PracticeLevel Level { get; init; } = PracticeLevel.Medium;
-    public PracticeLength Length { get; init; }
-    public WordDensity Density { get; init; } = WordDensity.Medium;
-    public int QuestionCount { get; init; } = 4;
+    public PracticeMode Mode { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.Mode;
+    public PassageKind Kind { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.Kind;
+    public PracticeLevel Level { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.Level;
+    public PracticeLength Length { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.Length;
+    public WordDensity Density { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.Density;
+    public int QuestionCount { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.QuestionCount;
     public string[] Topics { get; init; } = [];
-    public int SpeechRate { get; init; }
+    public int SpeechRate { get; init; } = ApplicationConfiguration.Current.Practice.Defaults.SpeechRate;
 
     public void Validate()
     {

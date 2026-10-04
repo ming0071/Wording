@@ -94,6 +94,22 @@ public interface IContentGenerator
     Task<AiEnrichment> GenerateAsync(VocabularyItem word, CancellationToken cancellationToken = default);
 }
 
+public sealed record CodexModel(string Model, string DisplayName, string Description, bool IsDefault)
+{
+    public IReadOnlyList<CodexServiceTier> ServiceTiers { get; init; } = [];
+}
+
+public sealed record CodexServiceTier(string Id, string Name, string Description)
+{
+    public static bool IsValidId(string? value) => value is not null && value.Length <= 64 &&
+        value.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-');
+}
+
+public interface ICodexModelCatalog
+{
+    Task<IReadOnlyList<CodexModel>> ListModelsAsync(string executable, CancellationToken cancellationToken = default);
+}
+
 public interface IPronunciationService : IDisposable
 {
     string Status { get; }

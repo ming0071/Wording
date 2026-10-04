@@ -83,7 +83,7 @@ public sealed partial class SqliteStudyStore
             else
             {
                 var due = DueCount(connection, transaction, now);
-                if (due >= 10) adaptiveLimit = due >= 20 ? 0 : 2;
+                adaptiveLimit = ApplicationConfiguration.Current.Review.AdaptiveNewLimit(due);
             }
             if (adaptiveLimit is { } adaptiveQuota) quota = BigInteger.Min(quota, adaptiveQuota);
             var startedToday = StartedCount(connection, transaction, day);
@@ -123,7 +123,7 @@ public sealed partial class SqliteStudyStore
 
     private void PurgePractice(SqliteConnection connection, SqliteTransaction? transaction, DateTimeOffset now)
     {
-        var day = TimeZoneInfo.ConvertTime(now, _timeZone).Date.AddMonths(-3);
+        var day = TimeZoneInfo.ConvertTime(now, _timeZone).Date.AddMonths(-ApplicationConfiguration.Current.Practice.HistoryMonths);
         var cutoff = new DateTimeOffset(day, _timeZone.GetUtcOffset(day));
         Execute(connection, transaction, "DELETE FROM practice_sessions WHERE completed_ms<$cutoff;", ("$cutoff", Ms(cutoff)));
     }

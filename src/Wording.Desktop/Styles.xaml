@@ -78,6 +78,41 @@
             <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
+        <Style x:Key="StarButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#FFF5DA" />
+            <Setter Property="Foreground" Value="#D99300" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="AutomationProperties.HelpText" Value="標為不熟悉，讓它更常出現在練習中" />
+            <Setter Property="AutomationProperties.Name" Value="標為不熟悉" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid Background="Transparent">
+                            <Ellipse x:Name="Circle" Width="30" Height="30" Fill="{TemplateBinding Background}" />
+                            <Path x:Name="Star" Width="19" Height="21" Stretch="Fill" Fill="{TemplateBinding Foreground}"
+                                  Data="M 12,1 C 14.3,7.1 14.7,7.6 21.5,9 C 16.3,12.8 15.8,13.5 17.8,20.5 C 12.4,16.9 11.6,16.9 6.2,20.5 C 8.2,13.5 7.7,12.8 2.5,9 C 9.3,7.6 9.7,7.1 12,1 Z" />
+                            <Ellipse x:Name="FocusRing" Width="38" Height="38" Stroke="{StaticResource AccentBrush}" StrokeThickness="2" Visibility="Collapsed" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Circle" Property="Opacity" Value="0.8" /></Trigger>
+                            <Trigger Property="IsPressed" Value="True"><Setter TargetName="Circle" Property="Opacity" Value="0.6" /></Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="FocusRing" Property="Visibility" Value="Visible" /></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.45" /></Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="Background" Value="#FFB800" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="AutomationProperties.HelpText" Value="已標為不熟悉，點擊取消星號" />
+                    <Setter Property="AutomationProperties.Name" Value="取消星號" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="NavButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
             <Setter Property="HorizontalContentAlignment" Value="Left" />
             <Setter Property="Background" Value="Transparent" />

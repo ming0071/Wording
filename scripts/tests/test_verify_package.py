@@ -25,6 +25,7 @@ class PackageVerificationTests(unittest.TestCase):
         executable[64:68] = b"PE\0\0"
         struct.pack_into("<H", executable, 68, 0x8664)
         self.files = {name: b"fixture" for name in verifier.REQUIRED}
+        self.files["Configuration/app-defaults.json"] = json.dumps({key: {} for key in ("Review", "Shortcuts", "Speech", "Ai", "Practice")})
         self.files["Wording.exe"] = bytes(executable)
         self.files["Wording.runtimeconfig.json"] = json.dumps({"runtimeOptions": {"includedFrameworks": [
             {"name": "Microsoft.NETCore.App"}, {"name": "Microsoft.WindowsDesktop.App"}]}})
@@ -47,12 +48,19 @@ class PackageVerificationTests(unittest.TestCase):
         self.assertEqual([], verifier.verify_package(self.path, "0.3.0"))
 
     def test_missing_prompt_or_license_fails(self):
-        for name in ("Prompts/practice-reading.txt", "docs/licenses/WebView2-LICENSE.txt"):
+        for name in ("Prompts/practice-reading.txt", "docs/licenses/WebView2-LICENSE.txt", "Configuration/app-defaults.json"):
             with self.subTest(name=name):
                 content = self.files.pop(name)
                 self.write_package()
                 self.assertTrue(any(name in error for error in verifier.verify_package(self.path, "0.3.0")))
                 self.files[name] = content
+
+    def test_invalid_product_defaults_fail_before_release(self):
+        for config in ("broken json", "[]", '{"Review":{}}'):
+            with self.subTest(config=config):
+                self.files["Configuration/app-defaults.json"] = config
+                self.write_package()
+                self.assertTrue(verifier.verify_package(self.path, "0.3.0"))
 
     def test_wrong_hash_and_filename_fail(self):
         self.write_package()

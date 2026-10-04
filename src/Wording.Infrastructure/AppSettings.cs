@@ -4,29 +4,29 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using Wording.Core;
+
 namespace Wording.Infrastructure;
 
 public sealed class AppSettings
 {
     public Wording.Core.PracticeOptions Practice { get; set; } = new();
     [JsonConverter(typeof(NewWordLimitConverter))]
-    public BigInteger DailyNewLimit { get; set; } = 5;
-    public string FlipKey { get; set; } = "Space";
-    public string AgainKey { get; set; } = "1";
-    public string HardKey { get; set; } = "2";
-    public string GoodKey { get; set; } = "3";
-    public string EasyKey { get; set; } = "4";
-    public string SpeakKey { get; set; } = "S";
-    public string SpeakExampleKey { get; set; } = "E";
-    public bool AutoSpeakWord { get; set; } = true;
-    public bool AutoSpeakExamples { get; set; } = true;
-    public static IReadOnlyList<string> ShortcutKeys { get; } =
-        new[] { "Space", "Enter" }.Concat(Enumerable.Range(0, 10).Select(x => x.ToString(CultureInfo.InvariantCulture)))
-            .Concat(Enumerable.Range('A', 26).Select(x => ((char)x).ToString()))
-            .Concat(Enumerable.Range(1, 12).Select(x => $"F{x}")).ToArray();
-    public string CodexExecutablePath { get; set; } = "codex";
-    public string CodexModel { get; set; } = "";
-    public int DailyGenerationLimit { get; set; } = 10;
+    public BigInteger DailyNewLimit { get; set; } = BigInteger.Parse(ApplicationConfiguration.Current.Review.DailyNewLimit, CultureInfo.InvariantCulture);
+    public string FlipKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Flip;
+    public string AgainKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Again;
+    public string HardKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Hard;
+    public string GoodKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Good;
+    public string EasyKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Easy;
+    public string SpeakKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Speak;
+    public string SpeakExampleKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.SpeakExample;
+    public bool AutoSpeakWord { get; set; } = ApplicationConfiguration.Current.Speech.AutoSpeakWord;
+    public bool AutoSpeakExamples { get; set; } = ApplicationConfiguration.Current.Speech.AutoSpeakExamples;
+    public static IReadOnlyList<string> ShortcutKeys => ShortcutDefaults.AvailableKeys;
+    public string CodexExecutablePath { get; set; } = ApplicationConfiguration.Current.Ai.ExecutablePath;
+    public string CodexModel { get; set; } = ApplicationConfiguration.Current.Ai.Model;
+    public string CodexServiceTier { get; set; } = ApplicationConfiguration.Current.Ai.ServiceTier;
+    public int DailyGenerationLimit { get; set; } = ApplicationConfiguration.Current.Ai.DailyGenerationLimit;
 
     public static AppSettings Load(string dataDirectory)
     {
@@ -41,10 +41,10 @@ public sealed class AppSettings
         if (document.RootElement.TryGetProperty(nameof(SpeakKey), out _)) used.Add(settings.SpeakKey);
         if (document.RootElement.TryGetProperty(nameof(SpeakExampleKey), out _)) used.Add(settings.SpeakExampleKey);
         if (!document.RootElement.TryGetProperty(nameof(SpeakKey), out _))
-            settings.SpeakKey = used.Add("S") ? "S" : ShortcutKeys.First(x => !used.Contains(x));
+            settings.SpeakKey = used.Add(settings.SpeakKey) ? settings.SpeakKey : ShortcutKeys.First(x => !used.Contains(x));
         used.Add(settings.SpeakKey);
         if (!document.RootElement.TryGetProperty(nameof(SpeakExampleKey), out _))
-            settings.SpeakExampleKey = used.Add("E") ? "E" : ShortcutKeys.First(x => !used.Contains(x));
+            settings.SpeakExampleKey = used.Add(settings.SpeakExampleKey) ? settings.SpeakExampleKey : ShortcutKeys.First(x => !used.Contains(x));
         settings.Validate();
         return settings;
     }
@@ -60,10 +60,12 @@ public sealed class AppSettings
 
     public void Validate()
     {
+        if (!Wording.Core.CodexServiceTier.IsValidId(CodexServiceTier))
+            throw new ArgumentException("Codex 加速模式識別碼無效。");
         Practice ??= new();
         Practice.Validate();
-        if (DailyNewLimit < 0 || DailyGenerationLimit is < 0 or > 50)
-            throw new ArgumentException("每日新詞須為非負整數，AI 次數須為 0–50。");
+        if (DailyNewLimit < 0 || DailyGenerationLimit < 0 || DailyGenerationLimit > ApplicationConfiguration.Current.Ai.MaximumDailyGenerations)
+            throw new ArgumentException($"每日新詞須為非負整數，AI 次數須為 0–{ApplicationConfiguration.Current.Ai.MaximumDailyGenerations}。");
         var keys = new[] { FlipKey, AgainKey, HardKey, GoodKey, EasyKey, SpeakKey, SpeakExampleKey };
         if (keys.Any(key => !ShortcutKeys.Contains(key)) || keys.Distinct().Count() != keys.Length)
             throw new ArgumentException("翻卡、評分與朗讀請選擇不同的快捷鍵。");
@@ -87,8 +89,9 @@ public sealed class NewWordLimitConverter : JsonConverter<BigInteger>
 
 public sealed class AiSettings
 {
-    public string ExecutablePath { get; set; } = "codex";
-    public string Model { get; set; } = "";
-    public int DailyGenerationLimit { get; set; } = 10;
-    public int TimeoutSeconds { get; set; } = 120;
+    public string ExecutablePath { get; set; } = ApplicationConfiguration.Current.Ai.ExecutablePath;
+    public string Model { get; set; } = ApplicationConfiguration.Current.Ai.Model;
+    public string ServiceTier { get; set; } = ApplicationConfiguration.Current.Ai.ServiceTier;
+    public int DailyGenerationLimit { get; set; } = ApplicationConfiguration.Current.Ai.DailyGenerationLimit;
+    public int TimeoutSeconds { get; set; } = ApplicationConfiguration.Current.Ai.TimeoutSeconds;
 }

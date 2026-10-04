@@ -243,11 +243,11 @@ public sealed partial class SqliteStudyStore
         DateTimeOffset now, BigInteger? configuredLimit)
     {
         var due = DueCount(connection, transaction, now);
-        int? adaptive = due >= 20 ? 0 : due >= 10 ? 2 : null;
+        int? adaptive = ApplicationConfiguration.Current.Review.AdaptiveNewLimit(due);
         Execute(connection, transaction,
             "INSERT OR IGNORE INTO daily_limits(local_day,adaptive_limit,configured_limit) VALUES($day,$adaptive,$configured);",
             ("$day", LocalDay(now)), ("$adaptive", adaptive),
-            ("$configured", (configuredLimit ?? 5).ToString(CultureInfo.InvariantCulture)));
+            ("$configured", (configuredLimit ?? BigInteger.Parse(ApplicationConfiguration.Current.Review.DailyNewLimit, CultureInfo.InvariantCulture)).ToString(CultureInfo.InvariantCulture)));
         if (configuredLimit is { } limit)
             Execute(connection, transaction, "UPDATE daily_limits SET configured_limit=$limit WHERE local_day=$day;",
                 ("$limit", limit.ToString(CultureInfo.InvariantCulture)), ("$day", LocalDay(now)));
