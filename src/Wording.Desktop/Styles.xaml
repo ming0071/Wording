@@ -79,8 +79,9 @@
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
         <Style x:Key="StarButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Setter Property="Background" Value="#FFF5DA" />
-            <Setter Property="Foreground" Value="#D99300" />
+            <Setter Property="Background" Value="#B8BABD" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="5" />
             <Setter Property="Width" Value="40" />
             <Setter Property="Height" Value="40" />
             <Setter Property="Margin" Value="0" />
@@ -90,9 +91,13 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Grid Background="Transparent">
-                            <Ellipse x:Name="Circle" Width="30" Height="30" Fill="{TemplateBinding Background}" />
-                            <Path x:Name="Star" Width="19" Height="21" Stretch="Fill" Fill="{TemplateBinding Foreground}"
-                                  Data="M 12,1 C 14.3,7.1 14.7,7.6 21.5,9 C 16.3,12.8 15.8,13.5 17.8,20.5 C 12.4,16.9 11.6,16.9 6.2,20.5 C 8.2,13.5 7.7,12.8 2.5,9 C 9.3,7.6 9.7,7.1 12,1 Z" />
+                            <Viewbox Margin="{TemplateBinding Padding}" Stretch="Uniform">
+                                <Grid Width="30" Height="30">
+                                    <Ellipse x:Name="Circle" Width="30" Height="30" Fill="{TemplateBinding Background}" />
+                                    <Path x:Name="Star" Width="19" Height="21" Stretch="Fill" Fill="{TemplateBinding Foreground}"
+                                          Data="M 12,1 C 14.3,7.1 14.7,7.6 21.5,9 C 16.3,12.8 15.8,13.5 17.8,20.5 C 12.4,16.9 11.6,16.9 6.2,20.5 C 8.2,13.5 7.7,12.8 2.5,9 C 9.3,7.6 9.7,7.1 12,1 Z" />
+                                </Grid>
+                            </Viewbox>
                             <Ellipse x:Name="FocusRing" Width="38" Height="38" Stroke="{StaticResource AccentBrush}" StrokeThickness="2" Visibility="Collapsed" />
                         </Grid>
                         <ControlTemplate.Triggers>

@@ -92,7 +92,9 @@ public sealed partial class DesktopWorkflowTests
             Layout(card, 959, 710);
             var unstarred = Descendants(card).OfType<System.Windows.Controls.Button>().Single(x => x.Tag is bool);
             Assert.Equal("標為不熟悉", System.Windows.Automation.AutomationProperties.GetName(unstarred));
-            Assert.NotEqual(System.Windows.Media.Colors.White, ((System.Windows.Media.SolidColorBrush)((System.Windows.Shapes.Path)unstarred.Template.FindName("Star", unstarred)).Fill).Color);
+            Assert.Equal(System.Windows.Media.Colors.White, ((System.Windows.Media.SolidColorBrush)((System.Windows.Shapes.Path)unstarred.Template.FindName("Star", unstarred)).Fill).Color);
+            Assert.NotEqual(((System.Windows.Media.SolidColorBrush)star.Background).Color,
+                ((System.Windows.Media.SolidColorBrush)unstarred.Background).Color);
             Render(card, "review-star-unselected.png");
         });
     }
