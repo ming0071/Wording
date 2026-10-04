@@ -76,8 +76,7 @@ public sealed class VocabularyFileService(IStudyStore store)
             var id = entry.Id;
             if (id == Guid.Empty)
             {
-                // Keep the original identity salt so reimporting after the rename cannot duplicate words.
-                var identity = $"wordtrail-import-v1\n{entry.Headword.Trim().ToLowerInvariant()}\n{entry.PartOfSpeech.Trim()}\n{entry.Meaning.Trim()}";
+                var identity = $"wording-import-v1\n{entry.Headword.Trim().ToLowerInvariant()}\n{entry.PartOfSpeech.Trim()}\n{entry.Meaning.Trim()}";
                 id = new Guid(SHA256.HashData(Encoding.UTF8.GetBytes(identity)).AsSpan(0, 16));
             }
             if (!identifiers.Add(id)) throw new InvalidDataException($"第 {imported.Count + 1} 筆的 ID 或詞義重複，請合併後再匯入。");

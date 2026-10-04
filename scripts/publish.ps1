@@ -6,6 +6,20 @@ try {
     if (-not $Version) { $Version = ([xml](Get-Content -LiteralPath Directory.Build.props -Raw)).Project.PropertyGroup.Version }
     if ($Version -notmatch '^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$') { throw 'Version must be a semantic version, such as 0.3.0.' }
     $taskOutput = Join-Path (Get-Location) "artifacts/Wording-$Version-win-x64"
+    # Publish into an empty directory so removed assemblies or documents cannot survive in a release.
+    if (Test-Path -LiteralPath $taskOutput) {
+        $taskArtifactsRoot = [IO.Path]::GetFullPath((Join-Path (Get-Location) 'artifacts')) + [IO.Path]::DirectorySeparatorChar
+        $taskResolvedOutput = (Resolve-Path -LiteralPath $taskOutput).Path
+        if (-not $taskResolvedOutput.StartsWith($taskArtifactsRoot, [StringComparison]::OrdinalIgnoreCase) -or
+            (Get-Item -LiteralPath $taskOutput).Attributes.HasFlag([IO.FileAttributes]::ReparsePoint)) {
+            throw 'Publish output must be a normal directory inside workspace artifacts.'
+        }
+        $taskRunningApp = Get-Process Wording -ErrorAction SilentlyContinue | Where-Object {
+            $_.Path -and $_.Path.StartsWith($taskResolvedOutput + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)
+        }
+        if ($taskRunningApp) { throw 'The app is running from this publish directory; close it before rebuilding this package.' }
+        Remove-Item -LiteralPath $taskResolvedOutput -Recurse -Force
+    }
     $taskPublishArguments = @('publish', 'src/Wording.Desktop/Wording.Desktop.csproj', '-c', 'Release', '-r', 'win-x64', '--self-contained', 'true', "-p:Version=$Version", '-p:PublishTrimmed=false', '-o', $taskOutput)
     if ($LockedRestore) { $taskPublishArguments += '-p:RestoreLockedMode=true' }
     & $taskDotnet @taskPublishArguments

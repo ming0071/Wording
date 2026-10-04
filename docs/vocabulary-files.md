@@ -6,13 +6,13 @@
 
 ## Data Location
 
-新安裝預設使用 `%LOCALAPPDATA%\Wording\wording.db`。若此資料庫不存在，而已有 `%LOCALAPPDATA%\WordTrail\wordtrail.db`，則沿用舊版資料目錄。設定另存於資料目錄的 `settings.json`。
+預設使用 `%LOCALAPPDATA%\Wording\wording.db`。設定另存於資料目錄的 `settings.json`。
 
 使用 `--data-dir <路徑>` 啟動時，改用指定目錄。實際位置可在「設定與備份」查看。
 
 SQLite 資料庫包含單字與複習紀錄。交給 AI 修改詞彙時使用匯出的 JSON；資料庫應透過 App 或備份功能管理。
 
-備份 ZIP 不包含 `settings.json`。從備份還原會替換整個單字庫，並先在資料目錄的 `backups` 保存還原前的資料庫備份。
+備份 ZIP 不包含 `settings.json`，備份資訊中的應用名稱必須為 `Wording`。從備份還原會替換整個單字庫，並先在資料目錄的 `backups` 保存還原前的資料庫備份。
 
 ## Import & Export
 

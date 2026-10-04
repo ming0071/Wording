@@ -55,7 +55,7 @@
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="資料與備份" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Text="單字與複習進度存放於下方資料目錄的 wording.db；升級使用者會沿用既有 wordtrail.db。JSON 可交給 AI 編輯，再匯入更新；既有 ID 的複習進度會保留。" Style="{StaticResource MutedText}" Margin="0,0,0,12" />
+                    <TextBlock Text="單字與複習進度存放於下方資料目錄的 wording.db。JSON 可交給 AI 編輯，再匯入更新；既有 ID 的複習進度會保留。" Style="{StaticResource MutedText}" Margin="0,0,0,12" />
                     <WrapPanel Margin="0,0,0,12"><Button Content="匯出單字 JSON" Command="{Binding ExportVocabularyCommand}" /><Button Content="匯入單字 JSON…" Command="{Binding ImportVocabularyCommand}" /></WrapPanel>
                     <TextBlock Text="備份包含單字、分類與複習進度。還原會替換整個單字庫，並先保存目前資料；不會合併兩份內容。" Style="{StaticResource MutedText}" />
                     <WrapPanel Margin="0,18,0,0">

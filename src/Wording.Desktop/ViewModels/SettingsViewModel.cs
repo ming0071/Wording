@@ -162,8 +162,7 @@ public sealed class SettingsViewModel : PageViewModel
     {
         var dialog = new OpenFileDialog { Title = "選擇要還原的 Wording 備份", Filter = "Wording 備份 (*.zip;*.wtbackup)|*.zip;*.wtbackup" };
         if (dialog.ShowDialog() != true) return;
-        if (MessageBox.Show($"將用以下備份替換目前整個單字庫與複習紀錄：\n{dialog.FileName}\n\n程式會先保存現有資料的復原備份。確定還原？",
-            "還原整個單字庫", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No) != MessageBoxResult.Yes) return;
+        if (!Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.RestoreBackup(dialog.FileName))) return;
         await backup.RestoreBackupAsync(dialog.FileName, token);
         restored();
         Notice = "還原完成。回到今日學習或單字庫即可查看。";

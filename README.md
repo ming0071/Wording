@@ -122,4 +122,5 @@ Wording/
 | [桌面介面導覽](src/Wording.Desktop/README.md) | 畫面、操作流程、共用樣式與介面測試 |
 | [FSRS 參考驗證](docs/FSRS_VERIFICATION.md) | 排程參數、套件差異與參考資料重建 |
 | [品質檢查與維護](docs/quality-checks.md) | CI、發行驗證、歷史檔案判斷與後續優化 |
+| [版本發布](docs/releases/README.md) | tag 自動發布、附件驗證與草稿重試 |
 | [第三方授權](THIRD_PARTY_NOTICES.md) | 相依套件的授權與來源 |

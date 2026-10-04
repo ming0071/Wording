@@ -168,7 +168,7 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
         using (var input = manifestEntry.Open())
             manifest = JsonSerializer.Deserialize<BackupManifest>(input, SqliteStudyStore.JsonOptions)
                 ?? throw new StudyDataException("缺少備份資訊。");
-        if (manifest.Application is not ("Wording" or "WordTrail") || manifest.FormatVersion != FormatVersion ||
+        if (manifest.Application != "Wording" || manifest.FormatVersion != FormatVersion ||
             manifest.SchemaVersion < 1 || manifest.SchemaVersion > SqliteStudyStore.SchemaVersion || manifest.Files is null ||
             manifest.Files.Length != 1 || manifest.Files[0].Name != DatabaseEntry ||
             manifest.Files[0].Length != databaseEntry.Length)

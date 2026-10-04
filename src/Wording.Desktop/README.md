@@ -58,6 +58,7 @@ MainViewModel 的非同步導航方法自行接住例外。評分未確認保存
 | [ResponsiveDashboardTests.cs](../../tests/Wording.Tests/ResponsiveDashboardTests.cs) | 今日學習版面與熱力圖月份標籤 |
 | [PracticeInteractionTests.cs](../../tests/Wording.Tests/PracticeInteractionTests.cs) | 情境練習最小視窗、作答、聽力逐字稿與翻譯顯示時機 |
 | [PracticeReliabilityTests.cs](../../tests/Wording.Tests/PracticeReliabilityTests.cs) | 生成取消與晚回傳、保存衝突、保存邊界與設定往返 |
+| [ConfirmationDialogTests.cs](../../tests/Wording.Tests/ConfirmationDialogTests.cs) | 編輯、練習取代與備份還原共用樣式，預設保留目前內容 |
 
 介面測試在背景 STA dispatcher 建立真實 WPF 控制項；版面截圖輸出至 `artifacts/layout-check`，測試報告輸出至 `artifacts/test-results`。測試使用獨立資料或替身，不開啟正式單字庫，也不消耗真實 AI 額度。CI 執行完整套件。
 

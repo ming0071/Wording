@@ -79,9 +79,11 @@ public sealed class LibraryViewModel : PageViewModel
 
     public override async Task LoadAsync(CancellationToken cancellationToken = default)
     {
+        AppDiagnostics.Write($"Library load started: searchLength={SearchText.Length}; filter={SelectedFilter}; selectedCategories={CategoryScope.SelectedNames.Length}");
         var index = Math.Max(0, Items.IndexOf(SelectedItem!));
         var selectedId = SelectedItem?.Id;
         var categories = await store.GetCategoriesAsync(cancellationToken);
+        AppDiagnostics.Write($"Library categories loaded: count={categories.Count}");
         Categories.Clear();
         Categories.Add("全部分類");
         foreach (var category in categories) Categories.Add(category);
@@ -103,6 +105,7 @@ public sealed class LibraryViewModel : PageViewModel
         foreach (var item in filtered) Items.Add(item);
         SelectedItem = Items.FirstOrDefault(x => x.Id == selectedId) ?? (Items.Count == 0 ? null : Items[Math.Min(index, Items.Count - 1)]);
         OnPropertyChanged(nameof(CountText));
+        AppDiagnostics.Write($"Library loaded: queried={vocabulary.Count}; displayed={Items.Count}");
     }
 
     public static IEnumerable<VocabularyItem> SortItems(IEnumerable<VocabularyItem> items, string sort) => sort switch

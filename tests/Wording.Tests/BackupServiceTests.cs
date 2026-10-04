@@ -12,7 +12,7 @@ public sealed class BackupServiceTests
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public async Task LegacyBackupUpgradesInStagingAndFailedMigrationKeepsLiveData(bool failMigration)
+    public async Task PreviousSchemaBackupUpgradesInStagingAndFailedMigrationKeepsLiveData(bool failMigration)
     {
         using var legacy = new StudyTestData();
         await legacy.Store.InitializeAsync();
@@ -29,7 +29,7 @@ public sealed class BackupServiceTests
             using var output = archive.CreateEntry("manifest.json").Open();
             System.Text.Json.JsonSerializer.Serialize(output, new
             {
-                application = "WordTrail", formatVersion = 1, schemaVersion = 1, createdAt = legacy.Clock.Now,
+                application = "Wording", formatVersion = 1, schemaVersion = 1, createdAt = legacy.Clock.Now,
                 files = new[] { new { name = "study.sqlite", length = bytes.Length,
                     sha256 = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(bytes)).ToLowerInvariant() } }
             });
@@ -156,6 +156,7 @@ public sealed class BackupServiceTests
     [InlineData("schema")]
     [InlineData("hash")]
     [InlineData("missing")]
+    [InlineData("application")]
     public async Task InvalidArchiveIsRejectedBeforeChangingUserData(string failure)
     {
         using var data = new StudyTestData();
@@ -221,6 +222,7 @@ public sealed class BackupServiceTests
                 var json = JsonNode.Parse(sourceStream)!;
                 if (failure == "schema") json["schemaVersion"] = 999;
                 if (failure == "hash") json["files"]![0]!["sha256"] = new string('0', 64);
+                if (failure == "application") json["application"] = "OtherApplication";
                 var bytes = Encoding.UTF8.GetBytes(json.ToJsonString());
                 targetStream.Write(bytes);
             }

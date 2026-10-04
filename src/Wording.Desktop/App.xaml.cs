@@ -21,9 +21,9 @@ public partial class App : Application
         {
             var dataDirectory = GetDataDirectory(e.Args);
             Directory.CreateDirectory(dataDirectory);
+            AppDiagnostics.Initialize(dataDirectory);
             var identity = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(dataDirectory.ToUpperInvariant())))[..20];
-            // Retain the mutex identity to prevent old and renamed apps opening the same data.
-            instanceMutex = new Mutex(true, $"Local\\WordTrail-{identity}", out var firstInstance);
+            instanceMutex = new Mutex(true, $"Local\\Wording-{identity}", out var firstInstance);
             if (!firstInstance)
             {
                 if (VocabularyFileCommand.IsRequested(e.Args)) throw new InvalidOperationException("請先關閉使用這個單字庫的 Wording，再執行檔案匯入或匯出。");
@@ -34,7 +34,9 @@ public partial class App : Application
             var settings = AppSettings.Load(dataDirectory);
             var aiSettings = new AiSettings { ExecutablePath = settings.CodexExecutablePath, Model = settings.CodexModel, DailyGenerationLimit = settings.DailyGenerationLimit };
             var store = new SqliteStudyStore(AppDataPaths.DatabasePath(dataDirectory));
+            AppDiagnostics.Write($"Database path={store.DatabasePath}; existing={File.Exists(store.DatabasePath)}; bytes={(File.Exists(store.DatabasePath) ? new FileInfo(store.DatabasePath).Length : 0)}; user={System.Security.Principal.WindowsIdentity.GetCurrent().Name}; exe={Environment.ProcessPath}");
             await store.InitializeAsync();
+            AppDiagnostics.Write($"Database initialized: bytes={new FileInfo(store.DatabasePath).Length}; words={(await store.GetVocabularyAsync()).Count}; categories={(await store.GetCategoriesAsync()).Count}");
             if (VocabularyFileCommand.IsRequested(e.Args))
             {
                 Shutdown(await VocabularyFileCommand.ExecuteAsync(e.Args, store));
@@ -52,6 +54,7 @@ public partial class App : Application
         }
         catch (Exception exception)
         {
+            AppDiagnostics.Write($"Startup error: {exception}");
             if (VocabularyFileCommand.IsRequested(e.Args))
             {
                 try { VocabularyFileCommand.WriteResult(e.Args, false, exception.Message); }

@@ -55,8 +55,16 @@ public sealed class MainViewModel : ObservableObject
 
     public async Task InitializeAsync()
     {
-        try { await Dashboard.LoadAsync(); }
-        catch (Exception exception) { Dashboard.Error = exception.Message; }
+        try
+        {
+            await Dashboard.LoadAsync();
+            AppDiagnostics.Write($"Dashboard loaded: total={Dashboard.Summary.TotalCount}");
+        }
+        catch (Exception exception)
+        {
+            AppDiagnostics.Write($"Dashboard error: {exception}");
+            Dashboard.Error = exception.Message;
+        }
     }
 
     private async void Navigate(string section)
@@ -83,9 +91,15 @@ public sealed class MainViewModel : ObservableObject
             };
             if (page == Review) Review.BeginSession();
             CurrentPage = page;
+            AppDiagnostics.Write($"Navigation loading: {section}");
             await page.LoadAsync();
+            AppDiagnostics.Write($"Navigation loaded: {section}");
         }
-        catch (Exception exception) { CurrentPage.Error = exception.Message; }
+        catch (Exception exception)
+        {
+            AppDiagnostics.Write($"Navigation error: {section}; {exception}");
+            CurrentPage.Error = exception.Message;
+        }
         finally { isNavigating = false; }
     }
 
@@ -102,5 +116,5 @@ public sealed class MainViewModel : ObservableObject
     }
 
     public bool ConfirmLeaveEditor() => CurrentPage is not EditorViewModel { IsDirty: true }
-        || Views.LeaveEditorDialog.Confirm();
+        || Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.LeaveEditor);
 }

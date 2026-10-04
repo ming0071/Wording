@@ -145,7 +145,7 @@ public sealed class PracticeViewModel : PageViewModel
     {
         this.study = study; this.store = store; this.generator = generator; this.speech = speech;
         this.settings = settings; this.saveSettings = saveSettings; this.edit = edit; this.clock = clock ?? TimeProvider.System;
-        this.confirmReplace = confirmReplace ?? Views.LeaveEditorDialog.ConfirmPractice;
+        this.confirmReplace = confirmReplace ?? (() => Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.ReplacePractice));
         var options = settings.Practice; mode = options.Mode; questionCount = options.QuestionCount; SpeechRate = options.SpeechRate;
         Difficulty = new([(PracticeLevel.Easy, "輕鬆"), (PracticeLevel.Medium, "適中"), (PracticeLevel.Hard, "挑戰")], options.Level);
         Length = new([(PracticeLength.Short, "短篇 · 120–180 字"), (PracticeLength.Medium, "中篇 · 220–300 字"), (PracticeLength.Long, "長篇 · 350–500 字")], options.Length);

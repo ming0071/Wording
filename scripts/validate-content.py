@@ -7,6 +7,7 @@ copyright provenance, or the usefulness of a vocabulary sense; those need review
 
 import argparse
 from collections import Counter, defaultdict
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -16,6 +17,7 @@ import uuid
 
 
 EXPECTED_COUNT = 300
+EXPECTED_IDS_SHA256 = "f247c2f97c3ecaf1f552f2cc21c95c4cfee40002b0d237a7fb2e9ecf47575696"
 ORIGIN_NOTE = "AI 編寫的原創學習教材；非官方 TOEIC 詞表"
 CATEGORIES = {
     "一般職場", "會議與聯絡", "招募與人事", "訂購與採購", "財務與付款", "運送與物流",
@@ -163,12 +165,9 @@ def validate_pack(pack):
                 problem(path + "." + field, "must be the JSON boolean false")
 
     # Compare the whole set, not list positions: sorting must not change sense IDs.
-    expected_ids = {
-        # Original namespace is retained to preserve the shipped vocabulary IDs.
-        uuid.uuid5(uuid.NAMESPACE_URL, f"https://wordtrail.local/content/toeic-starter/{n:03d}")
-        for n in range(1, EXPECTED_COUNT + 1)
-    }
-    if ids != expected_ids:
+    # Pin the shipped IDs directly, independently of the original generation method.
+    ids_sha256 = hashlib.sha256("\n".join(sorted(map(str, ids))).encode("utf-8")).hexdigest()
+    if ids_sha256 != EXPECTED_IDS_SHA256:
         problem("items.id", "edition 1 IDs have been added, lost, or regenerated")
     for word, senses in headwords.items():
         if len(senses) > 1:
