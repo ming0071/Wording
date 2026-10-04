@@ -1,9 +1,14 @@
-param([ValidateSet('Debug','Release')][string]$Configuration = 'Release')
+param(
+    [ValidateSet('Debug','Release')][string]$Configuration = 'Release',
+    [switch]$LockedRestore
+)
 $ErrorActionPreference = 'Stop'
 $taskDotnet = & (Join-Path $PSScriptRoot 'resolve-dotnet.ps1')
 Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
-    & $taskDotnet restore Wording.sln
+    $taskRestoreArguments = @('restore', 'Wording.sln')
+    if ($LockedRestore) { $taskRestoreArguments += '--locked-mode' }
+    & $taskDotnet @taskRestoreArguments
     if ($LASTEXITCODE -ne 0) { throw 'Restore failed' }
     & $taskDotnet build Wording.sln --no-restore -c $Configuration
     if ($LASTEXITCODE -ne 0) { throw 'Build failed' }

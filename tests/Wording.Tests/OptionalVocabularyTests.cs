@@ -34,6 +34,22 @@ public sealed class OptionalVocabularyTests
     }
 
     [Fact]
+    public async Task DocumentedVocabularyExampleImportsWithStableIdentityAndPreservesReviewOnReimport()
+    {
+        using var data = new StudyTestData(); await data.Store.InitializeAsync();
+        var service = new VocabularyFileService(data.Store);
+        var path = Path.Combine(AppContext.BaseDirectory, "content", "vocabulary-example.json");
+        Assert.Equal(1, await service.ImportAsync(path));
+        var first = Assert.Single(await data.Store.GetVocabularyAsync());
+        Assert.Equal("bank", first.Headword); Assert.Equal("河岸", first.Meaning); Assert.Equal("riverside", Assert.Single(first.Synonyms));
+        await data.Store.SubmitReviewAsync(new(first.Id, Wording.Core.ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), 0));
+        Assert.Equal(1, await service.ImportAsync(path));
+        Assert.Equal(first.Id, Assert.Single(await data.Store.GetVocabularyAsync()).Id);
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM cards WHERE last_review_ms IS NOT NULL;"));
+    }
+
+    [Fact]
     public async Task OriginalStarterPackCanStillBeImportedManually()
     {
         using var data = new StudyTestData();

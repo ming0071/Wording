@@ -91,7 +91,7 @@ codex login status
 .\scripts\test.ps1
 ```
 
-測試使用獨立資料庫，不會修改自己的單字庫。
+測試使用獨立資料庫，不會修改自己的單字庫。CI 另檢查鎖定還原、Windows 發行包與 SHA-256；本機驗證方式與待評估優化見 [品質檢查與維護](docs/quality-checks.md)。
 
 ## Project Structure
 
@@ -121,4 +121,5 @@ Wording/
 | [教材說明](content/README.md) | 選用詞庫、主題、星號與教材維護 |
 | [桌面介面導覽](src/Wording.Desktop/README.md) | 畫面、操作流程、共用樣式與介面測試 |
 | [FSRS 參考驗證](docs/FSRS_VERIFICATION.md) | 排程參數、套件差異與參考資料重建 |
+| [品質檢查與維護](docs/quality-checks.md) | CI、發行驗證、歷史檔案判斷與後續優化 |
 | [第三方授權](THIRD_PARTY_NOTICES.md) | 相依套件的授權與來源 |

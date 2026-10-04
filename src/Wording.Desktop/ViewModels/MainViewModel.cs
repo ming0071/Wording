@@ -16,6 +16,7 @@ public sealed class MainViewModel : ObservableObject
     public ReviewViewModel Review { get; }
     public PracticeViewModel? Practice { get; }
     public SettingsViewModel Settings { get; }
+    public string AppVersion => typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "";
     public PageViewModel CurrentPage { get => currentPage; private set => SetProperty(ref currentPage, value); }
     public string CurrentSection
     {

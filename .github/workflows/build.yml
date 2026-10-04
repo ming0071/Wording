@@ -7,41 +7,76 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   verify:
     runs-on: windows-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: '10.0.x'
-      - uses: actions/setup-python@v5
+          cache: true
+          cache-dependency-path: '**/packages.lock.json'
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
-      - name: Validate all vocabulary content
+      - name: Test release validation scripts
+        run: python -m unittest discover -s scripts/tests -v
+      - name: Validate original starter vocabulary
         run: python scripts/validate-content.py
       - name: Build and test
-        shell: pwsh
-        run: ./scripts/build.ps1
+        run: ./scripts/build.ps1 -LockedRestore
       - name: Publish Windows package
-        shell: pwsh
-        run: ./scripts/publish.ps1
+        run: ./scripts/publish.ps1 -LockedRestore
+      - name: Verify Windows package and checksum
+        run: |
+          python scripts/verify-package.py | Tee-Object artifacts/test-results/package-validation.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Package verification failed' }
+      - name: Check dependency locks remain unchanged
+        run: |
+          git diff --exit-code -- '**/packages.lock.json'
+          if ($LASTEXITCODE -ne 0) { throw 'Build or publish changed dependency locks' }
       - name: Upload Windows package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: Wording-win-x64
+          compression-level: 0
+          retention-days: 14
           path: |
             artifacts/*.zip
             artifacts/*.sha256
           if-no-files-found: error
       - name: Upload test reports and dependency locks
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: validation-evidence
+          retention-days: 14
           path: |
             artifacts/test-results/**
             artifacts/layout-check/**
             **/packages.lock.json
           if-no-files-found: warn
+      - name: Summarize test results
+        if: always()
+        run: |
+          $taskReport = 'artifacts/test-results/tests.trx'
+          if (Test-Path -LiteralPath $taskReport) {
+            $taskCounts = ([xml](Get-Content -LiteralPath $taskReport -Raw)).TestRun.ResultSummary.Counters
+            "Tests: $($taskCounts.passed) passed, $($taskCounts.failed) failed, $($taskCounts.total) total." | Add-Content $env:GITHUB_STEP_SUMMARY
+          }
+          $taskPackageReport = 'artifacts/test-results/package-validation.txt'
+          if (Test-Path -LiteralPath $taskPackageReport) {
+            Get-Content -LiteralPath $taskPackageReport | Add-Content $env:GITHUB_STEP_SUMMARY
+          }
