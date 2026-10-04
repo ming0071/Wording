@@ -60,7 +60,7 @@ public sealed partial class SqliteStudyStore
     internal static void ValidateConnection(SqliteConnection connection, bool allowLegacy = false)
     {
         var version = Convert.ToInt32(Scalar(connection, null, "PRAGMA user_version;"));
-        if (version != SchemaVersion && !(allowLegacy && version is 1 or 2))
+        if (version != SchemaVersion && !(allowLegacy && version is 1 or 2 or 3))
             throw new StudyDataException("不支援此資料庫版本，原有資料未被修改。");
         if (!string.Equals(Scalar(connection, null, "PRAGMA integrity_check;") as string, "ok", StringComparison.Ordinal))
             throw new StudyDataException("資料庫完整性檢查失敗。");

@@ -56,15 +56,15 @@ public sealed partial class DesktopWorkflowTests
         await editor.SaveCommand.ExecuteAsync();
         Assert.Equal("", editor.Error);
         Assert.False(editor.IsDirty);
-        Assert.Equal(2, store.SavedBatch.Count);
-        Assert.All(store.SavedBatch, x => Assert.Equal("bank", x.Headword));
-        Assert.NotEqual(store.SavedBatch[0].Id, store.SavedBatch[1].Id);
-        Assert.Equal(new[] { "lender", "financial institution" }, store.SavedBatch[0].Synonyms);
-        Assert.Equal("存錢的地方", store.SavedBatch[0].Notes);
-        Assert.Equal("河岸", store.SavedBatch[1].Meaning);
-        Assert.Equal("shore", Assert.Single(store.SavedBatch[1].Synonyms));
-        Assert.Equal("river bank", store.SavedBatch[1].Notes);
-        Assert.Equal("We sat on the river bank.", Assert.Single(store.SavedBatch[1].Examples).English);
+        var word = store.Saved!;
+        var definition = Assert.Single(word.AdditionalSenses);
+        Assert.NotEqual(word.Id, definition.Id);
+        Assert.Equal(new[] { "lender", "financial institution" }, word.Synonyms);
+        Assert.Equal("存錢的地方", word.Notes);
+        Assert.Equal("河岸", definition.Meaning);
+        Assert.Equal("shore", Assert.Single(definition.Synonyms));
+        Assert.Equal("river bank", definition.Notes);
+        Assert.Equal("We sat on the river bank.", Assert.Single(definition.Examples).English);
     }
 
     [Fact]
@@ -110,13 +110,13 @@ public sealed partial class DesktopWorkflowTests
         Assert.True(editor.RemoveSenseCommand.CanExecute(sense));
         Assert.True(editor.IsDirty);
         Assert.Equal(0, navigations);
-        Assert.Equal("", store.SavedBatch[1].Notes);
-        var savedId = store.SavedBatch[1].Id;
+        Assert.Equal("", store.Saved!.AdditionalSenses[0].Notes);
+        var savedId = store.Saved.AdditionalSenses[0].Id;
         await editor.SaveCommand.ExecuteAsync();
         Assert.False(editor.IsDirty);
         Assert.Equal(1, navigations);
-        Assert.Equal(savedId, store.SavedBatch[1].Id);
-        Assert.Equal("新的筆記", store.SavedBatch[1].Notes);
+        Assert.Equal(savedId, store.Saved.AdditionalSenses[0].Id);
+        Assert.Equal("新的筆記", store.Saved.AdditionalSenses[0].Notes);
     }
 
     [Fact]

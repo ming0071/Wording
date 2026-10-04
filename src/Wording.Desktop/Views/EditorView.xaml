@@ -69,7 +69,7 @@
                 <Button Content="保存" Style="{StaticResource PrimaryButton}" Command="{Binding SaveCommand}" MinWidth="100" AutomationProperties.AutomationId="SaveWord" />
                 <Button Content="保存，建立下一張" Command="{Binding SaveNextCommand}" Margin="4,0,0,0" AutomationProperties.AutomationId="SaveNextWord" />
             </StackPanel>
-            <TextBlock Text="每組解釋各自複習" Style="{StaticResource MutedText}" FontSize="12" VerticalAlignment="Center" />
+            <TextBlock Text="各組解釋共用一個星號與複習卡" Style="{StaticResource MutedText}" FontSize="12" VerticalAlignment="Center" />
         </DockPanel>
         <Grid>
             <Grid.ColumnDefinitions><ColumnDefinition Width="3*" MinWidth="320" /><ColumnDefinition Width="12" /><ColumnDefinition Width="2*" MinWidth="280" /></Grid.ColumnDefinitions>
@@ -85,7 +85,7 @@
                                 <StackPanel>
                                     <Border Height="1" Background="#E3E8F0" Margin="0,14,0,18" />
                                     <DockPanel Margin="0,0,0,10">
-                                        <Button Content="移除解釋" DockPanel.Dock="Right" Padding="8,4" FontSize="12" Margin="0" Command="{Binding DataContext.RemoveSenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
+                                        <Button Content="{Binding RemoveLabel}" DockPanel.Dock="Right" Padding="8,4" FontSize="12" Margin="0" Command="{Binding DataContext.RemoveSenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" />
                                         <TextBlock Text="{Binding SenseLabel}" FontWeight="SemiBold" Foreground="#8B91A0" FontSize="12" VerticalAlignment="Center" />
                                     </DockPanel>
                                     <ContentControl Content="{Binding}" ContentTemplate="{StaticResource SenseFields}" />

@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <ApplicationManifest>../../src/Wording.Desktop/app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Wording.Desktop/Wording.Desktop.csproj" />
+    <Content Include="../../content/toeic-vocabulary.json" Link="content/toeic-vocabulary.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

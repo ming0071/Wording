@@ -16,7 +16,9 @@ public sealed class ExampleEditor : ObservableObject
 
 public sealed class SenseEditor : ObservableObject
 {
-    public Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
+    internal VocabularyDefinition? Original { get; init; }
+    public string RemoveLabel => "移除解釋";
     private string senseLabel = "另一組解釋";
     public string SenseLabel { get => senseLabel; set => SetProperty(ref senseLabel, value); }
     internal AiEnrichment? AppliedGeneration { get; set; }
@@ -101,6 +103,7 @@ public sealed class EditorViewModel : PageViewModel
     private object? aiTarget;
     private object? previewTarget;
     private long previewRevision;
+    private bool relatedLoaded;
 
     public string Title { get; }
     public string SenseLabel => "解釋 1";
@@ -259,6 +262,28 @@ public sealed class EditorViewModel : PageViewModel
         AvailableCategories.Clear();
         foreach (var category in categories) AvailableCategories.Add(category);
         OnPropertyChanged(nameof(CategoryHint));
+        if (!relatedLoaded && !string.IsNullOrWhiteSpace(original.Headword))
+        {
+            var dirtyBeforeLoad = IsDirty;
+            foreach (var word in original.AdditionalSenses)
+            {
+                var sense = new SenseEditor
+                {
+                    Id = word.Id, Original = word, SenseLabel = $"解釋 {AdditionalSenses.Count + 2}",
+                    PartOfSpeech = word.PartOfSpeech, Meaning = word.Meaning, EnglishDefinition = word.EnglishDefinition,
+                    Cue = word.Cue, CollocationsText = string.Join(Environment.NewLine, word.Collocations),
+                    SynonymsText = string.Join("、", word.Synonyms), Notes = word.Notes
+                };
+                sense.SetExamples(word.Examples);
+                sense.PropertyChanged += OnSenseEdited;
+                AdditionalSenses.Add(sense);
+                AiTargets.Add(sense);
+            }
+            relatedLoaded = true;
+            // Loading existing definitions is not an edit; preserve any draft changes made before loading.
+            isDirty = dirtyBeforeLoad;
+            OnPropertyChanged(nameof(IsDirty));
+        }
     }
 
     private VocabularyItem BuildItem()
@@ -295,9 +320,18 @@ public sealed class EditorViewModel : PageViewModel
     {
         var item = BuildItem();
         var additional = AdditionalSenses.Select(sense => BuildAdditionalSense(sense, item)).ToArray();
+        item = item with { AdditionalSenses = additional,
+            Categories = item.Categories.Union(additional.SelectMany(x => x.Categories), StringComparer.OrdinalIgnoreCase).ToArray() };
         var savedRevision = editRevision;
-        if (additional.Length == 0) await store.SaveVocabularyAsync(item, token);
-        else await store.SaveVocabularyBatchAsync([item, .. additional], token);
+        var vocabulary = await store.GetVocabularyAsync(cancellationToken: token, includeArchived: true);
+        var sameWord = vocabulary.FirstOrDefault(x => x.WordId == item.WordId && x.Id != item.Id);
+        if (sameWord is not null)
+        {
+            if (vocabulary.Any(x => x.Id == item.Id))
+                throw new InvalidOperationException("這個詞條已存在，請到既有詞條新增另一組解釋。");
+            item = VocabularyMerge.Combine([sameWord, item]);
+        }
+        await store.SaveVocabularyAsync(item, token);
         // 寫入期間仍可編輯；舊快照成功不能抹掉後來的修改，也不能通知外層離開編輯頁。
         if (editRevision != savedRevision)
         {
@@ -305,14 +339,14 @@ public sealed class EditorViewModel : PageViewModel
             return;
         }
         IsDirty = false;
-        Notice = additional.Length == 0 ? "已保存。修改內容不會重設既有複習進度。" : $"已保存 {additional.Length + 1} 個詞義，每個詞義各自複習。";
+        Notice = $"已保存一個詞條、{item.Definitions.Count} 組解釋；共用星號與複習卡。";
         saved(item);
     }
 
     private static string[] SplitSynonyms(string text) => text.Split([',', '，', '、', '\r', '\n'],
         StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
 
-    private static VocabularyItem BuildAdditionalSense(SenseEditor sense, VocabularyItem common)
+    private VocabularyDefinition BuildAdditionalSense(SenseEditor sense, VocabularyItem common)
     {
         if (string.IsNullOrWhiteSpace(sense.Meaning) || string.IsNullOrWhiteSpace(sense.PartOfSpeech))
             throw new InvalidOperationException("新增的每個詞義都需要詞性與繁中解釋；不需要的欄位可按「移除詞義」。");
@@ -321,17 +355,16 @@ public sealed class EditorViewModel : PageViewModel
         var examples = sense.Examples.Where(x => !string.IsNullOrWhiteSpace(x.English) || !string.IsNullOrWhiteSpace(x.Chinese)).ToArray();
         if (examples.Any(x => string.IsNullOrWhiteSpace(x.English) || string.IsNullOrWhiteSpace(x.Chinese)))
             throw new InvalidOperationException("新增詞義的例句請同時填寫英文與繁中翻譯。");
-        return new VocabularyItem
+        var existing = sense.Original;
+        return (existing ?? new VocabularyDefinition()) with
         {
-            Id = sense.Id, Headword = common.Headword, PartOfSpeech = sense.PartOfSpeech.Trim(), Meaning = sense.Meaning.Trim(),
+            Id = sense.Id, PartOfSpeech = sense.PartOfSpeech.Trim(), Meaning = sense.Meaning.Trim(),
             EnglishDefinition = sense.EnglishDefinition.Trim(),
             Collocations = sense.CollocationsText.Split(['\r', '\n'], StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-            Cue = sense.Cue.Trim(), Categories = common.Categories, Level = common.Level, Kind = common.Kind,
-            Enrollment = Enrollment.Selected, IsPaused = common.IsPaused, IsArchived = common.IsArchived,
+            Cue = sense.Cue.Trim(),
+            Categories = existing is not null && common.Categories.SequenceEqual(original.Categories) ? existing.Categories : common.Categories,
+            Level = existing is not null && common.Level == original.Level ? existing.Level : common.Level,
             Synonyms = SplitSynonyms(sense.SynonymsText), Notes = sense.Notes.Trim(),
-            MeaningOrigin = sense.AppliedGeneration is { } generated && generated.Meaning == sense.Meaning.Trim() ? generated.Origin : null,
-            CollocationsOrigin = sense.AppliedGeneration is { } generatedCollocations &&
-                string.Join(Environment.NewLine, generatedCollocations.Collocations) == sense.CollocationsText ? generatedCollocations.Origin : null,
             Examples = examples.Select(x => new ExampleSentence(x.English.Trim(), x.Chinese.Trim(),
                 x.English.Trim() == x.OriginalEnglish && x.Chinese.Trim() == x.OriginalChinese ? x.Origin : new("user", "使用者編輯"))).ToArray()
         };

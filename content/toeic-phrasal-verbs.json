@@ -1,0 +1,3316 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "6b9a3eff-d0d0-5327-9072-b3d28c18bf63",
+      "wordId": "ef6273e2-2460-9f96-860d-3d6f9ac907a8",
+      "headword": "account for",
+      "partOfSpeech": "動詞片語",
+      "meaning": "解釋；說明原因",
+      "englishDefinition": "to provide a reason for a situation or result",
+      "cue": "財務與投資情境：account for a difference",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "account for a difference",
+        "account for an increase"
+      ],
+      "synonyms": [
+        "explain"
+      ],
+      "notes": "不可分：account for it。此處學解釋原因，與占某百分比的詞義分開。",
+      "examples": [
+        {
+          "english": "Can you account for the difference between these two totals?",
+          "chinese": "你能解釋這兩個總額之間的差異嗎？",
+          "origin": null
+        },
+        {
+          "english": "The accountant could not account for the missing receipts.",
+          "chinese": "會計無法說明收據遺失的原因。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "a56a2837-50a0-5ef2-a503-6127a02079ee",
+      "wordId": "0743bcc5-6946-9f9d-6ddc-8c83fd24c5fd",
+      "headword": "apply for",
+      "partOfSpeech": "動詞片語",
+      "meaning": "申請",
+      "englishDefinition": "",
+      "cue": "Seeking a job or opportunity",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "apply for a job",
+        "apply for a promotion"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "You can apply for this job through our website.",
+          "chinese": "你可以透過我們的網站申請這份工作。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "4a357683-216b-5d9d-b87e-0e60dc64abbe",
+      "wordId": "25391a61-1f68-dea7-a2c1-ab3ab9d0a8aa",
+      "headword": "back up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "備份（電子資料）",
+      "englishDefinition": "to save an extra copy of files so they can be recovered",
+      "cue": "設施與環境情境：back up files",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "back up files",
+        "back up a database"
+      ],
+      "synonyms": [
+        "make a copy of"
+      ],
+      "notes": "可分：back the files up；代名詞用 back them up。back up 是動詞，backup 是名詞或形容詞。",
+      "examples": [
+        {
+          "english": "Please back up the customer database before installing the update.",
+          "chinese": "安裝更新前，請先備份客戶資料庫。",
+          "origin": null
+        },
+        {
+          "english": "These files are important, so back them up to another drive.",
+          "chinese": "這些檔案很重要，請把它們備份到另一個磁碟。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "beffb618-c75c-57e9-a7f1-a02565bd09ce",
+      "wordId": "a0671d85-de58-b096-9311-7d54a7fd2959",
+      "headword": "be due",
+      "partOfSpeech": "動詞片語",
+      "meaning": "應在某日支付；到期",
+      "englishDefinition": "",
+      "cue": "A payment deadline",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "be due on Friday",
+        "be due at the end of the month"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "The first payment is due on the fifteenth of May.",
+          "chinese": "第一筆款項應在五月十五日支付。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "6e1bc53c-a537-589b-a5bb-c93f74114f84",
+      "wordId": "b3c4a289-4c9b-1bf7-2c00-039f82ad2406",
+      "headword": "be familiar with",
+      "partOfSpeech": "動詞片語",
+      "meaning": "熟悉",
+      "englishDefinition": "",
+      "cue": "Knowing a tool or procedure",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "be familiar with the software",
+        "be familiar with the process"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Applicants should be familiar with basic accounting software.",
+          "chinese": "應徵者應熟悉基本的會計軟體。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "faead251-e92b-5967-8b76-a362e3aeae27",
+      "wordId": "432f7c5a-b3f3-2e40-ee52-64c483e14f6e",
+      "headword": "be in charge of",
+      "partOfSpeech": "動詞片語",
+      "meaning": "負責管理；主管",
+      "englishDefinition": "",
+      "cue": "Leading an activity",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "be in charge of a team",
+        "be in charge of training"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Mia is in charge of the new employee training program.",
+          "chinese": "Mia 負責管理新進員工訓練計畫。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "e1aa2ec5-3a03-597a-ac4b-ee08f63d7a7a",
+      "wordId": "241ea8c8-28ef-5ddd-bf37-d79657c3fe79",
+      "headword": "be included",
+      "partOfSpeech": "動詞片語",
+      "meaning": "已包含在內",
+      "englishDefinition": "",
+      "cue": "What a price covers",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "be included in the price",
+        "be included in the package"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Breakfast is included in the room rate.",
+          "chinese": "房價已包含早餐。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "451c71f9-a5ac-5887-893a-60d1b524c57a",
+      "wordId": "5daa66ff-1cff-63a1-019b-5e2c65131de9",
+      "headword": "be responsible for",
+      "partOfSpeech": "動詞片語",
+      "meaning": "負責執行；對某事負責",
+      "englishDefinition": "",
+      "cue": "Duties in a job description",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "be responsible for scheduling",
+        "be responsible for orders"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "The assistant is responsible for scheduling interviews.",
+          "chinese": "這位助理負責安排面試。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "44f4518f-c7f9-5f47-8716-d34bdd0941e3",
+      "wordId": "8b989309-151e-fb88-a5d8-3d78bdfe68af",
+      "headword": "break down",
+      "partOfSpeech": "動詞片語",
+      "meaning": "故障",
+      "englishDefinition": "",
+      "cue": "A machine stops working",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "a machine breaks down",
+        "a vehicle breaks down"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "If the copier breaks down, contact the maintenance team.",
+          "chinese": "如果影印機故障，請聯絡維修團隊。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "1d832433-e08a-507b-8221-43988e85d3ef",
+      "wordId": "b1762545-0dc7-0e75-2927-1fa9e9e2f784",
+      "headword": "break even",
+      "partOfSpeech": "動詞片語",
+      "meaning": "收支打平",
+      "englishDefinition": "",
+      "cue": "Covering costs without a profit",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "break even within a year",
+        "break even on a project"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "The cafe needs to sell eighty meals a day to break even.",
+          "chinese": "這間咖啡館每天需要賣出八十份餐點，才能收支打平。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "5cafe1ab-c785-5514-abdf-903e39a573c2",
+      "wordId": "b02a6e32-fde3-c2d9-740c-75ee2109a731",
+      "headword": "bring forward",
+      "partOfSpeech": "動詞片語",
+      "meaning": "提前（日期或時間）",
+      "englishDefinition": "to move a scheduled event to an earlier time",
+      "cue": "會議與溝通情境：bring forward a meeting",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "bring forward a meeting",
+        "bring forward a deadline"
+      ],
+      "synonyms": [
+        "move earlier"
+      ],
+      "notes": "可分：bring the meeting forward。提前與 put off（延後）相反；日期用 to 加新的時間。",
+      "examples": [
+        {
+          "english": "We have brought forward the interview from Friday to Wednesday.",
+          "chinese": "我們已把面試從星期五提前到星期三。",
+          "origin": null
+        },
+        {
+          "english": "The launch was scheduled for June, but the team wants to bring it forward.",
+          "chinese": "原定六月推出，但團隊想提前。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "debe2ddf-5f72-593d-b428-006a9910f4ed",
+      "wordId": "5a17ca6b-8f27-8b95-4d6a-1c1ead6f7f0a",
+      "headword": "bring in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "請來；引入（人員協助工作）",
+      "englishDefinition": "to involve an additional person in a task",
+      "cue": "職場與人事情境：bring in a consultant",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "bring in a consultant",
+        "bring in an expert"
+      ],
+      "synonyms": [
+        "involve",
+        "call in"
+      ],
+      "notes": "可分：bring the consultant in；代名詞用 bring her in。此處學引入人員，不是賺得收入。",
+      "examples": [
+        {
+          "english": "We will bring in an outside consultant to review the new process.",
+          "chinese": "我們將請外部顧問審查新流程。",
+          "origin": null
+        },
+        {
+          "english": "The repairs are complex, so we should bring in a specialist.",
+          "chinese": "維修工作很複雜，因此我們應該請專家協助。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "e9152f3b-d18f-590b-843d-29a40dfd1a5b",
+      "wordId": "cf6ee5ce-9e8a-7883-8879-005c35114f94",
+      "headword": "bring up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "提出（供討論的話題或問題）",
+      "englishDefinition": "to mention a subject for discussion",
+      "cue": "會議與溝通情境：bring up an issue",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "bring up an issue",
+        "bring up a concern"
+      ],
+      "synonyms": [
+        "raise",
+        "mention"
+      ],
+      "notes": "可分：bring the issue up；代名詞用 bring it up。bring 的過去式為 brought。",
+      "examples": [
+        {
+          "english": "Please bring up the parking problem at tomorrow's staff meeting.",
+          "chinese": "請在明天的員工會議提出停車問題。",
+          "origin": null
+        },
+        {
+          "english": "I noticed an error in the proposal and brought it up with the manager.",
+          "chinese": "我注意到提案有錯誤，便向經理提出。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "20933fbc-57ae-5878-b7e4-cf57322ba3d3",
+      "wordId": "45511c2b-59b6-460f-fdf6-cb66b5d6b318",
+      "headword": "call off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "取消（原定的活動或安排）",
+      "englishDefinition": "to cancel an event that was planned",
+      "cue": "會議與溝通情境：call off a meeting",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "call off a meeting",
+        "call off an event"
+      ],
+      "synonyms": [
+        "cancel"
+      ],
+      "notes": "可分：call the meeting off；代名詞用 call it off。取消與 put off（延期）不同。",
+      "examples": [
+        {
+          "english": "The organizer called off the outdoor reception because of heavy rain.",
+          "chinese": "主辦單位因大雨取消了戶外招待會。",
+          "origin": null
+        },
+        {
+          "english": "If too few people register, we may have to call it off.",
+          "chinese": "如果報名人數太少，我們可能必須取消活動。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "d2d63824-b296-5ad4-a449-339efc2de652",
+      "wordId": "53e60670-840f-8814-d9d2-1c68a2da9f05",
+      "headword": "carry on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "繼續（進行原本的活動）",
+      "englishDefinition": "to continue an activity without stopping",
+      "cue": "職場與人事情境：carry on working",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "carry on working",
+        "carry on with a task"
+      ],
+      "synonyms": [
+        "continue",
+        "keep going"
+      ],
+      "notes": "carry on 加動名詞；carry on with 加工作或事情。不要用 carry on to work 表示繼續工作。",
+      "examples": [
+        {
+          "english": "We can carry on with the meeting while the technician fixes the microphone.",
+          "chinese": "技術人員修理麥克風時，我們可以繼續開會。",
+          "origin": null
+        },
+        {
+          "english": "The team carried on working until the urgent order was ready.",
+          "chinese": "團隊繼續工作，直到急件準備好。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "8aaa0ca7-a48e-544e-b2f3-55d4fb62263b",
+      "wordId": "af9322eb-82fa-cac6-9082-7054a946a48e",
+      "headword": "carry out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "執行；進行（任務、調查等）",
+      "englishDefinition": "to do a planned task or activity",
+      "cue": "職場與人事情境：carry out an inspection",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "carry out an inspection",
+        "carry out a survey"
+      ],
+      "synonyms": [
+        "perform",
+        "conduct"
+      ],
+      "notes": "可分：carry the inspection out；代名詞放中間：carry it out。",
+      "examples": [
+        {
+          "english": "The maintenance team will carry out a safety inspection on Thursday.",
+          "chinese": "維修團隊將於星期四進行安全檢查。",
+          "origin": null
+        },
+        {
+          "english": "We agreed on the plan and will carry it out next month.",
+          "chinese": "我們已就計畫達成共識，並將於下個月執行。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "0615ee58-ab71-5712-a80e-44ddac0332e4",
+      "wordId": "21f94f52-f8ba-51a8-85e4-0a5535d7ba5f",
+      "headword": "catch up on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "補做；補上之前落下的事",
+      "englishDefinition": "to do work or obtain information that was missed earlier",
+      "cue": "職場與人事情境：catch up on email",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "catch up on email",
+        "catch up on paperwork"
+      ],
+      "synonyms": [
+        "get up to date with"
+      ],
+      "notes": "不可分：catch up on it。on 後接落下的工作；catch up with 常接人或進度。",
+      "examples": [
+        {
+          "english": "I need an hour to catch up on email after my business trip.",
+          "chinese": "出差回來後，我需要一個小時補處理電子郵件。",
+          "origin": null
+        },
+        {
+          "english": "The assistant stayed late to catch up on the week's paperwork.",
+          "chinese": "助理留下來加班，補做本週落下的文書工作。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "3364f413-2b41-52b0-aa64-d2cd4ba78c00",
+      "wordId": "6ae1b66d-6342-a593-d387-03a7ec22ba04",
+      "headword": "check in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "辦理登機報到",
+      "englishDefinition": "",
+      "cue": "at the start of an air journey",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "check in for a flight",
+        "check in online"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "You should check in for your flight at least two hours before departure.",
+          "chinese": "你應至少在起飛前兩小時辦理登機報到。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "1b716a08-d724-53dd-9a22-12b52c107696",
+      "wordId": "e6062c1c-c6f6-fc35-6a52-c40ff37d4c7e",
+      "headword": "check out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "辦理退房",
+      "englishDefinition": "",
+      "cue": "At the end of a hotel stay",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語",
+        "行銷與客服"
+      ],
+      "collocations": [
+        "check out of a hotel",
+        "check out before noon"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "We need to check out of the hotel before eleven.",
+          "chinese": "我們需要在十一點以前辦理退房。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": [
+        {
+          "id": "ab0604f2-7c3d-58d2-ab57-dfbbea04e750",
+          "partOfSpeech": "動詞片語",
+          "meaning": "查看；檢查（以了解或確認）",
+          "englishDefinition": "to examine something to learn about it or verify it",
+          "cue": "行銷與客服情境：check out a product",
+          "level": "優先",
+          "categories": [
+            "行銷與客服",
+            "動詞片語"
+          ],
+          "collocations": [
+            "check out a product",
+            "check out the details"
+          ],
+          "synonyms": [
+            "examine",
+            "inspect"
+          ],
+          "notes": "可分：check the details out；代名詞用 check them out。與既有 check out 的退房詞義分開。",
+          "examples": [
+            {
+              "english": "You can check out the new display at our downtown store.",
+              "chinese": "你可以到我們市中心的商店看看新的展示。",
+              "origin": null
+            },
+            {
+              "english": "These product claims seem unusual, so we should check them out.",
+              "chinese": "這些產品宣稱有些異常，因此我們應該查證。",
+              "origin": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "f8338f0b-332f-549b-ba76-23770eca4725",
+      "wordId": "f1e879ea-677e-4a4b-a758-cd05041592d7",
+      "headword": "come up with",
+      "partOfSpeech": "動詞片語",
+      "meaning": "想出；提出（點子或方案）",
+      "englishDefinition": "to produce an idea or possible solution",
+      "cue": "會議與溝通情境：come up with an idea",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "come up with an idea",
+        "come up with a solution"
+      ],
+      "synonyms": [
+        "devise",
+        "think of"
+      ],
+      "notes": "不可分：come up with it。come 的過去式為 came。",
+      "examples": [
+        {
+          "english": "Can the team come up with a better way to reduce waiting times?",
+          "chinese": "團隊能想出更好的方法來縮短等候時間嗎？",
+          "origin": null
+        },
+        {
+          "english": "Nina came up with a simple solution during the planning meeting.",
+          "chinese": "Nina 在規劃會議中提出了簡單的解決方案。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "705bc105-1be1-5388-9d93-dd10cb6a4ba6",
+      "wordId": "265f42ef-4689-50ff-90fa-1454b49289a5",
+      "headword": "comply with",
+      "partOfSpeech": "動詞片語",
+      "meaning": "遵守；符合（規定或要求）",
+      "englishDefinition": "to act according to a rule or requirement",
+      "cue": "商務與法規情境：comply with regulations",
+      "level": "優先",
+      "categories": [
+        "商務與法規",
+        "動詞片語"
+      ],
+      "collocations": [
+        "comply with regulations",
+        "comply with requirements"
+      ],
+      "synonyms": [
+        "obey",
+        "follow"
+      ],
+      "notes": "介系詞動詞；with 後接規範或要求，不可分：comply with them。",
+      "examples": [
+        {
+          "english": "All suppliers must comply with our safety requirements.",
+          "chinese": "所有供應商都必須遵守我們的安全要求。",
+          "origin": null
+        },
+        {
+          "english": "The new packaging complies with local recycling regulations.",
+          "chinese": "新包裝符合當地的回收規定。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "30899b9a-e999-5b78-9358-99d66eaa533d",
+      "wordId": "f489a715-059a-190c-6011-53a7445c6613",
+      "headword": "consist in",
+      "partOfSpeech": "phrase",
+      "meaning": "在於，存在於",
+      "englishDefinition": "to have something as a main and necessary part or quality",
+      "cue": "",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [],
+      "synonyms": [],
+      "notes": "consist in：在於。\nconsist of：由……組成。",
+      "examples": [
+        {
+          "english": "The beauty of air travel consists in its speed and ease.",
+          "chinese": "乘飛機旅行的好處在於快捷、舒適。",
+          "origin": null
+        },
+        {
+          "english": "For her, happiness consists in watching television and reading magazines.",
+          "chinese": "對她來說，幸福就是看電視和讀雜誌。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "733c0dc7-76ca-55a9-a348-d4c5fe81de17",
+      "wordId": "85604a80-31e0-2dd5-fd08-21c3ed6cf38c",
+      "headword": "cut back on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "削減（支出或活動）",
+      "englishDefinition": "to reduce spending or the amount of an activity",
+      "cue": "財務與投資情境：cut back on expenses",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "cut back on expenses",
+        "cut back on business travel"
+      ],
+      "synonyms": [
+        "reduce",
+        "spend less on"
+      ],
+      "notes": "不可分：cut back on it。常用於預算調整，與 cut down on 的減少概念相近。",
+      "examples": [
+        {
+          "english": "The department will cut back on travel expenses next quarter.",
+          "chinese": "部門下季將削減差旅支出。",
+          "origin": null
+        },
+        {
+          "english": "We are using online meetings to cut back on business travel.",
+          "chinese": "我們正使用線上會議來減少商務旅行。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "29b63985-2130-51bd-9847-3d783b72f6b9",
+      "wordId": "44fda7c4-a774-53db-98af-ed37c1227914",
+      "headword": "cut down on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "減少（用量或次數）",
+      "englishDefinition": "to use or do less of something",
+      "cue": "設施與環境情境：cut down on waste",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "cut down on waste",
+        "cut down on paper use"
+      ],
+      "synonyms": [
+        "reduce",
+        "use less"
+      ],
+      "notes": "不可分：cut down on it。cut 的過去式仍為 cut；on 後接要減少的事。",
+      "examples": [
+        {
+          "english": "Digital receipts help the store cut down on paper use.",
+          "chinese": "電子收據能幫助商店減少紙張用量。",
+          "origin": null
+        },
+        {
+          "english": "We can cut down on waste by ordering only what we need.",
+          "chinese": "只訂購需要的物品，就能減少浪費。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "ec0e20ce-b97f-5826-a419-728af1870880",
+      "wordId": "7c59369b-ebf8-8b8b-c95d-801598a51c0e",
+      "headword": "deal with",
+      "partOfSpeech": "動詞片語",
+      "meaning": "處理；應對",
+      "englishDefinition": "",
+      "cue": "Handling a problem or request",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "deal with a complaint",
+        "deal with a problem"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "The service desk deals with customer requests every day.",
+          "chinese": "服務櫃檯每天都會處理顧客的請求。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "6fe42a11-2c37-5d9e-b9dd-78b50c01da6f",
+      "wordId": "b3249ca6-80c6-556f-64ae-2579626ca65f",
+      "headword": "depend on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "取決於；依情況而定",
+      "englishDefinition": "to be determined by a particular factor",
+      "cue": "商務與法規情境：depend on demand",
+      "level": "優先",
+      "categories": [
+        "商務與法規",
+        "動詞片語"
+      ],
+      "collocations": [
+        "depend on demand",
+        "depend on availability"
+      ],
+      "synonyms": [
+        "be determined by"
+      ],
+      "notes": "介系詞動詞，不可分：depend on it。此處學取決於，與依賴他人的詞義區別。",
+      "examples": [
+        {
+          "english": "The final delivery date will depend on stock availability.",
+          "chinese": "最終配送日期將取決於庫存情況。",
+          "origin": null
+        },
+        {
+          "english": "Whether we hire more staff depends on next quarter's sales.",
+          "chinese": "我們是否增聘員工，取決於下季的銷售額。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "016e6241-e0d8-5c37-a9ff-ba7e65f0804d",
+      "wordId": "df1519c9-bc49-bff5-c4e3-28b4f0be7d62",
+      "headword": "draw up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "草擬；擬定（正式文件）",
+      "englishDefinition": "to prepare a written agreement or detailed plan",
+      "cue": "商務與法規情境：draw up a contract",
+      "level": "優先",
+      "categories": [
+        "商務與法規",
+        "動詞片語"
+      ],
+      "collocations": [
+        "draw up a contract",
+        "draw up a schedule"
+      ],
+      "synonyms": [
+        "draft",
+        "prepare"
+      ],
+      "notes": "可分：draw the contract up；代名詞用 draw it up。draw 的過去式為 drew，過去分詞為 drawn。",
+      "examples": [
+        {
+          "english": "Our legal adviser will draw up a new service agreement.",
+          "chinese": "我們的法律顧問將草擬新的服務合約。",
+          "origin": null
+        },
+        {
+          "english": "The team discussed the schedule and drew it up before the launch.",
+          "chinese": "團隊討論了時程，並在推出前擬定完成。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "378943ec-6318-587a-91b8-665306da53d6",
+      "wordId": "0197e6c5-59d7-c583-6a48-c0712ee98f3b",
+      "headword": "drop by",
+      "partOfSpeech": "動詞片語",
+      "meaning": "順道來訪；短暫拜訪",
+      "englishDefinition": "to visit a place informally for a short time",
+      "cue": "會議與溝通情境：drop by the office",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "drop by the office",
+        "drop by after lunch"
+      ],
+      "synonyms": [
+        "stop by",
+        "visit briefly"
+      ],
+      "notes": "常直接接地點：drop by our office；也可單獨使用，語氣較隨意。",
+      "examples": [
+        {
+          "english": "Feel free to drop by our booth if you have questions about the product.",
+          "chinese": "如果對產品有疑問，歡迎順道到我們的攤位。",
+          "origin": null
+        },
+        {
+          "english": "The sales representative dropped by the office to deliver a new catalog.",
+          "chinese": "業務代表順道到辦公室送來新型錄。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c14270e6-bd4a-5d5a-8a6c-3ae36f9d0f41",
+      "wordId": "3f57a105-2d24-7398-a393-598fdd5cfd68",
+      "headword": "drop off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "順道送交；送到指定地點",
+      "englishDefinition": "",
+      "cue": "Leaving something for collection",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "drop off a package",
+        "drop off documents"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please drop off the documents at reception before noon.",
+          "chinese": "請在中午以前將文件送到接待處。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "fe5e2d80-9804-5a66-b447-0bdfcc700b0b",
+      "wordId": "d7038903-cdc0-7c1a-6b77-51e7d19e1ea5",
+      "headword": "engage in",
+      "partOfSpeech": "phrase",
+      "meaning": "參與；從事",
+      "englishDefinition": "To take part in an activity.",
+      "cue": "",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Each worker has engaged in at least two projects",
+          "chinese": "每位員工都已參與至少兩個專案。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c4b7f7c8-8111-5291-8120-a8f5ef9b5b66",
+      "wordId": "cd65c2e2-60ed-b9e2-cb5b-cb3a1c7bb09a",
+      "headword": "figure out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "弄清楚；想出解決辦法",
+      "englishDefinition": "to understand something by thinking about it",
+      "cue": "職場與人事情境：figure out a problem",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "figure out a problem",
+        "figure out how to proceed"
+      ],
+      "synonyms": [
+        "understand",
+        "solve"
+      ],
+      "notes": "可分：figure it out；也常接 how、why、what 等疑問詞子句。",
+      "examples": [
+        {
+          "english": "Can you figure out why the printer keeps stopping?",
+          "chinese": "你能弄清楚印表機為何一直停止運作嗎？",
+          "origin": null
+        },
+        {
+          "english": "The instructions are unclear, but our technician can figure them out.",
+          "chinese": "說明不清楚，但我們的技術人員能弄懂。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "b8d76ad6-f2b8-5c54-a7d3-ff5ff8baee63",
+      "wordId": "aec8a970-e778-deda-b56a-b6f5cfd5119f",
+      "headword": "fill in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "暫代他人的工作；代班",
+      "englishDefinition": "",
+      "cue": "While a colleague is away",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "fill in for a colleague",
+        "fill in for the manager"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Could you fill in for me while I am on leave?",
+          "chinese": "我休假時，你可以替我代班嗎？",
+          "origin": null
+        }
+      ],
+      "additionalSenses": [
+        {
+          "id": "9461f7ac-eefb-5c0a-a008-5846377e49c8",
+          "partOfSpeech": "動詞片語",
+          "meaning": "填寫空白欄位；填妥表格",
+          "englishDefinition": "to add the required information to blank spaces in a document",
+          "cue": "職場與人事情境：fill in a form",
+          "level": "優先",
+          "categories": [
+            "職場與人事",
+            "動詞片語"
+          ],
+          "collocations": [
+            "fill in a form",
+            "fill in the missing details"
+          ],
+          "synonyms": [
+            "fill out",
+            "complete"
+          ],
+          "notes": "可分：fill the form in；代名詞用 fill it in。與既有 fill in 的代班詞義分開。",
+          "examples": [
+            {
+              "english": "Please fill in your contact details before submitting the application.",
+              "chinese": "提交申請前，請填妥你的聯絡資料。",
+              "origin": null
+            },
+            {
+              "english": "The form has several blank fields; fill them in before the interview.",
+              "chinese": "表格有幾個空白欄位，請在面試前填妥。",
+              "origin": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "36b0ce1c-e989-52e9-a150-fe6f69397cd9",
+      "wordId": "0011937b-3644-85ab-28c1-5d4ed0ec3a91",
+      "headword": "fill out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "填寫；填妥表格",
+      "englishDefinition": "",
+      "cue": "Providing information on a form",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "fill out a form",
+        "fill out an application"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please fill out the visitor form at reception.",
+          "chinese": "請在接待處填寫訪客表格。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "5080e7dd-0ec2-51b9-83e5-3d07b8ce0e01",
+      "wordId": "a1550b17-8173-7878-b1b1-c227e06a7185",
+      "headword": "find out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "查明；得知",
+      "englishDefinition": "to learn information that was not previously known",
+      "cue": "會議與溝通情境：find out the reason",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "find out the reason",
+        "find out whether a room is available"
+      ],
+      "synonyms": [
+        "discover",
+        "learn"
+      ],
+      "notes": "常接 what、why、whether 等疑問詞子句；find out about 後接想了解的事。",
+      "examples": [
+        {
+          "english": "Please find out whether the conference room is available on Monday.",
+          "chinese": "請查明會議室星期一是否可用。",
+          "origin": null
+        },
+        {
+          "english": "We found out that the supplier had changed its delivery schedule.",
+          "chinese": "我們得知供應商已更改配送時程。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "aca40fc5-d4da-530f-8dfe-500eac89ec9c",
+      "wordId": "1d937eff-2698-2509-9d3f-c95d4f497c77",
+      "headword": "follow up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "追蹤處理；後續聯繫",
+      "englishDefinition": "",
+      "cue": "After an earlier conversation",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "follow up on a request",
+        "follow up with a client"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "I will follow up with the client after the meeting.",
+          "chinese": "會議結束後，我會再和客戶聯繫。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "0d2591c4-5bbc-5811-b10b-07226b653b06",
+      "wordId": "0c0a9155-74c7-d8b6-6c81-cf4ba2bb565c",
+      "headword": "get along",
+      "partOfSpeech": "phrase",
+      "meaning": "相處融洽；和睦相處",
+      "englishDefinition": "If two or more people get along, they like each other and are friendly to each other.",
+      "cue": "",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "I don't really get along with my sister's husband.",
+          "chinese": "我跟姊夫／妹夫相處得不太好。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": [
+        {
+          "id": "bbb60ce8-8885-5eeb-b9e7-5bb3900a3745",
+          "partOfSpeech": "phrase",
+          "meaning": "進展；應付得如何",
+          "englishDefinition": "To make progress or manage in a particular situation.",
+          "cue": "",
+          "level": "優先",
+          "categories": [
+            "職場與人事",
+            "動詞片語"
+          ],
+          "collocations": [],
+          "synonyms": [],
+          "notes": "",
+          "examples": [
+            {
+              "english": "I wonder how Michael is getting along in his new job?",
+              "chinese": "我想知道麥可在新工作中進展如何。",
+              "origin": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "7f4e2aa8-104e-5cd0-a65d-d5d1b20117d2",
+      "wordId": "abfc5afe-955f-3b6b-818c-c1b77528c9fa",
+      "headword": "get back to",
+      "partOfSpeech": "動詞片語",
+      "meaning": "稍後回覆；再聯絡",
+      "englishDefinition": "to respond to someone after obtaining information or having time",
+      "cue": "會議與溝通情境：get back to a customer",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "get back to a customer",
+        "get back to someone with an answer"
+      ],
+      "synonyms": [
+        "respond to",
+        "reply to"
+      ],
+      "notes": "不可分：get back to you。後面接回覆對象，可用 with 加回覆內容。",
+      "examples": [
+        {
+          "english": "I will get back to you after I confirm the delivery date.",
+          "chinese": "確認配送日期後，我會再回覆你。",
+          "origin": null
+        },
+        {
+          "english": "The account manager got back to the client with a revised quotation.",
+          "chinese": "客戶經理以修訂後的報價回覆客戶。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "0b7ca3a6-f796-5407-a4a1-5e1fc35d5c55",
+      "wordId": "bf13b831-f95d-1953-63f9-6aa1f4cc1e32",
+      "headword": "get in touch",
+      "partOfSpeech": "動詞片語",
+      "meaning": "取得聯繫",
+      "englishDefinition": "",
+      "cue": "Starting communication",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "get in touch with a client",
+        "get in touch by email"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "I will get in touch with the supplier this afternoon.",
+          "chinese": "我今天下午會和供應商聯繫。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "0d06613e-dd0b-5d93-acd3-479cf9bff58e",
+      "wordId": "8017565a-acc4-bb28-10cc-0b1835f3ddc3",
+      "headword": "get off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "下車",
+      "englishDefinition": "",
+      "cue": "Leaving public transport",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "get off a bus",
+        "get off at the next stop"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Get off at the next stop and walk two blocks to the office.",
+          "chinese": "在下一站下車，再走兩個街區就到辦公室。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c240cc11-9156-5fac-814c-64a45adaa808",
+      "wordId": "53d31568-c8fd-f5c0-ac30-75ef2d99a90d",
+      "headword": "get on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "登上公車、火車等交通工具",
+      "englishDefinition": "",
+      "cue": "Boarding public transport",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "get on a bus",
+        "get on a train"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please let passengers get off before you get on the train.",
+          "chinese": "上火車前，請先讓乘客下車。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "63ce05dd-a7e7-526f-a658-6703346ab19e",
+      "wordId": "a44b127b-2949-ba91-64f0-54156a5963e6",
+      "headword": "give out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "分發；發放",
+      "englishDefinition": "to provide something to a group of people",
+      "cue": "行銷與客服情境：give out samples",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "give out samples",
+        "give out information sheets"
+      ],
+      "synonyms": [
+        "distribute",
+        "hand out"
+      ],
+      "notes": "可分：give them out。此處學分發，不是燃料耗盡或設備失靈的詞義。",
+      "examples": [
+        {
+          "english": "The sales team will give out free samples at the exhibition.",
+          "chinese": "業務團隊將在展覽會發放免費樣品。",
+          "origin": null
+        },
+        {
+          "english": "We have fifty discount coupons and plan to give them out this afternoon.",
+          "chinese": "我們有五十張折價券，計畫今天下午發放。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "00f04d95-bd8a-5e50-83e5-b4a5b57f047a",
+      "wordId": "d26c255c-4124-4c17-7448-245a84859a8f",
+      "headword": "go over",
+      "partOfSpeech": "動詞片語",
+      "meaning": "仔細檢查；複習",
+      "englishDefinition": "to review something carefully",
+      "cue": "會議與溝通情境：go over a report",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "go over a report",
+        "go over the details"
+      ],
+      "synonyms": [
+        "review",
+        "check"
+      ],
+      "notes": "不可分：go over it。常用於會議前核對資料或逐項確認細節。",
+      "examples": [
+        {
+          "english": "Let's go over the presentation once more before the client arrives.",
+          "chinese": "客戶抵達前，我們再仔細檢查一次簡報吧。",
+          "origin": null
+        },
+        {
+          "english": "I have read the contract, but I want to go over it with our adviser.",
+          "chinese": "我已看過合約，但想和顧問再核對一次。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "526edd10-f4ff-5741-8430-616603452414",
+      "wordId": "41a336dd-b366-7adf-9e82-c15cc22a4b2b",
+      "headword": "go through",
+      "partOfSpeech": "動詞片語",
+      "meaning": "逐一查看；仔細檢查",
+      "englishDefinition": "to examine the contents of something in detail",
+      "cue": "職場與人事情境：go through applications",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "go through applications",
+        "go through the records"
+      ],
+      "synonyms": [
+        "examine",
+        "review"
+      ],
+      "notes": "不可分：go through them。此處學逐一檢查，與經歷困難等其他詞義分開。",
+      "examples": [
+        {
+          "english": "The hiring team will go through all applications this week.",
+          "chinese": "招聘團隊本週將逐一查看所有申請。",
+          "origin": null
+        },
+        {
+          "english": "These records are incomplete, so please go through them with the accountant.",
+          "chinese": "這些紀錄不完整，請和會計逐一檢查。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "f4fa7cc6-f67c-5c1d-9497-38a3c89b2a71",
+      "wordId": "bc87ebb5-59f8-3eec-bf9e-0c8e5d27d5f1",
+      "headword": "hand in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "提交；繳交（文件或作業）",
+      "englishDefinition": "to give a document to the person responsible for collecting it",
+      "cue": "職場與人事情境：hand in a report",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "hand in a report",
+        "hand in an application"
+      ],
+      "synonyms": [
+        "submit",
+        "turn in"
+      ],
+      "notes": "可分：hand the report in；代名詞用 hand it in。常接 by 加截止時間。",
+      "examples": [
+        {
+          "english": "Please hand in your travel expense form by Tuesday.",
+          "chinese": "請在星期二以前繳交差旅費表格。",
+          "origin": null
+        },
+        {
+          "english": "Your supervisor needs the report today, so hand it in before lunch.",
+          "chinese": "主管今天需要這份報告，請在午餐前繳交。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "1470784e-391c-58f4-b9ac-29ab1684ad9f",
+      "wordId": "311b594c-0913-4461-4f09-dee28218cd0e",
+      "headword": "hand out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "分發；發給",
+      "englishDefinition": "to give items to several people",
+      "cue": "會議與溝通情境：hand out materials",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "hand out materials",
+        "hand out name tags"
+      ],
+      "synonyms": [
+        "distribute",
+        "give out"
+      ],
+      "notes": "可分：hand the materials out；代名詞用 hand them out。",
+      "examples": [
+        {
+          "english": "The trainer will hand out the exercise sheets after the introduction.",
+          "chinese": "講師將在介紹結束後分發練習單。",
+          "origin": null
+        },
+        {
+          "english": "The name tags are ready; please hand them out at the entrance.",
+          "chinese": "名牌已準備好，請在入口處分發。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "74a95e56-dd63-58aa-8cb8-56fbd53c4a21",
+      "wordId": "9ca4831a-8470-42a7-a342-0e41fe983112",
+      "headword": "help yourself",
+      "partOfSpeech": "動詞片語",
+      "meaning": "請自取；請自行享用",
+      "englishDefinition": "",
+      "cue": "Offering food or drinks",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "help yourself to coffee",
+        "help yourself to some fruit"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please help yourself to coffee while you wait.",
+          "chinese": "等候時，請自行取用咖啡。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "858f13ca-3429-5fb0-b441-6a7a8a77a54f",
+      "wordId": "a1ec2d2c-d108-b578-a2e1-e4556fe73ba3",
+      "headword": "hold up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "延誤；耽擱",
+      "englishDefinition": "to prevent someone or something from proceeding on time",
+      "cue": "產品與物流情境：hold up a delivery",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "hold up a delivery",
+        "hold up production"
+      ],
+      "synonyms": [
+        "delay"
+      ],
+      "notes": "可分：hold the delivery up；代名詞用 hold it up。hold 的過去式為 held。",
+      "examples": [
+        {
+          "english": "A customs inspection held up the shipment for two days.",
+          "chinese": "海關檢查使貨件延誤了兩天。",
+          "origin": null
+        },
+        {
+          "english": "One missing signature could hold up the entire approval process.",
+          "chinese": "少了一個簽名可能耽擱整個核准流程。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "d87ff3c1-260e-5687-b5cc-35543cc24d4e",
+      "wordId": "6f88ec3f-d083-a970-20f1-2523597f2533",
+      "headword": "keep up with",
+      "partOfSpeech": "動詞片語",
+      "meaning": "跟上（速度、進度或變化）",
+      "englishDefinition": "to stay at the same pace as work or changing information",
+      "cue": "職場與人事情境：keep up with demand",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "keep up with demand",
+        "keep up with changes"
+      ],
+      "synonyms": [
+        "keep pace with"
+      ],
+      "notes": "不可分：keep up with them。與 catch up on（補做落下的工作）區別。",
+      "examples": [
+        {
+          "english": "The warehouse hired more staff to keep up with rising demand.",
+          "chinese": "倉庫增聘人手，以跟上不斷增加的需求。",
+          "origin": null
+        },
+        {
+          "english": "Regular training helps employees keep up with changes in the software.",
+          "chinese": "定期訓練能幫助員工跟上軟體的變化。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "02f26a06-7843-5109-b56a-1f51f14c499d",
+      "wordId": "fb79622a-0340-d5d4-d8e0-4756c72fb873",
+      "headword": "lay off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "裁員；因業務需要解僱",
+      "englishDefinition": "to end workers' employment because the business has less work",
+      "cue": "職場與人事情境：lay off workers",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "lay off workers",
+        "lay off staff"
+      ],
+      "synonyms": [
+        "make redundant"
+      ],
+      "notes": "可分：lay the workers off；代名詞用 lay them off。過去式 laid off，與員工自行 resign 不同。",
+      "examples": [
+        {
+          "english": "The factory had to lay off some workers after losing a major contract.",
+          "chinese": "工廠失去一份重要合約後，不得不裁減部分員工。",
+          "origin": null
+        },
+        {
+          "english": "The company hopes to avoid laying off staff by reducing other expenses.",
+          "chinese": "公司希望透過減少其他支出來避免裁員。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "7a490e68-34d6-5b45-a2f6-ad673fd6963a",
+      "wordId": "cd7c0644-30dd-e813-6a4e-812f954928e6",
+      "headword": "log in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "登入（電腦系統或帳號）",
+      "englishDefinition": "to enter a computer system using account details",
+      "cue": "設施與環境情境：log in to a system",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "log in to a system",
+        "log in with a password"
+      ],
+      "synonyms": [
+        "sign in"
+      ],
+      "notes": "常用 log in to 加系統名稱，或 log in with 加登入方式。log in 是動詞，login 常作名詞或形容詞。",
+      "examples": [
+        {
+          "english": "Please log in to the staff portal to view your schedule.",
+          "chinese": "請登入員工入口網站查看你的班表。",
+          "origin": null
+        },
+        {
+          "english": "You can log in with your employee number and temporary password.",
+          "chinese": "你可以用員工編號和臨時密碼登入。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "991ca778-bd52-5dff-b5dc-f63a2c67575e",
+      "wordId": "fffdb53b-a593-e51e-a1c4-7e4c2c36005c",
+      "headword": "log out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "登出（電腦系統或帳號）",
+      "englishDefinition": "to end an account session on a computer system",
+      "cue": "設施與環境情境：log out of a system",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "log out of a system",
+        "log out after use"
+      ],
+      "synonyms": [
+        "sign out"
+      ],
+      "notes": "常用 log out of 加系統名稱；與 log in 相反。",
+      "examples": [
+        {
+          "english": "Remember to log out of the shared computer after checking your email.",
+          "chinese": "查看郵件後，記得登出共用電腦。",
+          "origin": null
+        },
+        {
+          "english": "The system will log you out automatically after twenty minutes of inactivity.",
+          "chinese": "系統會在你閒置二十分鐘後自動將你登出。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "e547a371-6f2c-5131-84f1-d4d98ae3df2c",
+      "wordId": "4ca6b1c8-bb1d-c610-88d1-9a9ad85b5e8a",
+      "headword": "look after",
+      "partOfSpeech": "動詞片語",
+      "meaning": "照顧；照料",
+      "englishDefinition": "to take care of a person or thing",
+      "cue": "旅遊與生活情境：look after guests",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "look after guests",
+        "look after someone's belongings"
+      ],
+      "synonyms": [
+        "take care of"
+      ],
+      "notes": "不可分：look after them。與 look for（尋找）及 look into（調查）區別。",
+      "examples": [
+        {
+          "english": "The tour guide will look after the guests during the excursion.",
+          "chinese": "導遊將在短途旅行期間照料旅客。",
+          "origin": null
+        },
+        {
+          "english": "Could you look after my bag while I speak to the receptionist?",
+          "chinese": "我和接待人員說話時，你能幫我看管行李嗎？",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c3c662ca-6e53-5606-bc2d-88c1cbd9bb3b",
+      "wordId": "a4c7c875-7b06-104a-7d29-c03dc6492aff",
+      "headword": "look forward to",
+      "partOfSpeech": "動詞片語",
+      "meaning": "期待",
+      "englishDefinition": "",
+      "cue": "A polite message ending",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "look forward to meeting you",
+        "look forward to the event"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "We look forward to meeting you at the conference.",
+          "chinese": "我們期待在研討會上與你見面。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "f8ceac0c-a421-5d3d-b93b-72220194eae7",
+      "wordId": "8859984f-d003-1099-03d8-33edd81d8d58",
+      "headword": "look into",
+      "partOfSpeech": "動詞片語",
+      "meaning": "調查；查明",
+      "englishDefinition": "to examine an issue to learn more about it",
+      "cue": "行銷與客服情境：look into a complaint",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "look into a complaint",
+        "look into a problem"
+      ],
+      "synonyms": [
+        "investigate",
+        "examine"
+      ],
+      "notes": "不可分：look into it，不用 look it into。常用於客服回覆與問題調查。",
+      "examples": [
+        {
+          "english": "Our support team will look into the missing shipment today.",
+          "chinese": "我們的客服團隊今天將調查遺失的貨件。",
+          "origin": null
+        },
+        {
+          "english": "Thank you for reporting the error; we are looking into it.",
+          "chinese": "謝謝你回報錯誤，我們正在調查。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "b6c0b7ce-b7d1-5d48-8c78-8a54b0e8b502",
+      "wordId": "3df3e24e-ee14-9253-d2cc-f1d606ffebe2",
+      "headword": "look up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "查閱；查找（資料）",
+      "englishDefinition": "to search a reference source for information",
+      "cue": "職場與人事情境：look up a number",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "look up a number",
+        "look up a word"
+      ],
+      "synonyms": [
+        "consult",
+        "search for"
+      ],
+      "notes": "可分：look the number up；代名詞用 look it up。與 look for（尋找人或物）不同。",
+      "examples": [
+        {
+          "english": "You can look up the product code in the online catalog.",
+          "chinese": "你可以在網路型錄查找產品代碼。",
+          "origin": null
+        },
+        {
+          "english": "I do not know the extension number, but I can look it up.",
+          "chinese": "我不知道分機號碼，但可以查一下。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "fbbb53a7-56c8-5acf-a4f8-ceb3b4ce34f9",
+      "wordId": "845ce900-4428-69f0-5e83-416985c081cd",
+      "headword": "make a reservation",
+      "partOfSpeech": "動詞片語",
+      "meaning": "預訂；訂位",
+      "englishDefinition": "",
+      "cue": "Arranging a table or room",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "make a dinner reservation",
+        "make a reservation online"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "I would like to make a reservation for four people at seven.",
+          "chinese": "我想預訂七點的四人座位。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "6b9824ea-2d77-500b-94a8-5fef62b728bc",
+      "wordId": "4e6da36a-643a-8e4e-4d65-a31a60609bdc",
+      "headword": "make up for",
+      "partOfSpeech": "動詞片語",
+      "meaning": "彌補；補償",
+      "englishDefinition": "to provide something that compensates for a loss or problem",
+      "cue": "行銷與客服情境：make up for a delay",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "make up for a delay",
+        "make up for lost time"
+      ],
+      "synonyms": [
+        "compensate for"
+      ],
+      "notes": "不可分：make up for it。與 make up（編造、和好等）分開學。",
+      "examples": [
+        {
+          "english": "The hotel offered a free breakfast to make up for the check-in delay.",
+          "chinese": "飯店提供免費早餐，以彌補入住報到的延誤。",
+          "origin": null
+        },
+        {
+          "english": "The team worked faster to make up for the time lost during the outage.",
+          "chinese": "團隊加快工作速度，以補回停電期間損失的時間。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "f2c127d5-7102-5f08-a480-9c4cecadb51d",
+      "wordId": "6997ecbf-67bf-4f78-e840-37dec6cdc1bc",
+      "headword": "meet a requirement",
+      "partOfSpeech": "動詞片語",
+      "meaning": "符合要求",
+      "englishDefinition": "",
+      "cue": "Checking whether something is suitable",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "meet a safety requirement",
+        "meet a minimum requirement"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "The new model meets a key requirement: it can run on battery power.",
+          "chinese": "新款機型符合一項關鍵要求：它能以電池供電。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "4d2eb88e-23d5-5433-943a-8e6550ae61c7",
+      "wordId": "bfb7a0fa-6954-7863-453c-c8f9f1f2c3ed",
+      "headword": "move in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "搬入；遷入",
+      "englishDefinition": "to start occupying a new home or workplace",
+      "cue": "設施與環境情境：move in next week",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "move in next week",
+        "move in to a new office"
+      ],
+      "synonyms": [
+        "take up occupancy"
+      ],
+      "notes": "本詞義常不接受直接受詞：move in next week。加地點可用 move into a new office。",
+      "examples": [
+        {
+          "english": "The renovation is complete, and the team can move in next week.",
+          "chinese": "整修已完成，團隊下週可以搬入。",
+          "origin": null
+        },
+        {
+          "english": "New tenants may move in after signing the lease.",
+          "chinese": "新租客簽完租約後即可搬入。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "a59f39a1-cda4-5567-b0b8-e62496001b15",
+      "wordId": "bc157d57-3ce5-9725-565e-48c43158e830",
+      "headword": "move out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "搬出；遷出",
+      "englishDefinition": "to stop occupying a home or workplace and leave it",
+      "cue": "設施與環境情境：move out of an office",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "move out of an office",
+        "move out by Friday"
+      ],
+      "synonyms": [
+        "vacate"
+      ],
+      "notes": "本詞義常不接受直接受詞；move out of 加搬出的地點。與 move in 相反。",
+      "examples": [
+        {
+          "english": "The company must move out of the old office before the lease expires.",
+          "chinese": "公司必須在租約到期前搬出舊辦公室。",
+          "origin": null
+        },
+        {
+          "english": "The tenants agreed to move out by the end of the month.",
+          "chinese": "租客同意在月底以前搬出。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "5ad10b14-8fd7-5472-846b-fdca5b27784d",
+      "wordId": "93c24a73-d606-5a24-0567-245fca5209e0",
+      "headword": "pay in advance",
+      "partOfSpeech": "動詞片語",
+      "meaning": "預先付款",
+      "englishDefinition": "",
+      "cue": "Before receiving a service",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "pay in advance for a course",
+        "pay in advance online"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Participants must pay in advance to secure a place on the course.",
+          "chinese": "參加者必須預先付款，才能保留課程名額。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "b7e89b97-0eff-59b1-af2f-6b43fa85b74d",
+      "wordId": "7cee8e01-20d0-720a-a1c1-726c40c19f8d",
+      "headword": "pay off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "還清（貸款或債務）",
+      "englishDefinition": "to repay all the money owed on a debt",
+      "cue": "財務與投資情境：pay off a loan",
+      "level": "優先",
+      "categories": [
+        "財務與投資",
+        "動詞片語"
+      ],
+      "collocations": [
+        "pay off a loan",
+        "pay off a debt"
+      ],
+      "synonyms": [
+        "repay in full"
+      ],
+      "notes": "可分：pay the loan off；代名詞用 pay it off。此處學清償債務，不是努力獲得成果的詞義。",
+      "examples": [
+        {
+          "english": "The company plans to pay off its bank loan within three years.",
+          "chinese": "公司計畫在三年內還清銀行貸款。",
+          "origin": null
+        },
+        {
+          "english": "The debt is small enough for us to pay it off this month.",
+          "chinese": "這筆債務金額不大，我們本月就能還清。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "ed93b205-013f-53fb-b7e9-4b2e84cf847a",
+      "wordId": "930cf9d0-0499-ad1e-ff1e-e453eef84944",
+      "headword": "phase out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "逐步淘汰；逐步停止使用",
+      "englishDefinition": "to stop using something in planned stages",
+      "cue": "產品與物流情境：phase out a product",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "phase out a product",
+        "phase out old equipment"
+      ],
+      "synonyms": [
+        "discontinue gradually"
+      ],
+      "notes": "可分：phase the product out；代名詞用 phase it out。強調逐步，不是立即停用。",
+      "examples": [
+        {
+          "english": "The manufacturer will phase out the older model over the next year.",
+          "chinese": "製造商將在未來一年逐步淘汰舊款機型。",
+          "origin": null
+        },
+        {
+          "english": "We still use paper forms, but plan to phase them out gradually.",
+          "chinese": "我們仍使用紙本表格，但計畫逐步停用。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "db47d2f2-9ba7-594f-b64b-0f4e8d8f787a",
+      "wordId": "85b5b99d-db3e-db08-ff4c-a7242b878dbc",
+      "headword": "pick up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "領取；取貨",
+      "englishDefinition": "",
+      "cue": "Collecting an order",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "pick up a package",
+        "pick up an order"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "You can pick up your order at the service counter.",
+          "chinese": "你可以在服務櫃檯領取訂購的商品。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c0a364a6-501c-5d77-8cd0-295156d0624b",
+      "wordId": "4466fd9e-5299-af36-2528-9af238b35427",
+      "headword": "place an order",
+      "partOfSpeech": "動詞片語",
+      "meaning": "下訂單",
+      "englishDefinition": "",
+      "cue": "Buying from a business",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "place an order online",
+        "place an order with a supplier"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "You can place an order online or by phone.",
+          "chinese": "你可以在線上或透過電話下單。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "260e26f2-8473-586f-ab70-1be468f9b7d3",
+      "wordId": "059ad986-9987-db89-2315-47a67d309d1a",
+      "headword": "point out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "指出；提醒注意",
+      "englishDefinition": "to direct someone's attention to a fact or detail",
+      "cue": "會議與溝通情境：point out an error",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "point out an error",
+        "point out a difference"
+      ],
+      "synonyms": [
+        "indicate",
+        "highlight"
+      ],
+      "notes": "可分：point the error out；代名詞用 point it out。也可用 point out that 子句。",
+      "examples": [
+        {
+          "english": "The reviewer pointed out several errors in the price list.",
+          "chinese": "審核人員指出價目表中的幾項錯誤。",
+          "origin": null
+        },
+        {
+          "english": "If you notice a missing item, please point it out before we submit the report.",
+          "chinese": "如果你發現遺漏的項目，請在我們提交報告前指出。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c06e80c1-22e6-55b0-bec5-6700a1d94075",
+      "wordId": "b390d6f2-e6e4-eaa0-1cf3-9372bd2bc012",
+      "headword": "print out",
+      "partOfSpeech": "phrase",
+      "meaning": "（從電腦）列印出",
+      "englishDefinition": "to produce a printed copy of a document that has been written on a computer",
+      "cue": "",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Could you print out a copy of that letter for me?",
+          "chinese": "你能把那封信列印一份給我嗎？",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "aa8681ba-acf8-579f-8ba3-279c02048c3c",
+      "wordId": "29c69626-fcd5-4734-fed2-cf7423c42676",
+      "headword": "put forward",
+      "partOfSpeech": "動詞片語",
+      "meaning": "提出（供考慮的建議或提案）",
+      "englishDefinition": "to offer an idea for others to consider",
+      "cue": "會議與溝通情境：put forward a proposal",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "put forward a proposal",
+        "put forward a suggestion"
+      ],
+      "synonyms": [
+        "propose",
+        "suggest"
+      ],
+      "notes": "可分：put the proposal forward；代名詞用 put it forward。比 bring up 更著重提出建議。",
+      "examples": [
+        {
+          "english": "The committee put forward a proposal to extend the opening hours.",
+          "chinese": "委員會提出了延長營業時間的提案。",
+          "origin": null
+        },
+        {
+          "english": "Your suggestion is useful; please put it forward at the next meeting.",
+          "chinese": "你的建議很有用，請在下次會議提出。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "3dc3ffe1-8afc-52fc-bc4e-e5da9b867853",
+      "wordId": "20c2e2bb-7bfe-6ddd-9d11-ec37d558d45d",
+      "headword": "put off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "延期；延後處理",
+      "englishDefinition": "to move an activity to a later time",
+      "cue": "會議與溝通情境：put off a meeting",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "put off a meeting",
+        "put off a decision"
+      ],
+      "synonyms": [
+        "postpone",
+        "delay"
+      ],
+      "notes": "可分：put the meeting off；代名詞用 put it off。後面也可接動名詞：put off making a decision。",
+      "examples": [
+        {
+          "english": "We need to put off the budget meeting until Friday.",
+          "chinese": "我們需要把預算會議延至星期五。",
+          "origin": null
+        },
+        {
+          "english": "The payment is due today, so please do not put it off.",
+          "chinese": "款項今天到期，請不要延後付款。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "4ada0d6c-c0c6-576a-987d-93d4220ba313",
+      "wordId": "77e738fc-b86d-889a-e698-5818316b303a",
+      "headword": "put together",
+      "partOfSpeech": "動詞片語",
+      "meaning": "整理製作；組合成",
+      "englishDefinition": "to assemble parts or information into a complete item",
+      "cue": "會議與溝通情境：put together a presentation",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "put together a presentation",
+        "put together a proposal"
+      ],
+      "synonyms": [
+        "assemble",
+        "prepare"
+      ],
+      "notes": "可分：put the presentation together；代名詞用 put it together。可用於資料或實體零件。",
+      "examples": [
+        {
+          "english": "Could you put together a short presentation about our new services?",
+          "chinese": "你能整理製作一份介紹新服務的簡短簡報嗎？",
+          "origin": null
+        },
+        {
+          "english": "The figures are ready; now we need to put them together in one report.",
+          "chinese": "數據已準備好，現在需要把它們整理成一份報告。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "158c1d0c-cba9-54e1-beaa-fdc3ddbdbdd7",
+      "wordId": "f7c338cb-9429-b878-2d30-0bbb306602db",
+      "headword": "reach out to",
+      "partOfSpeech": "動詞片語",
+      "meaning": "主動聯繫；聯絡尋求或提供協助",
+      "englishDefinition": "to contact a person or organization to begin communication",
+      "cue": "會議與溝通情境：reach out to a supplier",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "reach out to a supplier",
+        "reach out to a customer"
+      ],
+      "synonyms": [
+        "contact",
+        "get in touch with"
+      ],
+      "notes": "不可分：reach out to them。to 後接聯繫的對象。",
+      "examples": [
+        {
+          "english": "Please reach out to the supplier about the damaged boxes.",
+          "chinese": "請主動聯繫供應商，討論箱子損壞的問題。",
+          "origin": null
+        },
+        {
+          "english": "Our support team will reach out to you if more information is needed.",
+          "chinese": "如果需要更多資訊，我們的客服團隊會聯繫你。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "06ebc7e4-026f-5873-9e55-b0cfa663faa3",
+      "wordId": "631d351a-416c-f7ae-5eab-3f6d278643ba",
+      "headword": "refer to",
+      "partOfSpeech": "動詞片語",
+      "meaning": "參閱；查閱",
+      "englishDefinition": "",
+      "cue": "Looking at a source for information",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "refer to a manual",
+        "refer to the instructions"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Refer to the manual if you need help setting up the printer.",
+          "chinese": "如果你在設定印表機時需要協助，請參閱使用手冊。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "292e5fff-0af7-5d28-8a6e-b9a456d0d22b",
+      "wordId": "7220d4f3-861c-1614-32ef-10ae81dbd516",
+      "headword": "rely on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "依靠；信賴",
+      "englishDefinition": "to trust someone or something to provide what is needed",
+      "cue": "職場與人事情境：rely on a supplier",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "rely on a supplier",
+        "rely on accurate data"
+      ],
+      "synonyms": [
+        "depend on",
+        "trust"
+      ],
+      "notes": "介系詞動詞，不可分：rely on them。可用 rely on someone to do something。",
+      "examples": [
+        {
+          "english": "Small stores often rely on local suppliers for fresh produce.",
+          "chinese": "小型商店常仰賴當地供應商提供新鮮農產品。",
+          "origin": null
+        },
+        {
+          "english": "You can rely on our team to deliver the report on time.",
+          "chinese": "你可以信賴我們的團隊準時交付報告。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "79416f29-255c-5680-af26-c98572b71edd",
+      "wordId": "e281738a-4a6e-8ab6-6221-d886ab6e5d69",
+      "headword": "rent a car",
+      "partOfSpeech": "動詞片語",
+      "meaning": "租車",
+      "englishDefinition": "",
+      "cue": "Arranging local transport",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "rent a car for a week",
+        "rent a car at the airport"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "We plan to rent a car at the airport for the business trip.",
+          "chinese": "我們計畫在機場租車，供出差使用。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "74797f6e-a266-589f-a92a-303bce3a404c",
+      "wordId": "501d3301-2077-9a5c-9a73-fdcd204bfe73",
+      "headword": "rule out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "排除（可能性或選項）",
+      "englishDefinition": "to decide that a possibility should no longer be considered",
+      "cue": "商務與法規情境：rule out a possibility",
+      "level": "優先",
+      "categories": [
+        "商務與法規",
+        "動詞片語"
+      ],
+      "collocations": [
+        "rule out a possibility",
+        "rule out an option"
+      ],
+      "synonyms": [
+        "exclude",
+        "eliminate"
+      ],
+      "notes": "可分：rule the option out；代名詞用 rule it out。常見 cannot rule out 表示尚不能排除。",
+      "examples": [
+        {
+          "english": "The technician ruled out a power failure as the cause of the problem.",
+          "chinese": "技術人員排除了停電是問題原因的可能性。",
+          "origin": null
+        },
+        {
+          "english": "The proposal may be expensive, but we should not rule it out yet.",
+          "chinese": "這個提案可能很昂貴，但我們還不應排除它。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "494d5884-5246-5206-9c72-2489bc72f8c7",
+      "wordId": "4d9ea48a-35c3-76e1-d5e8-bff79b0474b1",
+      "headword": "run into",
+      "partOfSpeech": "動詞片語",
+      "meaning": "遇到（意料之外的困難）",
+      "englishDefinition": "to encounter an unexpected problem",
+      "cue": "產品與物流情境：run into difficulties",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "run into difficulties",
+        "run into a problem"
+      ],
+      "synonyms": [
+        "encounter"
+      ],
+      "notes": "不可分：run into a problem。run 的過去式為 ran；此處學遇到問題，另有偶遇他人的詞義。",
+      "examples": [
+        {
+          "english": "We ran into a problem while testing the new payment system.",
+          "chinese": "測試新的付款系統時，我們遇到了問題。",
+          "origin": null
+        },
+        {
+          "english": "The project may run into difficulties if the parts arrive late.",
+          "chinese": "如果零件晚到，專案可能會遇到困難。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "19def611-a821-5343-8061-15e027159955",
+      "wordId": "c36aa51a-0611-4e51-f4a5-1af43d08b2a7",
+      "headword": "run out of",
+      "partOfSpeech": "動詞片語",
+      "meaning": "用完；耗盡",
+      "englishDefinition": "",
+      "cue": "Having no stock left",
+      "level": "優先",
+      "categories": [
+        "產品與物流",
+        "動詞片語"
+      ],
+      "collocations": [
+        "run out of supplies",
+        "run out of paper"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "We have run out of packing tape and need to order more.",
+          "chinese": "我們的包裝膠帶已經用完，需要再訂購。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "bffc5168-c453-5f62-b130-82f46090ab65",
+      "wordId": "4d6db575-5755-a7a8-dbde-c8d340dd0af6",
+      "headword": "sell out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "售罄；賣完",
+      "englishDefinition": "to sell all available items or tickets",
+      "cue": "行銷與客服情境：sell out quickly",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "sell out quickly",
+        "sell out of tickets"
+      ],
+      "synonyms": [
+        "run out of stock"
+      ],
+      "notes": "商品或票券作主詞：the tickets sold out；商店可用 sell out of 加商品。sold 是 sell 的過去式。",
+      "examples": [
+        {
+          "english": "Tickets for the training conference sold out in two days.",
+          "chinese": "訓練研討會的票券在兩天內售罄。",
+          "origin": null
+        },
+        {
+          "english": "We have sold out of the blue jackets, but the gray ones are still available.",
+          "chinese": "藍色外套已售罄，但灰色款仍有貨。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "369971e9-8ab1-512d-85ca-31b010c0a196",
+      "wordId": "7c3ad357-c390-3fb3-0d27-2fa118a44c86",
+      "headword": "set up",
+      "partOfSpeech": "動詞片語",
+      "meaning": "架設；設置",
+      "englishDefinition": "",
+      "cue": "Preparing equipment for use",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "set up a projector",
+        "set up a computer"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "We need to set up the projector before the presentation.",
+          "chinese": "我們需要在簡報前架好投影機。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "7389fc2c-111a-5fe2-aa5a-6c70aede3234",
+      "wordId": "f91f6c87-8f55-9d60-0b0c-ac96f224c201",
+      "headword": "shut down",
+      "partOfSpeech": "動詞片語",
+      "meaning": "關閉；停止運作（系統或設備）",
+      "englishDefinition": "to stop a machine or system from operating",
+      "cue": "設施與環境情境：shut down a computer",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "shut down a computer",
+        "shut down equipment"
+      ],
+      "synonyms": [
+        "switch off",
+        "stop operating"
+      ],
+      "notes": "可分：shut it down；系統自行停止可用 the system shut down。shut 的過去式仍為 shut。",
+      "examples": [
+        {
+          "english": "The technician will shut down the server for maintenance tonight.",
+          "chinese": "技術人員今晚將關閉伺服器進行維護。",
+          "origin": null
+        },
+        {
+          "english": "The machine is making an unusual noise; shut it down immediately.",
+          "chinese": "機器發出異常聲音，請立即關閉。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "43967f0a-e97e-5825-9aaf-697ad19a976c",
+      "wordId": "fd465619-1856-374c-c359-120bd2fb7dcb",
+      "headword": "sign in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "簽到；登記到場",
+      "englishDefinition": "to record that you have arrived",
+      "cue": "職場與人事情境：sign in at reception",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "sign in at reception",
+        "sign in before a meeting"
+      ],
+      "synonyms": [
+        "register one's arrival"
+      ],
+      "notes": "本詞義可不接受詞：sign in at reception。此處學到場簽到；電腦登入另見 log in。",
+      "examples": [
+        {
+          "english": "All visitors must sign in at the reception desk.",
+          "chinese": "所有訪客都必須在接待櫃檯簽到。",
+          "origin": null
+        },
+        {
+          "english": "Please sign in before entering the training room.",
+          "chinese": "進入訓練教室前，請先簽到。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "abaf8bf7-f7ac-5824-80b7-d56d5230f5c7",
+      "wordId": "62ae1ab1-c9f2-44d6-27a9-2352f21043f4",
+      "headword": "sign up for",
+      "partOfSpeech": "動詞片語",
+      "meaning": "報名參加",
+      "englishDefinition": "to register to take part in an activity or service",
+      "cue": "職場與人事情境：sign up for a workshop",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "sign up for a workshop",
+        "sign up for a course"
+      ],
+      "synonyms": [
+        "register for",
+        "enroll in"
+      ],
+      "notes": "sign up for 加活動名稱；sign up 本身可單獨使用。不要把名詞 signup 當作動詞。",
+      "examples": [
+        {
+          "english": "Employees can sign up for the safety workshop on the company website.",
+          "chinese": "員工可以在公司網站報名參加安全講習。",
+          "origin": null
+        },
+        {
+          "english": "I signed up for an evening course to improve my presentation skills.",
+          "chinese": "我報名了晚間課程，以提升簡報能力。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "fd4d3310-9eaa-5dfe-94d9-66eaaa3cde00",
+      "wordId": "b32ab9f3-cd10-0570-7ab4-19b502085fd5",
+      "headword": "sort out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "解決；處理妥當",
+      "englishDefinition": "to deal successfully with a problem or confusing situation",
+      "cue": "行銷與客服情境：sort out a problem",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "sort out a problem",
+        "sort out a billing error"
+      ],
+      "synonyms": [
+        "resolve",
+        "settle"
+      ],
+      "notes": "可分：sort the problem out；代名詞用 sort it out。",
+      "examples": [
+        {
+          "english": "The service desk helped us sort out the billing problem.",
+          "chinese": "服務櫃檯協助我們解決帳單問題。",
+          "origin": null
+        },
+        {
+          "english": "There is a mistake in your order, but we will sort it out today.",
+          "chinese": "你的訂單有誤，但我們今天會處理妥當。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "b43e5e2c-994d-58f6-82a4-b880e56a0787",
+      "wordId": "c90f7c18-c06a-6d12-f822-8bbee408191f",
+      "headword": "step down",
+      "partOfSpeech": "動詞片語",
+      "meaning": "辭去職務；卸任",
+      "englishDefinition": "to leave a position of authority voluntarily",
+      "cue": "職場與人事情境：step down as chair",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "step down as chair",
+        "step down from a position"
+      ],
+      "synonyms": [
+        "resign"
+      ],
+      "notes": "不接受直接受詞；step down as 加職位，step down from 加所辭的職位。",
+      "examples": [
+        {
+          "english": "The board chair will step down at the end of the year.",
+          "chinese": "董事長將在年底卸任。",
+          "origin": null
+        },
+        {
+          "english": "After ten years in the role, she decided to step down as director.",
+          "chinese": "擔任該職務十年後，她決定辭去主管一職。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "a0a36cb4-300a-52b8-8a3c-35d35aa9f144",
+      "wordId": "fc0c9e50-88f4-36a7-cfe4-15ac9e20e53f",
+      "headword": "stop by",
+      "partOfSpeech": "動詞片語",
+      "meaning": "順道拜訪；短暫到訪",
+      "englishDefinition": "to make a brief visit to a place",
+      "cue": "旅遊與生活情境：stop by the office",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "stop by the office",
+        "stop by a store"
+      ],
+      "synonyms": [
+        "drop by",
+        "visit briefly"
+      ],
+      "notes": "常直接接地點：stop by the office；也可單獨用 stop by。stop by to 加拜訪目的。",
+      "examples": [
+        {
+          "english": "Please stop by the office to collect your visitor badge.",
+          "chinese": "請順道到辦公室領取訪客證。",
+          "origin": null
+        },
+        {
+          "english": "I will stop by the store after work to pick up the order.",
+          "chinese": "我下班後會順道到商店取貨。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "70e03fe0-487f-5b91-8dff-80e73d7ce51c",
+      "wordId": "1d95fa0e-59e5-af33-469e-a35e488b44a5",
+      "headword": "take advantage of",
+      "partOfSpeech": "動詞片語",
+      "meaning": "善用；利用有利機會",
+      "englishDefinition": "",
+      "cue": "Making use of an offer",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take advantage of a discount",
+        "take advantage of an opportunity"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Take advantage of the early booking discount before Friday.",
+          "chinese": "請在星期五以前把握提前預訂的折扣。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "c11543eb-b454-5283-94ff-17749a032d34",
+      "wordId": "98751d0f-0d39-4aee-a9bd-3e40f00ef579",
+      "headword": "take care of",
+      "partOfSpeech": "動詞片語",
+      "meaning": "處理；照料",
+      "englishDefinition": "",
+      "cue": "Handling something for someone",
+      "level": "優先",
+      "categories": [
+        "行銷與客服",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take care of a request",
+        "take care of the paperwork"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Our assistant will take care of the travel arrangements.",
+          "chinese": "我們的助理會處理旅行安排。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "d52d83f5-2345-50f3-a4ce-907c312c8c53",
+      "wordId": "3541a323-c1e6-6989-8521-1939be7fc8fa",
+      "headword": "take notes",
+      "partOfSpeech": "動詞片語",
+      "meaning": "做筆記",
+      "englishDefinition": "",
+      "cue": "Recording key points",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take notes during a meeting",
+        "take detailed notes"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please take notes so we can share the main points later.",
+          "chinese": "請做筆記，方便我們之後分享重點。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "2c6a473f-1449-5d57-8970-a2795a8d51d1",
+      "wordId": "f017e5c4-a078-f154-0647-7047d743e28f",
+      "headword": "take off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "起飛（飛機）",
+      "englishDefinition": "to leave the ground and begin flying",
+      "cue": "旅遊與生活情境：take off on time",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take off on time",
+        "take off from an airport"
+      ],
+      "synonyms": [
+        "depart"
+      ],
+      "notes": "本詞義不接受直接受詞：the plane takes off。與脫下衣物、事業快速成功等其他詞義分開。",
+      "examples": [
+        {
+          "english": "Our flight is expected to take off at eight thirty.",
+          "chinese": "我們的班機預計八點半起飛。",
+          "origin": null
+        },
+        {
+          "english": "The plane took off late because of strong winds.",
+          "chinese": "飛機因強風而延後起飛。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "aa39b4bd-0c25-586b-a2e7-3241a3e64cc0",
+      "wordId": "b594d756-8691-5270-bdba-251c7df418c0",
+      "headword": "take on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "承擔；接受（工作或責任）",
+      "englishDefinition": "to agree to handle a task or responsibility",
+      "cue": "職場與人事情境：take on a project",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take on a project",
+        "take on responsibility"
+      ],
+      "synonyms": [
+        "undertake",
+        "accept"
+      ],
+      "notes": "可分：take the project on；代名詞用 take it on。此處學承擔工作，另有雇用的詞義。",
+      "examples": [
+        {
+          "english": "Our team cannot take on another project this month.",
+          "chinese": "我們團隊本月無法再承接另一個專案。",
+          "origin": null
+        },
+        {
+          "english": "Before you take it on, make sure you have enough time to finish.",
+          "chinese": "承接這項工作前，請確認有足夠時間完成。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "0b8f35d1-fa7c-5d6b-944b-9a8afed3dfc0",
+      "wordId": "df5589a2-0df3-051e-b196-a21ca8a7a15b",
+      "headword": "take over",
+      "partOfSpeech": "動詞片語",
+      "meaning": "接管；接手管理",
+      "englishDefinition": "to become responsible for work previously handled by someone else",
+      "cue": "職場與人事情境：take over a project",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "take over a project",
+        "take over responsibility"
+      ],
+      "synonyms": [
+        "assume control"
+      ],
+      "notes": "可分：take the project over；也可接 from 表示從誰手中接手。take over as 後接職位。",
+      "examples": [
+        {
+          "english": "Leo will take over the project when the current manager retires.",
+          "chinese": "現任經理退休後，Leo 將接手這個專案。",
+          "origin": null
+        },
+        {
+          "english": "The new team is ready to take it over from the contractors.",
+          "chinese": "新團隊已準備好從承包商手中接手這項工作。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "fc4ab56d-de7b-5c57-9ae5-02981c7dc021",
+      "wordId": "d06bc108-5739-acff-5393-5d4df9f0f856",
+      "headword": "take up residence",
+      "partOfSpeech": "phrase",
+      "meaning": "定居；開始居住於某處",
+      "englishDefinition": "to go to live somewhere:",
+      "cue": "",
+      "level": "優先",
+      "categories": [
+        "旅遊與生活",
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "She took up residence in Canada.",
+          "chinese": "她在加拿大定居。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "5be2990d-2803-563e-bd91-f1908082cf80",
+      "wordId": "d4acc5b6-fdb9-ff1e-413f-8ecb878bd108",
+      "headword": "turn down",
+      "partOfSpeech": "動詞片語",
+      "meaning": "拒絕（提議、申請或機會）",
+      "englishDefinition": "to decide not to accept an offer or request",
+      "cue": "商務與法規情境：turn down an offer",
+      "level": "優先",
+      "categories": [
+        "商務與法規",
+        "動詞片語"
+      ],
+      "collocations": [
+        "turn down an offer",
+        "turn down a request"
+      ],
+      "synonyms": [
+        "reject",
+        "refuse"
+      ],
+      "notes": "可分；代名詞用 turn it down。此詞義是拒絕，與調低音量的詞義分開學習。",
+      "examples": [
+        {
+          "english": "The supplier turned down our request for a longer payment period.",
+          "chinese": "供應商拒絕了我們延長付款期限的要求。",
+          "origin": null
+        },
+        {
+          "english": "The position requires weekend work, so Mina decided to turn it down.",
+          "chinese": "這個職位需要週末上班，所以 Mina 決定婉拒。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "ecd8054a-dd9c-58b2-b397-db21b7a781fd",
+      "wordId": "dcbe8966-2f98-f66e-7e08-7bac20f71fea",
+      "headword": "turn in",
+      "partOfSpeech": "動詞片語",
+      "meaning": "繳交；交還",
+      "englishDefinition": "to submit a document or return an item to the appropriate person",
+      "cue": "職場與人事情境：turn in a report",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "turn in a report",
+        "turn in an access card"
+      ],
+      "synonyms": [
+        "submit",
+        "hand in"
+      ],
+      "notes": "可分：turn it in。此處學繳交或交還，不是 turn in 的就寢詞義。",
+      "examples": [
+        {
+          "english": "Employees must turn in their access cards before leaving the company.",
+          "chinese": "員工離職前必須交還門禁卡。",
+          "origin": null
+        },
+        {
+          "english": "Once you finish the questionnaire, turn it in at the reception desk.",
+          "chinese": "填完問卷後，請交到接待櫃檯。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "61c64020-869d-5736-bb4a-bc0b89fe9a89",
+      "wordId": "301aa2ca-71f2-a9f3-8b8b-4984645a43c4",
+      "headword": "turn off",
+      "partOfSpeech": "動詞片語",
+      "meaning": "關閉；關掉",
+      "englishDefinition": "",
+      "cue": "Stopping power to a device",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "turn off the lights",
+        "turn off a machine"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "Please turn off the lights before leaving the room.",
+          "chinese": "離開房間前，請關燈。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "4c1cb541-5c46-5518-9273-593822c9e749",
+      "wordId": "57d533bf-4778-bc3c-f64a-9e1819d54572",
+      "headword": "turn on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "開啟；打開（設備或電源）",
+      "englishDefinition": "to make equipment start working by using a switch",
+      "cue": "設施與環境情境：turn on the lights",
+      "level": "優先",
+      "categories": [
+        "設施與環境",
+        "動詞片語"
+      ],
+      "collocations": [
+        "turn on the lights",
+        "turn on a projector"
+      ],
+      "synonyms": [
+        "switch on"
+      ],
+      "notes": "可分：turn the projector on；代名詞用 turn it on。與 turn off 相反。",
+      "examples": [
+        {
+          "english": "Please turn on the projector before the guests arrive.",
+          "chinese": "請在來賓抵達前開啟投影機。",
+          "origin": null
+        },
+        {
+          "english": "The desk lamp is off; could you turn it on for me?",
+          "chinese": "桌燈關著，你能幫我打開嗎？",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "f2546b71-1e1e-5674-a702-9f319794d600",
+      "wordId": "82ec45fd-a741-e284-7517-17cf4dfab547",
+      "headword": "work on",
+      "partOfSpeech": "動詞片語",
+      "meaning": "致力於；正在處理",
+      "englishDefinition": "",
+      "cue": "A task in progress",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "work on a project",
+        "work on a report"
+      ],
+      "synonyms": [],
+      "notes": "",
+      "examples": [
+        {
+          "english": "I am working on the sales report this afternoon.",
+          "chinese": "今天下午我正在處理銷售報告。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "a039eb7f-e6ff-5d0c-b256-1534e75e8d8b",
+      "wordId": "96234f32-e416-4dc5-6cdd-9c24021e354d",
+      "headword": "work out",
+      "partOfSpeech": "動詞片語",
+      "meaning": "想出解決辦法；解決",
+      "englishDefinition": "to develop a practical solution or workable arrangement",
+      "cue": "職場與人事情境：work out a solution",
+      "level": "優先",
+      "categories": [
+        "職場與人事",
+        "動詞片語"
+      ],
+      "collocations": [
+        "work out a solution",
+        "work out an arrangement"
+      ],
+      "synonyms": [
+        "resolve",
+        "devise"
+      ],
+      "notes": "可分：work it out。此處學想出辦法，不是運動或計算的詞義。",
+      "examples": [
+        {
+          "english": "The logistics team will work out a cheaper delivery plan.",
+          "chinese": "物流團隊將想出較便宜的配送方案。",
+          "origin": null
+        },
+        {
+          "english": "The two departments have a scheduling problem, but they can work it out together.",
+          "chinese": "兩個部門的排程有問題，但可以共同解決。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    },
+    {
+      "id": "703e84fa-7c47-5565-9014-ef4b0455a69f",
+      "wordId": "234303a8-8db8-3e8f-c990-23d6353a2761",
+      "headword": "write down",
+      "partOfSpeech": "動詞片語",
+      "meaning": "寫下；記錄",
+      "englishDefinition": "to record information in writing",
+      "cue": "會議與溝通情境：write down a number",
+      "level": "優先",
+      "categories": [
+        "會議與溝通",
+        "動詞片語"
+      ],
+      "collocations": [
+        "write down a number",
+        "write down instructions"
+      ],
+      "synonyms": [
+        "note",
+        "record"
+      ],
+      "notes": "可分：write the number down；代名詞用 write it down。過去式 wrote down。",
+      "examples": [
+        {
+          "english": "Please write down the reference number before closing the page.",
+          "chinese": "關閉頁面前，請寫下查詢編號。",
+          "origin": null
+        },
+        {
+          "english": "The speaker gave us several tips, and I wrote them down.",
+          "chinese": "講者提供了幾項建議，我把它們記了下來。",
+          "origin": null
+        }
+      ],
+      "additionalSenses": []
+    }
+  ]
+}

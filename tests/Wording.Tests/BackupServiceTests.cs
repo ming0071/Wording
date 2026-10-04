@@ -49,7 +49,7 @@ public sealed class BackupServiceTests
         {
             await service.RestoreBackupAsync(archivePath);
             Assert.Equal(word.Id, Assert.Single(await live.Store.GetVocabularyAsync()).Id);
-            Assert.Equal(3L, live.Scalar("PRAGMA user_version;"));
+            Assert.Equal(4L, live.Scalar("PRAGMA user_version;"));
             Assert.Equal(1L, live.Scalar("SELECT COUNT(*) FROM review_log;"));
             Assert.Equal(1, (await live.Store.GetDashboardAsync(live.Clock.Now)).StartedToday);
             Assert.Equal("5", live.Scalar("SELECT configured_limit FROM daily_limits;"));

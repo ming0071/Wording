@@ -66,8 +66,8 @@ public sealed partial class SqliteStudyStore
             {
                 var text = search.Trim();
                 query = query.Where(x => x.Headword.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                    x.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                    x.Collocations.Any(c => c.Contains(text, StringComparison.OrdinalIgnoreCase)));
+                    x.Definitions.Any(d => d.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                        d.Collocations.Any(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))));
             }
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(x => x.Categories.Contains(category.Trim(), StringComparer.OrdinalIgnoreCase));
@@ -96,6 +96,26 @@ public sealed partial class SqliteStudyStore
     public Task SaveVocabularyAsync(VocabularyItem item, CancellationToken cancellationToken = default) =>
         SaveVocabularyBatchAsync([item], cancellationToken);
 
+    public Task<int> RemoveVocabularyNoteMetadataAsync(CancellationToken token = default) => WithMaintenanceAsync(() =>
+    {
+        using var connection = OpenConnection();
+        var words = ReadWords(connection, null).Select(word => (Original: word, Cleaned: VocabularyNotes.Clean(word)))
+            .Where(x => !ReferenceEquals(x.Original, x.Cleaned)).Select(x => x.Cleaned).ToArray();
+        if (words.Length == 0) return 0;
+        BackupBeforeVocabularyMaintenance("note-cleanup", token);
+        using var transaction = connection.BeginTransaction();
+        foreach (var word in words)
+        {
+            token.ThrowIfCancellationRequested();
+            Execute(connection, transaction, "UPDATE senses SET content_json=$json WHERE id=$id;",
+                ("$json", JsonSerializer.Serialize(word, JsonOptions)), ("$id", Id(word.Id)));
+            InjectFault("VocabularyNotes.AfterItem");
+        }
+        token.ThrowIfCancellationRequested();
+        transaction.Commit();
+        return words.Length;
+    }, token);
+
     public Task SaveVocabularyBatchAsync(IReadOnlyList<VocabularyItem> items, CancellationToken cancellationToken = default,
         IReadOnlyDictionary<Guid, bool>? starOverrides = null)
     {
@@ -109,6 +129,11 @@ public sealed partial class SqliteStudyStore
                 throw new ArgumentException("星號設定必須對應這次保存的詞義。");
             foreach (var item in snapshot) ValidateVocabulary(item);
             using var connection = OpenConnection();
+            var resets = snapshot.Where(x => ReadWord(connection, null, x.Id) is { } old &&
+                x.Definitions.Any(d => !old.Definitions.Any(previous => previous.Id == d.Id ||
+                    VocabularyMerge.Key(previous) == VocabularyMerge.Key(d))) &&
+                x.AdditionalSenses.Length > 0).Select(x => x.Id).ToHashSet();
+            if (resets.Count > 0) BackupBeforeWordMerge(cancellationToken);
             using var transaction = connection.BeginTransaction();
             foreach (var source in snapshot)
             {
@@ -130,6 +155,11 @@ public sealed partial class SqliteStudyStore
                         Execute(connection, transaction, "UPDATE cards SET version=version+1 WHERE sense_id=$id;", ("$id", Id(item.Id)));
                 }
                 InjectFault("Vocabulary.AfterItem");
+                if (resets.Contains(item.Id))
+                {
+                    ClearWordLearning(connection, transaction, item.Id);
+                    ResetWordSchedule(connection, transaction, item.Id);
+                }
             }
             transaction.Commit();
         }, cancellationToken);
@@ -247,7 +277,8 @@ public sealed partial class SqliteStudyStore
         Categories = item.Categories.Select(x => x.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
         Collocations = item.Collocations.Select(x => x.Trim()).Where(x => x.Length > 0).ToArray(),
         Synonyms = item.Synonyms.Select(x => x.Trim()).Where(x => x.Length > 0).Distinct(StringComparer.OrdinalIgnoreCase).ToArray(),
-        Notes = item.Notes.Trim(), EnglishDefinition = item.EnglishDefinition.Trim()
+        Notes = VocabularyNotes.Clean(item.Notes).Trim(), EnglishDefinition = item.EnglishDefinition.Trim(),
+        AdditionalSenses = item.AdditionalSenses.Select(x => x with { Notes = VocabularyNotes.Clean(x.Notes) }).ToArray()
     };
 
     private static void ValidateVocabulary(VocabularyItem item)
@@ -263,6 +294,11 @@ public sealed partial class SqliteStudyStore
         if (item.Categories.Length > 30 || item.Examples.Length > 20 || item.Collocations.Length > 30 || item.Synonyms.Length > 30)
             throw new ArgumentException("分類、例句或搭配數量過多。");
         foreach (var category in item.Categories) ValidateCategory(category);
+        if (item.AdditionalSenses is null || item.AdditionalSenses.Length > 50 ||
+            item.AdditionalSenses.Any(x => x is null || x.Id == Guid.Empty || x.Id == item.Id) ||
+            item.AdditionalSenses.Select(x => x.Id).Distinct().Count() != item.AdditionalSenses.Length)
+            throw new ArgumentException("詞條的其他解釋無效或過多。");
+        foreach (var definition in item.AdditionalSenses) ValidateVocabulary(definition.AsWord(item.Headword));
         if (item.Collocations.Any(x => x is null || x.Length > 500) || item.Synonyms.Any(x => x is null || x.Length > 200) ||
             item.Examples.Any(x => x is null || string.IsNullOrWhiteSpace(x.English) ||
                 x.English.Length > 4000 || x.Chinese is null || x.Chinese.Length > 4000))

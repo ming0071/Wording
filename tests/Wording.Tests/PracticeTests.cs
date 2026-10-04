@@ -137,7 +137,7 @@ public sealed class PracticeTests
         Assert.Equal(2L, data.Scalar("PRAGMA user_version;"));
         Assert.Equal(0L, data.Scalar("SELECT COUNT(*) FROM sqlite_master WHERE name='practice_sessions';"));
         data.FailAt = null; await data.NewStore().InitializeAsync();
-        Assert.Equal(3L, data.Scalar("PRAGMA user_version;"));
+        Assert.Equal(4L, data.Scalar("PRAGMA user_version;"));
         Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
     }
 

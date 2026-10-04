@@ -26,7 +26,7 @@ CATEGORIES = {
 LEVELS = {"基礎", "優先", "延伸"}
 PARTS_OF_SPEECH = {"名詞", "動詞", "形容詞", "副詞", "動詞片語", "名詞片語", "副詞片語", "介系詞片語"}
 ITEM_FIELDS = {
-    "id", "headword", "partOfSpeech", "meaning", "cue", "level", "kind", "categories",
+    "id", "wordId", "headword", "partOfSpeech", "meaning", "cue", "level", "kind", "categories",
     "collocations", "examples", "origin", "enrollment", "isArchived", "isPaused", "isUserEdited",
 }
 
@@ -65,6 +65,23 @@ def validate_pack(pack):
     items = pack.get("items")
     if not isinstance(items, list):
         return (errors + ["items: must be an array"], notes, counts)
+    # Each stored word owns its additional definitions; validate the original 300 sense IDs.
+    stored_words = items
+    word_ids = [x.get("wordId") for x in stored_words if isinstance(x, dict)]
+    if len(stored_words) != 297 or len(set(word_ids)) != len(stored_words):
+        problem("items", "expected 297 unique headwords with nested definitions")
+    items = []
+    for parent in stored_words:
+        if not isinstance(parent, dict):
+            items.append(parent)
+            continue
+        primary = {k: v for k, v in parent.items() if k != "additionalSenses"}
+        items.append(primary)
+        for definition in parent.get("additionalSenses", []):
+            if not isinstance(definition, dict):
+                items.append(definition)
+            else:
+                items.append({**primary, **definition})
     counts["items"] = len(items)
     if len(items) != EXPECTED_COUNT:
         problem("items", f"expected {EXPECTED_COUNT}, got {len(items)}")
@@ -91,6 +108,11 @@ def validate_pack(pack):
             ids.add(sense_id)
         except (ValueError, TypeError, AttributeError):
             problem(path + ".id", "must be a UUID string")
+        if isinstance(item.get("headword"), str):
+            identity = "wording-headword-v1\n" + " ".join(unicodedata.normalize("NFKC", item["headword"]).split()).lower()
+            expected_word_id = str(uuid.UUID(bytes_le=hashlib.sha256(identity.encode("utf-8")).digest()[:16]))
+            if item.get("wordId") != expected_word_id:
+                problem(path + ".wordId", "must identify the normalized headword, shared by all its senses")
 
         valid_text = {}
         for field in ("headword", "partOfSpeech", "meaning", "cue", "level", "kind"):
@@ -180,10 +202,10 @@ def validate_pack(pack):
         if len(words) > 1:
             notes.append(f"Possible synonym overlap (not necessarily an error): {', '.join(words)} = {meaning}")
     for category in sorted(CATEGORIES):
-        if categories[category] != 25:
-            problem("categories", f"edition 1 expects 25 in {category}, got {categories[category]}")
+        if categories[category] < 25:
+            problem("categories", f"expected at least 25 definitions in {category}, got {categories[category]}")
     counts.update(categories=dict(sorted(categories.items())), levels=dict(sorted(levels.items())),
-                  kinds=dict(sorted(kinds.items())), distinctHeadwords=len(headwords))
+                  kinds=dict(sorted(kinds.items())), distinctHeadwords=len(headwords), storedWords=len(stored_words))
     return errors, notes, counts
 
 

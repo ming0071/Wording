@@ -27,7 +27,7 @@ public sealed class LibraryViewModel : PageViewModel
         set => CategoryScope.SetSelected(value == "全部分類" ? [] : [value]); }
     public string SelectedFilter { get => selectedFilter; set => SetProperty(ref selectedFilter, value); }
     public string NewCategory { get => newCategory; set => SetProperty(ref newCategory, value); }
-    public string CountText => $"{Items.Count} 個詞義 · 新詞自動加入學習";
+    public string CountText => $"{Items.Count} 個單字／片語 · {Items.Sum(x => x.Definitions.Count)} 組解釋";
     public string PauseLabel => SelectedItem is { } item && (item.IsPaused || item.Enrollment == Enrollment.Skipped)
         ? "恢復複習" : "暫停複習";
     public VocabularyItem? SelectedItem
@@ -89,17 +89,24 @@ public sealed class LibraryViewModel : PageViewModel
         foreach (var category in categories) Categories.Add(category);
         CategoryScope.SetAvailable(categories);
         var selected = CategoryScope.SelectedNames;
-        var vocabulary = await store.GetVocabularyAsync(SearchText,
+        var vocabulary = await store.GetVocabularyAsync(null,
             null, cancellationToken,
             includeArchived: SelectedFilter == "已封存");
-        var filtered = vocabulary.Where(item => selected.Length == 0 || item.Categories.Intersect(selected, StringComparer.OrdinalIgnoreCase).Any())
-            .Where(item => SelectedFilter switch
+        var eligible = vocabulary.Where(item => SelectedFilter switch
         {
             "學習中" => !item.IsArchived && !item.IsPaused && item.Enrollment != Enrollment.Skipped,
             "已暫停" => !item.IsArchived && (item.IsPaused || item.Enrollment == Enrollment.Skipped),
             "已封存" => item.IsArchived,
             _ => true
         }).ToList();
+        var text = SearchText.Trim();
+        var matchingWords = eligible.Where(item =>
+            (selected.Length == 0 || item.Categories.Intersect(selected, StringComparer.OrdinalIgnoreCase).Any()) &&
+            (text.Length == 0 || item.Headword.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                item.Definitions.Any(d => d.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+                    d.Collocations.Any(x => x.Contains(text, StringComparison.OrdinalIgnoreCase)))))
+            .Select(x => x.WordId).ToHashSet();
+        var filtered = eligible.Where(x => matchingWords.Contains(x.WordId)).ToList();
         filtered = SortItems(filtered, SelectedSort).ToList();
         Items.Clear();
         foreach (var item in filtered) Items.Add(item);

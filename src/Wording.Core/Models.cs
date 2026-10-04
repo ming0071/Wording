@@ -10,6 +10,7 @@ public sealed record ContentOrigin(string Kind, string Note, string? Model = nul
 public sealed record VocabularyItem
 {
     public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid WordId => WordIdentity.For(Headword);
     public string Headword { get; init; } = "";
     public string PartOfSpeech { get; init; } = "";
     public string Meaning { get; init; } = "";
@@ -22,6 +23,11 @@ public sealed record VocabularyItem
     public string[] Synonyms { get; init; } = [];
     public string Notes { get; init; } = "";
     public ExampleSentence[] Examples { get; init; } = [];
+    public VocabularyDefinition[] AdditionalSenses { get; init; } = [];
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<VocabularyDefinition> Definitions => [VocabularyDefinition.From(this), .. AdditionalSenses];
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string DefinitionCountText => AdditionalSenses.Length == 0 ? PartOfSpeech : $"{AdditionalSenses.Length + 1} 組解釋 · {PartOfSpeech}";
     public ContentOrigin Origin { get; init; } = new("user", "使用者編寫");
     public ContentOrigin? MeaningOrigin { get; init; }
     public ContentOrigin? CollocationsOrigin { get; init; }
@@ -37,6 +43,36 @@ public sealed record VocabularyItem
     public long CreationOrder { get; init; }
     [System.Text.Json.Serialization.JsonIgnore]
     public string StarLabel => IsStarred ? "★" : "☆";
+}
+
+public sealed record VocabularyDefinition
+{
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public string PartOfSpeech { get; init; } = "";
+    public string Meaning { get; init; } = "";
+    public string EnglishDefinition { get; init; } = "";
+    public string Cue { get; init; } = "";
+    public string Level { get; init; } = "優先";
+    public string[] Categories { get; init; } = [];
+    public string[] Collocations { get; init; } = [];
+    public string[] Synonyms { get; init; } = [];
+    public string Notes { get; init; } = "";
+    public ExampleSentence[] Examples { get; init; } = [];
+
+    public static VocabularyDefinition From(VocabularyItem word) => new()
+    {
+        Id = word.Id, PartOfSpeech = word.PartOfSpeech, Meaning = word.Meaning,
+        EnglishDefinition = word.EnglishDefinition, Cue = word.Cue, Level = word.Level,
+        Categories = word.Categories, Collocations = word.Collocations, Synonyms = word.Synonyms,
+        Notes = word.Notes, Examples = word.Examples
+    };
+
+    public VocabularyItem AsWord(string headword) => new()
+    {
+        Id = Id, Headword = headword, PartOfSpeech = PartOfSpeech, Meaning = Meaning,
+        EnglishDefinition = EnglishDefinition, Cue = Cue, Level = Level, Categories = Categories,
+        Collocations = Collocations, Synonyms = Synonyms, Notes = Notes, Examples = Examples
+    };
 }
 
 public sealed record SeedPack(string PackId, int Version, VocabularyItem[] Items);

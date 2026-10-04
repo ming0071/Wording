@@ -119,7 +119,7 @@
                         <DataGrid.Columns>
                             <DataGridTemplateColumn Header="星號" Width="70" CanUserSort="False">
                                 <DataGridTemplateColumn.CellTemplate><DataTemplate>
-                                    <Button Style="{StaticResource StarButton}" Tag="{Binding IsStarred}" Padding="10" Margin="10,0" VerticalAlignment="Center" Command="{Binding DataContext.StarRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
+                                    <Button Style="{StaticResource StarButton}" Tag="{Binding IsStarred}" Padding="10" Margin="10,0" Command="{Binding DataContext.StarRowCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" />
                                 </DataTemplate></DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             <DataGridTemplateColumn Header="單字／片語" SortMemberPath="Headword" ClipboardContentBinding="{Binding Headword}" Width="1.15*" MinWidth="150">
@@ -127,7 +127,7 @@
                                     <DataTemplate>
                                         <StackPanel Margin="16,12" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Headword}" FontSize="17" FontWeight="SemiBold" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" ToolTip="{Binding Headword}" />
-                                            <TextBlock Text="{Binding PartOfSpeech}" FontSize="11" Margin="0,5,0,0">
+                                            <TextBlock Text="{Binding DefinitionCountText}" FontSize="11" Margin="0,5,0,0" TextWrapping="Wrap">
                                                 <TextBlock.Style>
                                                     <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
                                                         <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
@@ -143,11 +143,16 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="這個詞義" SortMemberPath="Meaning" ClipboardContentBinding="{Binding Meaning}" Width="1.7*" MinWidth="170">
+                            <DataGridTemplateColumn Header="各組解釋" SortMemberPath="Meaning" ClipboardContentBinding="{Binding Meaning}" Width="1.7*" MinWidth="170">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="{Binding Meaning}" Margin="16,12" VerticalAlignment="Center" TextWrapping="Wrap"
-                                                   TextTrimming="CharacterEllipsis" MaxHeight="44" LineHeight="21" ToolTip="{Binding Meaning}" />
+                                        <ItemsControl ItemsSource="{Binding Definitions}" Margin="0,4">
+                                            <ItemsControl.ItemTemplate><DataTemplate>
+                                                <Border MinHeight="40" Padding="16,4">
+                                                    <TextBlock Text="{Binding Meaning}" VerticalAlignment="Center" TextWrapping="Wrap" LineHeight="21" ToolTip="{Binding Meaning}" />
+                                                </Border>
+                                            </DataTemplate></ItemsControl.ItemTemplate>
+                                        </ItemsControl>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

@@ -102,7 +102,7 @@ public sealed class BackupService(SqliteStudyStore store) : IBackupService
             TryDeleteFile(rollback);
         }, cancellationToken);
 
-    private void CreateBackup(string destination, CancellationToken cancellationToken)
+    internal void CreateBackup(string destination, CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(destination);
         destination = Path.GetFullPath(destination);

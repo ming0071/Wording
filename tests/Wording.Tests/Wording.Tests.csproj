@@ -21,6 +21,7 @@
     <None Include="Fixtures/**/*.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../content/toeic-starter.json" Link="content/toeic-starter.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../content/toeic-vocabulary.json" Link="content/toeic-vocabulary.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="../../content/toeic-phrasal-verbs.json" Link="content/toeic-phrasal-verbs.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="../../content/vocabulary-example.json" Link="content/vocabulary-example.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

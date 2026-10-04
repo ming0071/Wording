@@ -11,5 +11,5 @@
 | [FSRS 參考驗證](FSRS_VERIFICATION.md) | 開發用排程參數與驗證方法 |
 | [品質檢查與維護](quality-checks.md) | 測試、CI、發行包與待評估優化 |
 | [版本發布](releases/README.md) | tag 自動發布、附件驗證與草稿重試 |
-| [操作示範](images/wording-demo.gif) | 主 README 使用的操作 GIF |
+| [功能畫面與更新方式](images/README.md) | 主頁的清晰 PNG 展示、圖片索引與重新產生方式 |
 | [WebView2 授權](licenses/WebView2-LICENSE.txt) · [通知](licenses/WebView2-NOTICE.txt) | 隨 Windows 程式包提供的原始授權文件 |

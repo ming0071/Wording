@@ -22,8 +22,8 @@ public sealed class ContentTests
         var pack = LoadPack();
         Assert.Equal("toeic-starter", pack.PackId);
         Assert.Equal(1, pack.Version);
-        Assert.Equal(300, pack.Items.Length);
-        Assert.Equal(300, pack.Items.Select(item => item.Id).Distinct().Count());
+        Assert.Equal(297, pack.Items.Length);
+        Assert.Equal(300, pack.Items.SelectMany(item => item.Definitions).Select(x => x.Id).Distinct().Count());
         Assert.All(pack.Items, item =>
         {
             Assert.NotEqual(Guid.Empty, item.Id);
@@ -52,10 +52,11 @@ public sealed class ContentTests
     [InlineData("address", "處理；設法解決", "地址")]
     [InlineData("charge", "收費；費用", "為電池充電")]
     [InlineData("issue", "核發；發給", "問題；需要處理的事項")]
-    public void DifferentMeaningsOfTheSameHeadwordHaveSeparateIdentitiesAndFrontCues(
+    public void DifferentMeaningsShareOneStoredWordWithSeparateDefinitionContent(
         string headword, string firstMeaning, string secondMeaning)
     {
-        var senses = LoadPack().Items.Where(item => item.Headword == headword).ToArray();
+        var word = Assert.Single(LoadPack().Items, item => item.Headword == headword);
+        var senses = word.Definitions.ToArray();
         Assert.Equal(2, senses.Length);
         Assert.Contains(senses, sense => sense.Meaning == firstMeaning);
         Assert.Contains(senses, sense => sense.Meaning == secondMeaning);

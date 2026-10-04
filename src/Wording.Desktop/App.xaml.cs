@@ -36,6 +36,10 @@ public partial class App : Application
             var store = new SqliteStudyStore(AppDataPaths.DatabasePath(dataDirectory));
             AppDiagnostics.Write($"Database path={store.DatabasePath}; existing={File.Exists(store.DatabasePath)}; bytes={(File.Exists(store.DatabasePath) ? new FileInfo(store.DatabasePath).Length : 0)}; user={System.Security.Principal.WindowsIdentity.GetCurrent().Name}; exe={Environment.ProcessPath}");
             await store.InitializeAsync();
+            var removedDuplicates = await store.MergeDuplicateWordsAsync();
+            if (removedDuplicates > 0) AppDiagnostics.Write($"Combined duplicate word rows={removedDuplicates}; affected words reset to new.");
+            var cleanedNotes = await store.RemoveVocabularyNoteMetadataAsync();
+            if (cleanedNotes > 0) AppDiagnostics.Write($"Removed vocabulary note boilerplate: words={cleanedNotes}.");
             AppDiagnostics.Write($"Database initialized: bytes={new FileInfo(store.DatabasePath).Length}; words={(await store.GetVocabularyAsync()).Count}; categories={(await store.GetCategoriesAsync()).Count}");
             if (VocabularyFileCommand.IsRequested(e.Args))
             {

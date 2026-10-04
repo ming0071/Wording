@@ -62,6 +62,11 @@ public sealed class ReviewViewModel : PageViewModel
     public bool HasNotes => !string.IsNullOrWhiteSpace(Current?.Word.Notes);
     public bool HasEnglishDefinition => !string.IsNullOrWhiteSpace(Current?.Word.EnglishDefinition);
     public bool HasCollocations => Current?.Word.Collocations.Length > 0;
+    public IReadOnlyList<VocabularyDefinition> OtherSenses => Current?.Word.AdditionalSenses ?? [];
+    public bool HasOtherSenses => OtherSenses.Count > 0;
+    public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
+        ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
+        : "本次依提示回想這個詞義";
     public string KeyboardHint => $"{KeyLabel(settings.FlipKey)} 翻卡 · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
     public ICommand? CommandForShortcut(string key) => key == settings.FlipKey ? FlipCommand :
         key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :
@@ -176,6 +181,9 @@ public sealed class ReviewViewModel : PageViewModel
         reviewCategories = categories;
         ScopeText = $"{(categories.Length == 0 ? "全部單字庫" : string.Join("、", categories))} · {summary.DueCount} 個到期 · {summary.NewCount} 個未學新詞";
         Current = next;
+        OnPropertyChanged(nameof(OtherSenses));
+        OnPropertyChanged(nameof(HasOtherSenses));
+        OnPropertyChanged(nameof(SenseContext));
         IsAnswerVisible = false;
         operationId = Guid.NewGuid();
         pendingSubmission = null;

@@ -8,8 +8,8 @@ WPF 畫面與操作流程位於此專案。資料模型與服務契約在 `Wordi
 
 | 操作 | 程式入口 | 行為 |
 | --- | --- | --- |
-| 啟動 | [App.xaml.cs](App.xaml.cs) | 建立資料目錄、初始化資料庫並組裝服務；沿用既有庫，教材需自行匯入 |
-| 切換畫面 | [MainViewModel](ViewModels/MainViewModel.cs) | 管理今日學習、單字庫、複習、編輯與設定；返回單字庫時保留篩選 |
+| 啟動 | [App.xaml.cs](App.xaml.cs) | 建立資料目錄、初始化資料庫並組裝服務；同名舊詞條先備份再合併，其餘沿用既有庫 |
+| 切換畫面 | [MainViewModel](ViewModels/MainViewModel.cs) | 管理今日學習、單字庫、複習、情境練習、編輯與設定；返回單字庫時保留篩選 |
 | 新增／編輯詞義 | [LibraryViewModel](ViewModels/LibraryViewModel.cs) → [EditorViewModel](ViewModels/EditorViewModel.cs) | 以 `SenseEditor` 收集多詞義草稿，再用單一交易保存 |
 | 複習 | [ReviewViewModel](ViewModels/ReviewViewModel.cs) | 依已套用的主題取卡；保存評分成功後換下一張 |
 | 情境練習 | [PracticeViewModel](ViewModels/PracticeViewModel.cs) | 共用閱讀／聽力、作答解析、單字評分與三個月活動紀錄；導航保留當次文章與答案 |
@@ -19,7 +19,9 @@ WPF 畫面與操作流程位於此專案。資料模型與服務契約在 `Wordi
 
 `MainWindow.xaml.cs` 處理視窗快捷鍵與關閉提示；未保存修改確認由導航流程共用。使用 `--data-dir <路徑>` 啟動時，可指定獨立的測試資料目錄。
 
-同一個單字的不同詞義各有穩定 ID，重試保存不會重複建立卡片。同義詞與筆記存在詞義 JSON，舊資料預設為空。複習取卡與卡片數量依主題範圍篩選，每日新詞名額則跨主題共用。
+同名詞條保存為一個 `VocabularyItem`，其他解釋存在 `AdditionalSenses`；各組解釋保留內容 ID，共用一個星號與複習卡。初次合併或加入新意思時，先備份再將受影響詞條重設為未學習；一般編輯與相同內容重匯保留進度。複習取卡與卡片數量依主題範圍篩選，每日新詞名額跨主題共用。
+
+Codex 情境練習的模型／速度清單由 CLI 動態提供，閱讀與聽力共用生成、作答與解析流程。提示詞、選字規則與資料保存方式見 [情境練習說明](../../docs/scenario-practice.md)；功能 PNG 展示與更新方式見 [展示素材](../../docs/images/README.md)。
 
 ## Styles & Assets
 
@@ -51,7 +53,8 @@ MainViewModel 的非同步導航方法自行接住例外。評分未確認保存
 
 | 測試檔案 | 內容 |
 | --- | --- |
-| [ReviewInteractionTests.cs](../../tests/Wording.Tests/ReviewInteractionTests.cs) | 快捷鍵、評分提交、300 張起始教材在 715×560 複習頁的版面 |
+| [ReviewInteractionTests.cs](../../tests/Wording.Tests/ReviewInteractionTests.cs) | 快捷鍵、評分提交、起始教材在 715×560 複習頁的版面 |
+| [WordGroupingTests.cs](../../tests/Wording.Tests/WordGroupingTests.cs) | 同名詞條合併、單一星號與卡片、多組解釋、備份與進度重設 |
 | [VocabularyAuthoringTests.cs](../../tests/Wording.Tests/VocabularyAuthoringTests.cs) | 上下排版、同義詞／筆記、詞性選單、多詞義草稿與交易保存 |
 | [DesktopWorkflowTests.cs](../../tests/Wording.Tests/DesktopWorkflowTests.cs) | AI 預覽與保存分離、舊預覽拒絕、來源更新、命令防重入與評分重試 |
 | [LearningFlowUpdateTests.cs](../../tests/Wording.Tests/LearningFlowUpdateTests.cs) | 自動朗讀、多主題、學習入口與學習紀錄 |

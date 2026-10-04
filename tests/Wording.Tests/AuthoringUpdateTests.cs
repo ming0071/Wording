@@ -27,7 +27,7 @@ public sealed partial class DesktopWorkflowTests
         await editor.SaveNextCommand.ExecuteAsync();
         Assert.Equal("", editor.Error);
         Assert.Equal(1, advances);
-        Assert.Equal(2, store.SavedBatch.Count);
+        Assert.Single(store.Saved!.AdditionalSenses);
         Assert.False(editor.IsDirty);
     }
 
@@ -83,9 +83,9 @@ public sealed partial class DesktopWorkflowTests
         Assert.Equal(2, river.Examples.Count);
         await editor.SaveCommand.ExecuteAsync();
         Assert.Equal("", editor.Error);
-        Assert.Equal("A place to keep money.", store.SavedBatch[0].EnglishDefinition);
-        Assert.Equal("Land beside a river.", store.SavedBatch[1].EnglishDefinition);
-        Assert.Equal(2, store.SavedBatch[1].Examples.Length);
+        Assert.Equal("A place to keep money.", store.Saved!.EnglishDefinition);
+        Assert.Equal("Land beside a river.", store.Saved.AdditionalSenses[0].EnglishDefinition);
+        Assert.Equal(2, store.Saved.AdditionalSenses[0].Examples.Length);
     }
 
     [Fact]

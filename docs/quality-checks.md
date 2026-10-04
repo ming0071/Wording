@@ -14,12 +14,14 @@ python scripts/validate-content.py
 python scripts/verify-package.py
 ```
 
-Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.py` 專門檢查原創 300 筆教材；完整 .NET 測試另驗證 1,323 筆選用詞庫和 JSON 格式範例的匯入。
+Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.py` 檢查原創教材的 297 個詞條／300 組解釋；完整 .NET 測試另驗證完整詞庫的 1,113 個詞條／1,385 組解釋、動詞片語補充檔的 99 個詞條／102 組解釋，以及 JSON 格式範例的匯入。
 
 | 檢查 | 保護的情境 |
 | --- | --- |
 | [練習可靠性](../tests/Wording.Tests/PracticeReliabilityTests.cs) | 取消後晚回傳不能覆蓋答案、重按不會重複生成、取消後能重新操作、相同 ID 的不同完成紀錄不能覆寫、三個月保存邊界、無效設定不能覆蓋舊檔 |
-| [選用教材](../tests/Wording.Tests/OptionalVocabularyTests.cs) | 三份教材／範例能匯入，重複匯入保留 ID 與學習進度；作者的學習紀錄不會帶入 |
+| [選用教材](../tests/Wording.Tests/OptionalVocabularyTests.cs) | 四份教材／範例能匯入；補充片語時保留既有情境分類、星號及其他單字，新增另一組意思的詞條重設為未學習，其餘排程保留；重複匯入保留 ID 與學習進度；作者的學習紀錄不會帶入 |
+| [同詞多義](../tests/Wording.Tests/WordGroupingTests.cs) | 同名資料真正合併為一個詞條／星號／複習卡，合併前備份、失敗完整回退、受影響詞條重設為未學習、巢狀解釋可編輯與複習、舊 JSON 重匯不再新增重複資料 |
+| [卡片筆記清理](../tests/Wording.Tests/VocabularyNotesTests.cs) | 只清除教材重複聲明、保留用法與個人筆記；先備份、失敗回退、原卡片／星號／排程保留，舊檔重匯不帶回聲明 |
 | [設定與輸入法](../tests/Wording.Tests/ApplicationConfigurationTests.cs) | 新預設與已保存偏好分開、JSON 格式與範圍檢查、減量門檻邊界、英文鍵盤選擇與複習頁 IME 範圍 |
 | [Codex 模型清單](../tests/Wording.Tests/CodexModelCatalogTests.cs)、[模型選單](../tests/Wording.Tests/ModelPickerTests.cs) | 初始化順序、分頁、新模型與未知欄位、隱藏／非文字模型、ChatGPT 登入、錯誤輸出遮蔽、查詢失敗、舊路徑晚到回應及選擇保存 |
 | [發行包](../scripts/verify-package.py) | SHA-256、必要檔案、Windows x64 EXE、.NET／WPF 自包含 runtime、三個專案版本、提示詞、授權；排除重複路徑、使用者資料與暫存檔 |
@@ -44,7 +46,7 @@ Actions 版本與行為依官方文件核對：[checkout](https://github.com/act
 | `tests/Wording.Tests/Fixtures/practice-reading-default.json` | 真實生成格式的回歸案例，防止再次拒絕可用題目；保留 |
 | 舊品牌相容邏輯 | 僅供作者使用，已移除舊資料路徑與備份品牌辨識。兩份教材皆有固定 ID，自動匯入 ID 使用 Wording 前綴；資料庫結構升級仍保留。資料搬移需透過 App 備份／還原並在實際畫面驗收 |
 | `Assets/Wording.svg`、`scripts/create-app-icon.ps1` | 品牌圖示原始檔與重建工具；保留 |
-| `docs/images/wording-demo.gif`、授權文字 | 主 README 和發行包仍引用；保留 |
+| `docs/images/wording-*.png`、授權文字 | 主 README 與展示索引仍引用；保留。舊操作 GIF 已由清晰 PNG 取代並移除 |
 | `artifacts/Wording-0.2.0-win-x64`、舊 ZIP、`artifacts/practice-smoke` 與恢復診斷副本 | 未追蹤的舊打包與診斷輸出，本輪清理；完整資料恢復 ZIP 保留 |
 | `bin`、`obj`、`artifacts/layout-check`、`artifacts/test-results` | 可重建的輸出；近期結果有助除錯，清理前先決定需保留哪些證據 |
 

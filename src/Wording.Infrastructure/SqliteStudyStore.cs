@@ -13,7 +13,7 @@ namespace Wording.Infrastructure;
 /// </summary>
 public sealed partial class SqliteStudyStore : IStudyStore, IPracticeStore
 {
-    internal const int SchemaVersion = 3;
+    internal const int SchemaVersion = 4;
     internal static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly TimeProvider _clock;
