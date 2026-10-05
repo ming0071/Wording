@@ -141,10 +141,13 @@ public sealed partial class DesktopWorkflowTests
                 AssertFits(view, "FlipCard");
                 review.FlipCommand.Execute(null);
                 Layout(view, 715, 560);
-                foreach (var id in new[] { "ReviewHeadword", "ReviewMeaning", "RateAgain", "RateHard", "RateGood", "RateEasy" }) AssertFits(view, id);
+                foreach (var id in new[] { "ReviewHeadword", "RateAgain", "RateHard", "RateGood", "RateEasy" }) AssertFits(view, id);
+                var meanings = Descendants(view).OfType<TextBlock>().Where(x => AutomationProperties.GetAutomationId(x) == "ReviewMeaning").ToArray();
+                Assert.Equal(word.Definitions.Count, meanings.Length);
+                Assert.All(meanings, meaning => AssertFits(view, meaning));
                 var text = Descendants(view).OfType<TextBlock>().Where(IsShown).Select(x => x.Text).ToArray();
-                Assert.Contains(word.Meaning, text);
-                foreach (var example in word.Examples)
+                Assert.All(word.Definitions, definition => Assert.Contains(definition.Meaning, text));
+                foreach (var example in word.Definitions.SelectMany(x => x.Examples))
                 {
                     Assert.Contains(example.English, text);
                     Assert.Contains(example.Chinese, text);

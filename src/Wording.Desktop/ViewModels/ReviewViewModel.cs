@@ -20,6 +20,7 @@ public sealed class ReviewViewModel : PageViewModel
     private string emptyText = "正在準備學習卡…";
     private string[] reviewCategories = [];
     private string scopeText = "";
+    private IReadOnlyList<ReviewDefinitionViewModel> definitions = [];
 
     public ObservableCollection<string> Categories { get; } = [];
     public CategorySelection CategoryScope { get; } = new("全部單字庫");
@@ -34,7 +35,12 @@ public sealed class ReviewViewModel : PageViewModel
         private set
         {
             SetProperty(ref current, value);
+            definitions = value?.Word.Definitions.Select(x => new ReviewDefinitionViewModel(x)).ToArray() ?? [];
             OnPropertyChanged(nameof(HasCard));
+            OnPropertyChanged(nameof(Definitions));
+            OnPropertyChanged(nameof(DefinitionColumns));
+            OnPropertyChanged(nameof(HasOtherSenses));
+            OnPropertyChanged(nameof(SenseContext));
             OnPropertyChanged(nameof(Examples));
             OnPropertyChanged(nameof(SynonymsText));
             OnPropertyChanged(nameof(CollocationsText));
@@ -64,6 +70,8 @@ public sealed class ReviewViewModel : PageViewModel
     public bool HasCollocations => Current?.Word.Collocations.Length > 0;
     public IReadOnlyList<VocabularyDefinition> OtherSenses => Current?.Word.AdditionalSenses ?? [];
     public bool HasOtherSenses => OtherSenses.Count > 0;
+    public IReadOnlyList<ReviewDefinitionViewModel> Definitions => definitions;
+    public int DefinitionColumns => Math.Clamp(Definitions.Count, 1, 3);
     public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
         : "本次依提示回想這個詞義";
@@ -127,7 +135,7 @@ public sealed class ReviewViewModel : PageViewModel
         SpeakCommand = new(_ => Speak(), _ => Current is not null);
         StopSpeechCommand = new(_ => speech.Stop());
         SpeakExampleCommand = new(_ => SpeakExamples(),
-            _ => Current?.Word.Examples.Length > 0 && IsAnswerVisible);
+            _ => Definitions.Any(x => x.Examples.Count > 0) && IsAnswerVisible);
         DictionaryCommand = new(_ => UiActions.OpenDictionary(Current?.Word.Headword, message => Error = message), _ => Current is not null);
         PropertyChanged += (_, args) =>
         {
@@ -247,7 +255,7 @@ public sealed class ReviewViewModel : PageViewModel
     {
         SpeakText(Current?.Word.Headword);
     }
-    private void SpeakExamples() => SpeakText(string.Join(" ", Current?.Word.Examples.Select(x => x.English) ?? []));
+    private void SpeakExamples() => SpeakText(string.Join(" ", Definitions.SelectMany(x => x.Examples).Select(x => x.English)));
 
     private void SpeakText(string? text)
     {

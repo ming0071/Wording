@@ -25,8 +25,10 @@
                             <Button DockPanel.Dock="Right" Style="{StaticResource StarButton}" Tag="{Binding Current.Word.IsStarred}" Command="{Binding StarCommand}" Margin="12,0,0,0" />
                             <TextBlock Text="{Binding Current.Word.Headword}" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewHeadword" />
                         </DockPanel>
-                        <TextBlock Text="{Binding Current.Word.PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />
-                        <TextBlock Text="{Binding Current.Word.Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" />
+                        <StackPanel Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}">
+                            <TextBlock Text="{Binding Current.Word.PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />
+                            <TextBlock Text="{Binding Current.Word.Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" />
+                        </StackPanel>
                         <TextBlock Text="{Binding SenseContext}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,6,0,0" />
                         <WrapPanel HorizontalAlignment="Center" Margin="0,7,0,5">
                             <Button Content="{Binding SpeakButtonText}" Command="{Binding SpeakCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakWord" />
@@ -34,47 +36,61 @@
                             <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
                         </WrapPanel>
                         <TextBlock Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" />
-                        <StackPanel Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}">
-                            <TextBlock Text="{Binding Current.Word.Meaning}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" Margin="0,5,0,8" AutomationProperties.AutomationId="ReviewMeaning" />
-                            <TextBlock Text="{Binding Current.Word.EnglishDefinition}" FontSize="15" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,8" Visibility="{Binding HasEnglishDefinition, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewEnglishDefinition" />
-                            <DockPanel Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
-                                <TextBlock Text="常用搭配" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding CollocationsText}" FontSize="14" TextWrapping="Wrap" />
-                            </DockPanel>
-                            <DockPanel Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
-                                <TextBlock Text="同義詞" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding SynonymsText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewSynonyms" />
-                            </DockPanel>
-                            <ItemsControl ItemsSource="{Binding Examples}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border Background="#F5F7FB" CornerRadius="9" Padding="10,7" Margin="0,0,0,6">
-                                            <StackPanel><TextBlock Text="{Binding English}" FontSize="23" AutomationProperties.AutomationId="ReviewExampleEnglish" TextWrapping="Wrap" /><TextBlock Text="{Binding Chinese}" Style="{StaticResource MutedText}" FontSize="18" Margin="0,4,0,0" /></StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                            <DockPanel Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}" Margin="0,3,0,0">
-                                <TextBlock Text="我的筆記" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
-                                <TextBlock Text="{Binding Current.Word.Notes}" FontSize="13" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewNotes" />
-                            </DockPanel>
-                            <Border Background="#F0EEFC" CornerRadius="9" Padding="12,9" Margin="0,12,0,0" Visibility="{Binding HasOtherSenses, Converter={StaticResource BoolVisibility}}">
-                                <StackPanel>
-                                    <TextBlock Text="這個詞也有其他意思" FontWeight="SemiBold" FontSize="13" />
-                                    <TextBlock Text="依各組解釋的理解程度，為整個詞條評分。" Style="{StaticResource MutedText}" FontSize="11" TextWrapping="Wrap" Margin="0,4,0,7" />
-                                    <ItemsControl ItemsSource="{Binding OtherSenses}"><ItemsControl.ItemTemplate><DataTemplate>
-                                        <StackPanel Margin="0,6">
-                                            <TextBlock FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"><Run Text="{Binding PartOfSpeech}" /><Run Text="　" /><Run Text="{Binding Meaning}" /></TextBlock>
-                                            <TextBlock Text="{Binding EnglishDefinition}" FontSize="13" TextWrapping="Wrap" Margin="0,4" />
-                                            <ItemsControl ItemsSource="{Binding Examples}"><ItemsControl.ItemTemplate><DataTemplate>
-                                                <StackPanel Margin="0,4"><TextBlock Text="{Binding English}" TextWrapping="Wrap" /><TextBlock Text="{Binding Chinese}" Style="{StaticResource MutedText}" FontSize="12" TextWrapping="Wrap" /></StackPanel>
-                                            </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
-                                            <TextBlock Text="{Binding Notes}" FontSize="12" TextWrapping="Wrap" Margin="0,4" />
+                        <ItemsControl ItemsSource="{Binding Definitions}" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitions">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><UniformGrid Columns="{Binding DefinitionColumns}" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border CornerRadius="10" BorderBrush="#E9EDF5" AutomationProperties.AutomationId="ReviewDefinition">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Padding" Value="0" />
+                                                <Setter Property="Margin" Value="0" />
+                                                <Setter Property="BorderThickness" Value="0" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.HasOtherSenses, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                                                        <Setter Property="Padding" Value="12" />
+                                                        <Setter Property="Margin" Value="6,6" />
+                                                        <Setter Property="BorderThickness" Value="1" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />
+                                            <TextBlock Text="{Binding Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" Visibility="{Binding HasCue, Converter={StaticResource BoolVisibility}}" />
+                                            <TextBlock Text="{Binding Meaning}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" Margin="0,5,0,8" AutomationProperties.AutomationId="ReviewMeaning" />
+                                            <TextBlock Text="{Binding EnglishDefinition}" FontSize="15" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,8" Visibility="{Binding HasEnglishDefinition, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewEnglishDefinition" />
+                                            <DockPanel Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
+                                                <TextBlock Text="常用搭配" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding CollocationsText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewCollocations" />
+                                            </DockPanel>
+                                            <DockPanel Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
+                                                <TextBlock Text="同義詞" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding SynonymsText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewSynonyms" />
+                                            </DockPanel>
+                                            <ItemsControl ItemsSource="{Binding Examples}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="#F5F7FB" CornerRadius="9" Padding="10,7" Margin="0,0,0,6">
+                                                            <StackPanel>
+                                                                <TextBlock Text="{Binding English}" FontSize="23" AutomationProperties.AutomationId="ReviewExampleEnglish" TextWrapping="Wrap" />
+                                                                <TextBlock Text="{Binding Chinese}" Style="{StaticResource MutedText}" FontSize="18" Margin="0,4,0,0" AutomationProperties.AutomationId="ReviewExampleChinese" />
+                                                            </StackPanel>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                            <DockPanel Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}" Margin="0,3,0,0">
+                                                <TextBlock Text="我的筆記" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Notes}" FontSize="13" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewNotes" />
+                                            </DockPanel>
                                         </StackPanel>
-                                    </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
-                                </StackPanel>
-                            </Border>
-                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </Viewbox>
             </Grid>
