@@ -5,6 +5,8 @@ Push-Location (Split-Path $PSScriptRoot -Parent)
 try {
     if (-not $Version) { $Version = ([xml](Get-Content -LiteralPath Directory.Build.props -Raw)).Project.PropertyGroup.Version }
     if ($Version -notmatch '^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$') { throw 'Version must be a semantic version, such as 0.3.0.' }
+    # Check the pinned copy before doing any work, and again immediately before replacing it.
+    & (Join-Path $PSScriptRoot 'update-current.ps1') -CheckOnly
     $taskOutput = Join-Path (Get-Location) "artifacts/Wording-$Version-win-x64"
     # Publish into an empty directory so removed assemblies or documents cannot survive in a release.
     if (Test-Path -LiteralPath $taskOutput) {
@@ -30,4 +32,5 @@ try {
     Compress-Archive -Path "$taskOutput/*" -DestinationPath $taskZip -Force
     $taskHash = (Get-FileHash -LiteralPath $taskZip -Algorithm SHA256).Hash.ToLowerInvariant()
     "$taskHash  $([IO.Path]::GetFileName($taskZip))" | Set-Content -LiteralPath "$taskZip.sha256" -Encoding ascii
+    & (Join-Path $PSScriptRoot 'update-current.ps1') -PackageDirectory $taskOutput
 } finally { Pop-Location }

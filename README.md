@@ -38,6 +38,15 @@ cd Wording
 
 `build.ps1` 包含建置與測試；後續直接開啟 EXE。
 
+日常使用與工作列釘選建議使用固定的完整程式包路徑：
+
+```powershell
+.\scripts\publish.ps1 -LockedRestore
+.\artifacts\Wording-current\Wording.exe
+```
+
+每次成功打包都會更新 `Wording-current`，版本升級不需要更改捷徑；更新前請先關閉從這個位置開啟的程式。一般 `build.ps1` 只更新開發建置，不會更新此程式包。個人紀錄仍保存在 Windows 使用者資料目錄，沒有包含在程式包內。
+
 </details>
 
 ## Usage

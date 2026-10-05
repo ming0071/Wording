@@ -43,6 +43,13 @@ public sealed record VocabularyItem
     public long CreationOrder { get; init; }
     [System.Text.Json.Serialization.JsonIgnore]
     public string StarLabel => IsStarred ? "★" : "☆";
+
+    public bool MatchesSearch(string? search)
+    {
+        var text = search?.Trim() ?? "";
+        return text.Length == 0 || Headword.Contains(text, StringComparison.OrdinalIgnoreCase) ||
+            Definitions.Any(definition => definition.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase));
+    }
 }
 
 public sealed record VocabularyDefinition

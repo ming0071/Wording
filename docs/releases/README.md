@@ -1,10 +1,12 @@
 # Releases
 
-最新版本為 [0.4.0](0.4.0.md)。GitHub 發布列表保留 0.2.0、0.3.0、0.4.0；0.3.7 的發布已移除，其 [更新說明](0.3.7.md) 與 Git tag 留作原始碼歷史紀錄。
+目前原始碼版本為 [0.4.1](0.4.1.md)，尚未發布 GitHub Release。GitHub 最新發布版本為 [0.4.0](0.4.0.md)，發布列表保留 0.2.0、0.3.0、0.4.0；0.3.7 的發布已移除，其 [更新說明](0.3.7.md) 與 Git tag 留作原始碼歷史紀錄。
 
 [回到主頁](../../README.md#documentation) · [品質檢查與維護](../quality-checks.md)
 
 ## Publish
+
+本機執行 `scripts/publish.ps1 -LockedRestore` 會產生帶版本號的程式包及 ZIP，成功後同步到固定的 `artifacts/Wording-current/Wording.exe`，適合日常使用與工作列釘選。同步先準備完整新副本，再替換舊副本；固定路徑的程式仍在執行時會中止，保留現有程式。GitHub Release 仍只上傳版本 ZIP、校驗碼與教材，不上傳這個本機副本。從 GitHub 下載新版時，關閉程式並將完整新版內容替換到相同的固定資料夾，即可沿用捷徑；沒有自動下載更新。
 
 1. 在 `Directory.Build.props` 更新版本，新增對應的發布說明。
 2. 正常還原一次，提交更新的套件鎖定檔；以 `scripts/build.ps1 -LockedRestore` 驗證。

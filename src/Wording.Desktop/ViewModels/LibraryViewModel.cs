@@ -102,9 +102,7 @@ public sealed class LibraryViewModel : PageViewModel
         var text = SearchText.Trim();
         var matchingWords = eligible.Where(item =>
             (selected.Length == 0 || item.Categories.Intersect(selected, StringComparer.OrdinalIgnoreCase).Any()) &&
-            (text.Length == 0 || item.Headword.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                item.Definitions.Any(d => d.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                    d.Collocations.Any(x => x.Contains(text, StringComparison.OrdinalIgnoreCase)))))
+            item.MatchesSearch(text))
             .Select(x => x.WordId).ToHashSet();
         var filtered = eligible.Where(x => matchingWords.Contains(x.WordId)).ToList();
         filtered = SortItems(filtered, SelectedSort).ToList();

@@ -63,12 +63,7 @@ public sealed partial class SqliteStudyStore
             var items = ReadWords(connection, null);
             var query = items.Where(x => includeArchived || !x.IsArchived);
             if (!string.IsNullOrWhiteSpace(search))
-            {
-                var text = search.Trim();
-                query = query.Where(x => x.Headword.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                    x.Definitions.Any(d => d.Meaning.Contains(text, StringComparison.OrdinalIgnoreCase) ||
-                        d.Collocations.Any(c => c.Contains(text, StringComparison.OrdinalIgnoreCase))));
-            }
+                query = query.Where(x => x.MatchesSearch(search));
             if (!string.IsNullOrWhiteSpace(category))
                 query = query.Where(x => x.Categories.Contains(category.Trim(), StringComparer.OrdinalIgnoreCase));
             return query.OrderBy(x => x.Headword, StringComparer.OrdinalIgnoreCase).ToArray();

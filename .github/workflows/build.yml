@@ -39,6 +39,8 @@ jobs:
         run: python scripts/release.py metadata
       - name: Test release validation scripts
         run: python -m unittest discover -s scripts/tests -v
+      - name: Test fixed-path app updates
+        run: ./scripts/tests/test_update_current.ps1
       - name: Validate original starter vocabulary
         run: python scripts/validate-content.py
       - name: Build and test

@@ -146,7 +146,7 @@
                             <DataGridTemplateColumn Header="各組解釋" SortMemberPath="Meaning" ClipboardContentBinding="{Binding Meaning}" Width="1.7*" MinWidth="170">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ItemsControl ItemsSource="{Binding Definitions}" Margin="0,4">
+                                        <ItemsControl ItemsSource="{Binding Definitions}" Margin="0,4" VerticalAlignment="Center">
                                             <ItemsControl.ItemTemplate><DataTemplate>
                                                 <Border MinHeight="40" Padding="16,4">
                                                     <TextBlock Text="{Binding Meaning}" VerticalAlignment="Center" TextWrapping="Wrap" LineHeight="21" ToolTip="{Binding Meaning}" />
