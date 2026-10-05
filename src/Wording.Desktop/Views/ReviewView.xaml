@@ -26,7 +26,7 @@
                             <TextBlock Text="{Binding Current.Word.Headword}" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewHeadword" />
                         </DockPanel>
                         <StackPanel Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}">
-                            <TextBlock Text="{Binding Current.Word.PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />
+                            <TextBlock Text="{Binding PartOfSpeechText}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" AutomationProperties.AutomationId="ReviewQuestionPartOfSpeech" />
                             <TextBlock Text="{Binding Current.Word.Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" />
                         </StackPanel>
                         <TextBlock Text="{Binding SenseContext}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,6,0,0" />
@@ -36,7 +36,7 @@
                             <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
                         </WrapPanel>
                         <TextBlock Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" />
-                        <ItemsControl ItemsSource="{Binding Definitions}" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitions">
+                        <ItemsControl ItemsSource="{Binding Definitions}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitions">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate><UniformGrid Columns="{Binding DefinitionColumns}" /></ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
@@ -57,20 +57,37 @@
                                                 </Style.Triggers>
                                             </Style>
                                         </Border.Style>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" />
-                                            <TextBlock Text="{Binding Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" Visibility="{Binding HasCue, Converter={StaticResource BoolVisibility}}" />
-                                            <TextBlock Text="{Binding Meaning}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" Margin="0,5,0,8" AutomationProperties.AutomationId="ReviewMeaning" />
-                                            <TextBlock Text="{Binding EnglishDefinition}" FontSize="15" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,8" Visibility="{Binding HasEnglishDefinition, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewEnglishDefinition" />
-                                            <DockPanel Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewPartOfSpeechRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewMeaningRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewEnglishDefinitionRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewCueRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewCollocationsRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewSynonymsRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewExamplesRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewNotesRow" />
+                                                <RowDefinition Height="*" />
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Text="{Binding PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" AutomationProperties.AutomationId="ReviewPartOfSpeech" />
+                                            <TextBlock Grid.Row="1" Text="{Binding Meaning}" FontSize="22" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Top" Margin="0,5,0,8" AutomationProperties.AutomationId="ReviewMeaning" />
+                                            <StackPanel Grid.Row="2" VerticalAlignment="Top" Margin="0,0,0,8" AutomationProperties.AutomationId="ReviewEnglishDefinitionSection">
+                                                <TextBlock Text="英文解釋" FontSize="12" FontWeight="SemiBold" TextAlignment="Center" Margin="0,0,0,4" />
+                                                <TextBlock Text="{Binding EnglishDefinitionText}" FontSize="15" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewEnglishDefinition" />
+                                            </StackPanel>
+                                            <DockPanel Grid.Row="3" VerticalAlignment="Top" Visibility="{Binding HasCue, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
+                                                <TextBlock Text="提示" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
+                                                <TextBlock Text="{Binding Cue}" Style="{StaticResource MutedText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewCue" />
+                                            </DockPanel>
+                                            <DockPanel Grid.Row="4" VerticalAlignment="Top" Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
                                                 <TextBlock Text="常用搭配" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding CollocationsText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewCollocations" />
                                             </DockPanel>
-                                            <DockPanel Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
+                                            <DockPanel Grid.Row="5" VerticalAlignment="Top" Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
                                                 <TextBlock Text="同義詞" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding SynonymsText}" FontSize="14" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewSynonyms" />
                                             </DockPanel>
-                                            <ItemsControl ItemsSource="{Binding Examples}">
+                                            <ItemsControl Grid.Row="6" VerticalAlignment="Top" ItemsSource="{Binding Examples}" AutomationProperties.AutomationId="ReviewExamples">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Border Background="#F5F7FB" CornerRadius="9" Padding="10,7" Margin="0,0,0,6">
@@ -82,11 +99,11 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                            <DockPanel Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}" Margin="0,3,0,0">
+                                            <DockPanel Grid.Row="7" VerticalAlignment="Top" Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}" Margin="0,3,0,0">
                                                 <TextBlock Text="我的筆記" FontSize="12" FontWeight="SemiBold" Width="68" VerticalAlignment="Center" />
                                                 <TextBlock Text="{Binding Notes}" FontSize="13" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewNotes" />
                                             </DockPanel>
-                                        </StackPanel>
+                                        </Grid>
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

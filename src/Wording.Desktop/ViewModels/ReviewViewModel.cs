@@ -38,6 +38,7 @@ public sealed class ReviewViewModel : PageViewModel
             definitions = value?.Word.Definitions.Select(x => new ReviewDefinitionViewModel(x)).ToArray() ?? [];
             OnPropertyChanged(nameof(HasCard));
             OnPropertyChanged(nameof(Definitions));
+            OnPropertyChanged(nameof(PartOfSpeechText));
             OnPropertyChanged(nameof(DefinitionColumns));
             OnPropertyChanged(nameof(HasOtherSenses));
             OnPropertyChanged(nameof(SenseContext));
@@ -71,6 +72,7 @@ public sealed class ReviewViewModel : PageViewModel
     public IReadOnlyList<VocabularyDefinition> OtherSenses => Current?.Word.AdditionalSenses ?? [];
     public bool HasOtherSenses => OtherSenses.Count > 0;
     public IReadOnlyList<ReviewDefinitionViewModel> Definitions => definitions;
+    public string PartOfSpeechText => Definitions.FirstOrDefault()?.PartOfSpeech ?? "";
     public int DefinitionColumns => Math.Clamp(Definitions.Count, 1, 3);
     public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"

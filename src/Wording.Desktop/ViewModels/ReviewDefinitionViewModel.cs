@@ -4,10 +4,11 @@ namespace Wording.Desktop.ViewModels;
 
 public sealed class ReviewDefinitionViewModel(VocabularyDefinition definition)
 {
-    public string PartOfSpeech => definition.PartOfSpeech;
+    public string PartOfSpeech => PartOfSpeechDisplay.Chinese(definition.PartOfSpeech);
     public string Cue => definition.Cue;
     public string Meaning => definition.Meaning;
     public string EnglishDefinition => definition.EnglishDefinition;
+    public string EnglishDefinitionText => HasEnglishDefinition ? EnglishDefinition : "尚未提供英文解釋";
     public string CollocationsText => string.Join(" · ", definition.Collocations);
     public string SynonymsText => string.Join("、", definition.Synonyms);
     public string Notes => definition.Notes;
