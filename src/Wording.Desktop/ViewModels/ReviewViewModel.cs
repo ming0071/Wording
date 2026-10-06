@@ -89,7 +89,7 @@ public sealed class ReviewViewModel : PageViewModel
     }
     public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
-        : "本次依提示回想這個詞義";
+        : "";
     public string KeyboardHint => $"{KeyLabel(settings.FlipKey)} 翻卡 · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
     public ICommand? CommandForShortcut(string key) => key == settings.FlipKey ? FlipCommand :
         key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :

@@ -18,7 +18,7 @@
         </Border>
         <views:StatusBanner Grid.Row="2" />
         <Border Grid.Row="3" Style="{StaticResource Panel}" Padding="18,14" Visibility="{Binding HasCard, Converter={StaticResource BoolVisibility}}">
-            <Grid x:Name="ContentHost">
+            <Grid x:Name="ContentHost" VerticalAlignment="Center">
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
                     <StackPanel AutomationProperties.AutomationId="ReviewHeader">
                         <DockPanel HorizontalAlignment="Center">
@@ -29,14 +29,14 @@
                             <TextBlock Text="{Binding PartOfSpeechText}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" AutomationProperties.AutomationId="ReviewQuestionPartOfSpeech" />
                             <TextBlock Text="{Binding Current.Word.Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" />
                         </StackPanel>
-                        <TextBlock Text="{Binding SenseContext}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,6,0,0" />
+                        <TextBlock Text="{Binding SenseContext}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,6,0,0" Visibility="{Binding HasOtherSenses, Converter={StaticResource BoolVisibility}}" />
                         <WrapPanel HorizontalAlignment="Center" Margin="0,7,0,5">
                             <Button Content="{Binding SpeakButtonText}" Command="{Binding SpeakCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakWord" />
                             <Button Content="{Binding SpeakExampleButtonText}" Command="{Binding SpeakExampleCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakExamples" />
                             <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
                         </WrapPanel>
                     </StackPanel>
-                    <TextBlock Grid.Row="1" Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" />
+                    <TextBlock Grid.Row="1" Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" TextWrapping="Wrap" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewRecallPrompt" />
                     <ScrollViewer x:Name="DefinitionScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitionScroll">
                         <ItemsControl ItemsSource="{Binding Definitions}" Grid.IsSharedSizeScope="{Binding HasParallelDefinitions}" AutomationProperties.AutomationId="ReviewDefinitions">
                             <ItemsControl.ItemsPanel>
