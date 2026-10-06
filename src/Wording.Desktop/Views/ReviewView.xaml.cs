@@ -15,7 +15,9 @@ public partial class ReviewView : UserControl
         IsTabStop = false;
         Loaded += (_, _) => { ReviewInputLanguage.Configure(this); Observe(); RequestKeyboardFocus(); };
         Unloaded += (_, _) => StopObserving();
-        DataContextChanged += (_, _) => { if (IsLoaded) { Observe(); RequestKeyboardFocus(); } };
+        DataContextChanged += (_, _) => { Observe(); UpdateDefinitionWidth(); DefinitionScroll.ScrollToTop(); if (IsLoaded) RequestKeyboardFocus(); };
+        DefinitionScroll.SizeChanged += (_, _) => UpdateDefinitionWidth();
+        DefinitionScroll.ScrollChanged += (_, _) => UpdateDefinitionWidth();
     }
     private void Observe()
     {
@@ -30,7 +32,17 @@ public partial class ReviewView : UserControl
     }
     private void OnReviewChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(ReviewViewModel.Current) or nameof(ReviewViewModel.IsAnswerVisible)) RequestKeyboardFocus();
+        if (e.PropertyName is nameof(ReviewViewModel.Current) or nameof(ReviewViewModel.IsAnswerVisible))
+        {
+            DefinitionScroll.ScrollToTop();
+            UpdateDefinitionWidth();
+            RequestKeyboardFocus();
+        }
+    }
+    private void UpdateDefinitionWidth()
+    {
+        if (DataContext is ReviewViewModel review)
+            review.UpdateDefinitionWidth(DefinitionScroll.ViewportWidth > 0 ? DefinitionScroll.ViewportWidth : DefinitionScroll.ActualWidth);
     }
     private void RequestKeyboardFocus() => Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
     {

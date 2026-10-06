@@ -21,6 +21,7 @@ public sealed class ReviewViewModel : PageViewModel
     private string[] reviewCategories = [];
     private string scopeText = "";
     private IReadOnlyList<ReviewDefinitionViewModel> definitions = [];
+    private double definitionWidth = double.PositiveInfinity;
 
     public ObservableCollection<string> Categories { get; } = [];
     public CategorySelection CategoryScope { get; } = new("全部單字庫");
@@ -40,6 +41,7 @@ public sealed class ReviewViewModel : PageViewModel
             OnPropertyChanged(nameof(Definitions));
             OnPropertyChanged(nameof(PartOfSpeechText));
             OnPropertyChanged(nameof(DefinitionColumns));
+            OnPropertyChanged(nameof(HasParallelDefinitions));
             OnPropertyChanged(nameof(HasOtherSenses));
             OnPropertyChanged(nameof(SenseContext));
             OnPropertyChanged(nameof(Examples));
@@ -73,7 +75,18 @@ public sealed class ReviewViewModel : PageViewModel
     public bool HasOtherSenses => OtherSenses.Count > 0;
     public IReadOnlyList<ReviewDefinitionViewModel> Definitions => definitions;
     public string PartOfSpeechText => Definitions.FirstOrDefault()?.PartOfSpeech ?? "";
-    public int DefinitionColumns => Math.Clamp(Definitions.Count, 1, 3);
+    public int DefinitionColumns => Math.Min(Math.Clamp(Definitions.Count, 1, 3),
+        double.IsPositiveInfinity(definitionWidth) ? 3 : Math.Clamp((int)(definitionWidth / 360), 1, 3));
+    public bool HasParallelDefinitions => DefinitionColumns > 1;
+    public void UpdateDefinitionWidth(double width)
+    {
+        if (!double.IsFinite(width) || width <= 0) return;
+        var previous = DefinitionColumns;
+        definitionWidth = width;
+        if (previous == DefinitionColumns) return;
+        OnPropertyChanged(nameof(DefinitionColumns));
+        OnPropertyChanged(nameof(HasParallelDefinitions));
+    }
     public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
         : "本次依提示回想這個詞義";

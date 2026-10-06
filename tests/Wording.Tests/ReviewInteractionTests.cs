@@ -121,7 +121,7 @@ public sealed partial class DesktopWorkflowTests
     }
 
     [Fact]
-    public void AllSeedCardsFitTheMinimumReviewPageWithFixedActionsWithoutScrolling()
+    public void AllSeedCardsRemainReadableWithFixedActionsAndScrollableDefinitions()
     {
         OffscreenWpf.Invoke(() =>
         {
@@ -144,7 +144,7 @@ public sealed partial class DesktopWorkflowTests
                 foreach (var id in new[] { "ReviewHeadword", "RateAgain", "RateHard", "RateGood", "RateEasy" }) AssertFits(view, id);
                 var meanings = Descendants(view).OfType<TextBlock>().Where(x => AutomationProperties.GetAutomationId(x) == "ReviewMeaning").ToArray();
                 Assert.Equal(word.Definitions.Count, meanings.Length);
-                Assert.All(meanings, meaning => AssertFits(view, meaning));
+                Assert.All(meanings, meaning => AssertFitsReviewContent(view, meaning));
                 var text = Descendants(view).OfType<TextBlock>().Where(IsShown).Select(x => x.Text).ToArray();
                 Assert.All(word.Definitions, definition => Assert.Contains(definition.Meaning, text));
                 foreach (var example in word.Definitions.SelectMany(x => x.Examples))
@@ -152,26 +152,29 @@ public sealed partial class DesktopWorkflowTests
                     Assert.Contains(example.English, text);
                     Assert.Contains(example.Chinese, text);
                 }
-                foreach (var block in Descendants(view).OfType<TextBlock>().Where(IsShown)) AssertFits(view, block);
+                foreach (var block in Descendants(view).OfType<TextBlock>().Where(IsShown)) AssertFitsReviewContent(view, block);
+                var definitionScroll = (ScrollViewer)view.FindName("DefinitionScroll");
+                definitionScroll.ScrollToBottom();
+                Layout(view, 715, 560);
+                AssertFits(view, "ReviewHeadword");
+                AssertFits(view, "SpeakExamples");
+                AssertFits(view, "RateGood");
+                Assert.InRange(definitionScroll.VerticalOffset, definitionScroll.ScrollableHeight - 0.1, definitionScroll.ScrollableHeight + 0.1);
             }
-            // The topic selector can scroll when there are many topics. Its container alone
-            // does not mean the card needs scrolling; verify the visible layout instead.
             Assert.All(Descendants(view).OfType<ScrollViewer>().Where(IsShown), scroll =>
             {
-                Assert.True(scroll.ScrollableHeight <= 0.1, "The minimum review page requires vertical scrolling.");
                 Assert.True(scroll.ScrollableWidth <= 0.1, "The minimum review page requires horizontal scrolling.");
             });
-            var contentHost = (FrameworkElement)view.FindName("ContentHost");
-            Assert.DoesNotContain(Descendants(contentHost), x => x is ScrollViewer);
             Assert.All(Descendants(view).OfType<FrameworkElement>(), x => Assert.Null(x.ToolTip));
             var longest = seed.Items.MaxBy(x => x.Examples.Sum(e => e.English.Length + e.Chinese.Length))!;
             store.NextReview = new(longest, 0, true, null);
             review.LoadAsync().GetAwaiter().GetResult();
             review.FlipCommand.Execute(null);
             Layout(view, 715, 560);
-            Render(view, "review-v014-minimum.png");
+            Assert.Equal(0, ((ScrollViewer)view.FindName("DefinitionScroll")).VerticalOffset);
+            Render(view, "review-v044-minimum.png");
             Layout(view, 959, 710);
-            Render(view, "review-v014-normal.png");
+            Render(view, "review-v044-normal.png");
         });
     }
 
@@ -216,6 +219,19 @@ public sealed partial class DesktopWorkflowTests
         var bounds = element.TransformToAncestor(view).TransformBounds(new(0, 0, element.ActualWidth, element.ActualHeight));
         Assert.True(bounds.Left >= -1 && bounds.Top >= -1 && bounds.Right <= view.ActualWidth + 1 && bounds.Bottom <= view.ActualHeight + 1,
             $"{element.GetType().Name} {AutomationProperties.GetAutomationId(element)} {bounds} exceeds {view.ActualWidth}x{view.ActualHeight}");
+    }
+
+    private static void AssertFitsReviewContent(FrameworkElement view, FrameworkElement element)
+    {
+        var scroll = (ScrollViewer)view.FindName("DefinitionScroll");
+        var content = (FrameworkElement)scroll.Content;
+        if (!content.IsAncestorOf(element)) { AssertFits(view, element); return; }
+        AssertFits(content, element);
+        var transform = element.TransformToAncestor(view);
+        var origin = transform.Transform(new Point());
+        Assert.InRange((transform.Transform(new Point(1, 0)) - origin).Length, 0.999, 1.001);
+        Assert.InRange((transform.Transform(new Point(0, 1)) - origin).Length, 0.999, 1.001);
+        Assert.True(scroll.ScrollableWidth <= 0.1);
     }
 
     private static void Render(FrameworkElement view, string filename)

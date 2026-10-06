@@ -40,7 +40,7 @@ public sealed record ApplicationConfiguration
             throw new ArgumentException("設定區塊不能為空。");
         if (!BigInteger.TryParse(Review.DailyNewLimit, NumberStyles.None, CultureInfo.InvariantCulture, out _) ||
             string.IsNullOrWhiteSpace(Review.PreferredInputLanguage) ||
-            CultureInfo.GetCultureInfo(Review.PreferredInputLanguage).TwoLetterISOLanguageName != "en" ||
+            CultureInfo.GetCultureInfo(Review.PreferredInputLanguage).Name != "zh-TW" ||
             Review.ReduceNewAtDueCount < 1 || Review.PauseNewAtDueCount <= Review.ReduceNewAtDueCount || Review.ReducedNewLimit < 0)
             throw new ArgumentException("複習預設無效。");
         var keys = new[] { Shortcuts.Flip, Shortcuts.Again, Shortcuts.Hard, Shortcuts.Good, Shortcuts.Easy, Shortcuts.Speak, Shortcuts.SpeakExample };

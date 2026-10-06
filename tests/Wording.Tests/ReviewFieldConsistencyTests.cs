@@ -64,12 +64,13 @@ public sealed partial class DesktopWorkflowTests
                 {
                     var sections = Descendants(view).OfType<FrameworkElement>().Where(x => AutomationProperties.GetAutomationId(x) == id).ToArray();
                     Assert.Equal(3, sections.Length);
-                    var top = sections[0].TranslatePoint(new Point(), view).Y;
-                    Assert.All(sections, section =>
+                    for (var index = 0; index < sections.Length; index++)
                     {
+                        var section = sections[index];
+                        var top = sections[index / review.DefinitionColumns * review.DefinitionColumns].TranslatePoint(new Point(), view).Y;
                         Assert.InRange(section.TranslatePoint(new Point(), view).Y, top - 0.5, top + 0.5);
-                        AssertFits(view, section);
-                    });
+                        AssertFitsReviewContent(view, section);
+                    }
                 }
                 var parts = Descendants(view).OfType<TextBlock>().Where(x => AutomationProperties.GetAutomationId(x) == "ReviewPartOfSpeech").ToArray();
                 Assert.All(parts, part => Assert.Equal("名詞", part.Text));
@@ -80,8 +81,8 @@ public sealed partial class DesktopWorkflowTests
                 Assert.All(definitions, definition => { Assert.Equal(15, definition.FontSize); Assert.Equal(TextAlignment.Center, definition.TextAlignment); });
                 Assert.Equal(word.Cue, Assert.Single(Descendants(view).OfType<TextBlock>(), x =>
                     IsShown(x) && AutomationProperties.GetAutomationId(x) == "ReviewCue").Text);
-                Assert.All(Descendants(view).OfType<TextBlock>().Where(IsShown), block => AssertFits(view, block));
-                if (width != 715) Render(view, $"review-v043-assignment-{width}.png");
+                Assert.All(Descendants(view).OfType<TextBlock>().Where(IsShown), block => AssertFitsReviewContent(view, block));
+                Render(view, $"review-v044-assignment-{width}.png");
             }
             store.NextReview = new(word with { AdditionalSenses = [] }, 0, true, null);
             review.LoadAsync().GetAwaiter().GetResult();

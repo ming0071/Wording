@@ -19,8 +19,8 @@
         <views:StatusBanner Grid.Row="2" />
         <Border Grid.Row="3" Style="{StaticResource Panel}" Padding="18,14" Visibility="{Binding HasCard, Converter={StaticResource BoolVisibility}}">
             <Grid x:Name="ContentHost">
-                <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Stretch" VerticalAlignment="Center">
-                    <StackPanel Width="{Binding ActualWidth, ElementName=ContentHost}">
+                <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                    <StackPanel AutomationProperties.AutomationId="ReviewHeader">
                         <DockPanel HorizontalAlignment="Center">
                             <Button DockPanel.Dock="Right" Style="{StaticResource StarButton}" Tag="{Binding Current.Word.IsStarred}" Command="{Binding StarCommand}" Margin="12,0,0,0" />
                             <TextBlock Text="{Binding Current.Word.Headword}" FontSize="30" FontWeight="SemiBold" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewHeadword" />
@@ -35,10 +35,12 @@
                             <Button Content="{Binding SpeakExampleButtonText}" Command="{Binding SpeakExampleCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakExamples" />
                             <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
                         </WrapPanel>
-                        <TextBlock Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" />
-                        <ItemsControl ItemsSource="{Binding Definitions}" Grid.IsSharedSizeScope="True" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitions">
+                    </StackPanel>
+                    <TextBlock Grid.Row="1" Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" VerticalAlignment="Center" TextWrapping="Wrap" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" />
+                    <ScrollViewer x:Name="DefinitionScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitionScroll">
+                        <ItemsControl ItemsSource="{Binding Definitions}" Grid.IsSharedSizeScope="{Binding HasParallelDefinitions}" AutomationProperties.AutomationId="ReviewDefinitions">
                             <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate><UniformGrid Columns="{Binding DefinitionColumns}" /></ItemsPanelTemplate>
+                                <ItemsPanelTemplate><views:ReviewDefinitionsPanel Columns="{Binding DefinitionColumns}" /></ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -108,8 +110,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
-                    </StackPanel>
-                </Viewbox>
+                    </ScrollViewer>
             </Grid>
         </Border>
         <Border Grid.Row="3" Padding="24" Background="White" CornerRadius="14">

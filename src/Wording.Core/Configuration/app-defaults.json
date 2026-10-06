@@ -1,7 +1,7 @@
 {
   "Review": {
     "DailyNewLimit": "25",
-    "PreferredInputLanguage": "en-US",
+    "PreferredInputLanguage": "zh-TW",
     "ReduceNewAtDueCount": 10,
     "ReducedNewLimit": 2,
     "PauseNewAtDueCount": 20

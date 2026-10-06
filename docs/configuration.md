@@ -21,7 +21,7 @@
 
 | 區塊 | 可調整的值 |
 | --- | --- |
-| `Review` | 新詞預設、複習頁優先的英文輸入語言、到期卡減量／暫停新詞門檻及減量名額 |
+| `Review` | 新詞預設、複習頁使用的繁體中文（台灣）輸入法、到期卡減量／暫停新詞門檻及減量名額 |
 | `Shortcuts`、`Speech` | 翻卡、四種評分與朗讀快捷鍵，自動朗讀單字／例句 |
 | `Ai` | 執行檔、模型與加速模式預設、每日預設次數與最大次數、單字生成／練習生成／登入狀態檢查／模型清單查詢逾時 |
 | `Practice.Defaults` | 閱讀／聽力、文章類型、難度、長度、單字量、題數與語速預設 |
@@ -55,6 +55,6 @@ FSRS 公式與固定參數、資料庫 schema 版本、備份／教材格式版�
 
 ## Review Keyboard
 
-進入複習頁時，優先使用已安裝的 `Review.PreferredInputLanguage` 英文鍵盤；沒有該語言時選其他已安裝的英文鍵盤。複習頁停用中文組字，沒有英文鍵盤時也能直接操作快捷鍵；離開複習焦點後恢復原輸入語言。中文詞義與筆記編輯仍使用原本的輸入法設定。
+進入複習頁時，先檢查是否安裝繁體中文（台灣）輸入法；有安裝時使用它的英文模式，不切換到英文（美國）鍵盤。沒有安裝時不設定輸入語言或中英模式。`Review.PreferredInputLanguage` 固定為 `zh-TW`，不提供其他語言的後備選擇。離開複習焦點後恢復原輸入語言；中英模式由輸入法本身管理。
 
-輸入語言範圍使用 WPF 官方的 [InputLanguageManager](https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.inputlanguagemanager?view=windowsdesktop-10.0)。實際 Windows 輸入法指示與組字行為需在使用者已安裝的輸入法上驗收。
+輸入語言範圍使用 WPF 官方的 [InputLanguageManager](https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.inputlanguagemanager?view=windowsdesktop-10.0)，英文模式使用 [PreferredImeState](https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.inputmethod.preferredimestate?view=windowsdesktop-10.0) 與 [PreferredImeConversionMode](https://learn.microsoft.com/en-us/dotnet/api/system.windows.input.inputmethod.preferredimeconversionmode?view=windowsdesktop-10.0)。實際 Windows 輸入法指示與組字行為需在使用者已安裝的輸入法上驗收。

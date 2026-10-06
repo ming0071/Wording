@@ -34,18 +34,21 @@ public sealed partial class DesktopWorkflowTests
                 Layout(view, width, width == 715 ? 560 : 900);
                 var columns = Descendants(view).OfType<Border>().Where(x => AutomationProperties.GetAutomationId(x) == "ReviewDefinition").ToArray();
                 Assert.Equal(count, columns.Length);
+                Assert.Equal(Math.Min(count, width == 715 ? 1 : width == 959 ? 2 : 3), review.DefinitionColumns);
                 var bounds = columns.Select(x => x.TransformToAncestor(view).TransformBounds(new Rect(0, 0, x.ActualWidth, x.ActualHeight))).ToArray();
                 for (var index = 0; index < count; index++)
                 {
-                    Assert.InRange(bounds[index].Top, bounds[0].Top - 0.1, bounds[0].Top + 0.1);
+                    var rowStart = index / review.DefinitionColumns * review.DefinitionColumns;
+                    Assert.InRange(bounds[index].Top, bounds[rowStart].Top - 0.1, bounds[rowStart].Top + 0.1);
                     Assert.InRange(bounds[index].Width, bounds[0].Width - 0.1, bounds[0].Width + 0.1);
-                    if (index > 0) Assert.True(bounds[index].Left >= bounds[index - 1].Right);
+                    if (index % review.DefinitionColumns > 0) Assert.True(bounds[index].Left >= bounds[index - 1].Right);
+                    else if (index > 0) Assert.True(bounds[index].Top >= bounds[index - 1].Bottom);
                     var texts = Descendants(columns[index]).OfType<TextBlock>().Where(IsShown).ToArray();
                     var definition = word.Definitions[index];
                     foreach (var text in new[] { definition.Meaning, definition.EnglishDefinition, definition.Notes,
                         string.Join(" · ", definition.Collocations), string.Join("、", definition.Synonyms) })
                         Assert.Contains(texts, x => x.Text == text);
-                    Assert.All(texts, text => AssertFits(view, text));
+                    Assert.All(texts, text => AssertFitsReviewContent(view, text));
                     var meaning = Assert.Single(texts, x => x.Text == definition.Meaning);
                     Assert.Equal(22, meaning.FontSize);
                     Assert.Equal(FontWeights.SemiBold, meaning.FontWeight);
@@ -57,7 +60,16 @@ public sealed partial class DesktopWorkflowTests
                 }
                 Assert.Single(Descendants(view).OfType<Button>(), x => x.Tag is bool);
                 AssertFits(view, "RateGood");
-                if (width != 715) Render(view, $"review-v042-{count}-meanings-{width}.png");
+                var scroll = (ScrollViewer)view.FindName("DefinitionScroll");
+                scroll.ScrollToBottom();
+                Layout(view, width, width == 715 ? 560 : 900);
+                AssertFits(view, "ReviewHeadword");
+                AssertFits(view, "SpeakWord");
+                AssertFits(view, "RateGood");
+                Assert.True(scroll.ScrollableWidth <= 0.1);
+                scroll.ScrollToTop();
+                Layout(view, width, width == 715 ? 560 : 900);
+                Render(view, $"review-v044-{count}-meanings-{width}.png");
             }
         });
     }
