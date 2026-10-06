@@ -141,7 +141,8 @@ public sealed partial class SqliteStudyStore
             {
                 var wasStarted = Scalar(connection, transaction,
                     "SELECT 1 FROM new_starts WHERE sense_id=$id;", ("$id", Id(submission.SenseId))) is not null;
-                if (!wasStarted && StartedCount(connection, transaction, day) >= DailyQuota(connection, transaction, day))
+                // Practice may introduce extra words, but shares the same first-start accounting.
+                if (exerciseId is null && !wasStarted && StartedCount(connection, transaction, day) >= DailyQuota(connection, transaction, day))
                     throw new ReviewConflictException("今天的新詞名額已用完；先完成到期複習，明天可繼續。");
                 Execute(connection, transaction,
                     "INSERT OR IGNORE INTO new_starts(sense_id,first_day,started_ms) VALUES($id,$day,$now);",

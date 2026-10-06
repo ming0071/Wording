@@ -56,7 +56,7 @@ public sealed class SettingsViewModel : PageViewModel
     public bool AutoSpeakExamples { get => autoSpeakExamples; set => SetProperty(ref autoSpeakExamples, value); }
     public string DataDirectory { get; }
     public string SpeechStatus { get; }
-    public string DailyNewLimitHelp => $"預設 {ApplicationConfiguration.Current.Review.DailyNewLimit} 個，可填入任意非負整數，沒有固定數量上限；0 代表只複習已開始的卡。到期少於 {ApplicationConfiguration.Current.Review.ReduceNewAtDueCount} 張時依你設定；{ApplicationConfiguration.Current.Review.ReduceNewAtDueCount}–{ApplicationConfiguration.Current.Review.PauseNewAtDueCount - 1} 張時最多 {ApplicationConfiguration.Current.Review.ReducedNewLimit} 個，{ApplicationConfiguration.Current.Review.PauseNewAtDueCount} 張以上先不加新詞。所有主題共用每日名額。";
+    public string DailyNewLimitHelp => $"預設 {ApplicationConfiguration.Current.Review.DailyNewLimit} 個，可填入任意非負整數，沒有固定數量上限；0 代表複習頁只提供已開始的卡。到期少於 {ApplicationConfiguration.Current.Review.ReduceNewAtDueCount} 張時依你設定；{ApplicationConfiguration.Current.Review.ReduceNewAtDueCount}–{ApplicationConfiguration.Current.Review.PauseNewAtDueCount - 1} 張時最多 {ApplicationConfiguration.Current.Review.ReducedNewLimit} 個，{ApplicationConfiguration.Current.Review.PauseNewAtDueCount} 張以上先不加新詞。所有主題共用每日名額；情境練習評分的新詞仍計入今日數量，但可超過上限。";
     public string DailyGenerationLimitHelp => $"每日上限（0–{ApplicationConfiguration.Current.Ai.MaximumDailyGenerations} 次）";
     public string DailyNewLimit { get => dailyNewLimit; set => SetProperty(ref dailyNewLimit, value); }
     public string DailyGenerationLimit { get => dailyGenerationLimit; set => SetProperty(ref dailyGenerationLimit, value); }
@@ -238,7 +238,7 @@ public sealed class SettingsViewModel : PageViewModel
     private Task SaveAsync(CancellationToken token)
     {
         if (!BigInteger.TryParse(DailyNewLimit.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out var newLimit))
-            throw new InvalidOperationException("每日新詞上限請填入非負整數；0 代表暫停新詞，數量沒有固定上限。");
+            throw new InvalidOperationException("每日新詞上限請填入非負整數；0 代表複習頁暫停提供新詞，數量沒有固定上限。");
         if (!int.TryParse(DailyGenerationLimit, out var generationLimit) || generationLimit < 0 || generationLimit > ApplicationConfiguration.Current.Ai.MaximumDailyGenerations)
             throw new InvalidOperationException($"每日 AI 次數請填入 0–{ApplicationConfiguration.Current.Ai.MaximumDailyGenerations} 的整數；0 代表停用生成。");
         if (string.IsNullOrWhiteSpace(CodexPath)) throw new InvalidOperationException("請填入 Codex 執行檔路徑或 codex。");

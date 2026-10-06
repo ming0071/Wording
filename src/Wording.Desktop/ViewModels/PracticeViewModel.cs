@@ -52,8 +52,7 @@ public sealed class PracticeTargetViewModel : ObservableObject
     internal ReviewSubmission? Pending { get; set; }
     public string Status => Eligibility?.Message ?? "正在檢查評分資格…";
     public string StarText => Eligibility?.IsStarred == true ? "已標星" : "標為不熟悉";
-    public bool CanOfferRating => Pending is not null || Eligibility?.CanRate == true || Eligibility?.IsNewLimitBlocked == true;
-    public bool IsNewLimitBlocked => Eligibility?.IsNewLimitBlocked == true;
+    public bool CanOfferRating => Pending is not null || Eligibility?.CanRate == true;
     public AsyncCommand AgainCommand { get; }
     public AsyncCommand HardCommand { get; }
     public AsyncCommand GoodCommand { get; }
@@ -138,12 +137,13 @@ public sealed class PracticeViewModel : PageViewModel
     public RelayCommand ResumeCommand { get; }
     public RelayCommand StopCommand { get; }
     public RelayCommand AddWordCommand { get; }
-    public RelayCommand OpenSettingsCommand { get; }
+    private string newWordProgress = "";
+    public string NewWordProgress { get => newWordProgress; private set => SetProperty(ref newWordProgress, value); }
     public RelayCommand ToggleOptionsCommand { get; }
 
     public PracticeViewModel(IStudyStore study, IPracticeStore store, IPracticeGenerator generator,
         IPracticeSpeech speech, AppSettings settings, Action saveSettings, Action<VocabularyItem?> edit,
-        Func<bool>? confirmReplace = null, TimeProvider? clock = null, Action? openSettings = null)
+        Func<bool>? confirmReplace = null, TimeProvider? clock = null)
     {
         this.study = study; this.store = store; this.generator = generator; this.speech = speech;
         this.settings = settings; this.saveSettings = saveSettings; this.edit = edit; this.clock = clock ?? TimeProvider.System;
@@ -170,14 +170,13 @@ public sealed class PracticeViewModel : PageViewModel
         ResumeCommand = new(_ => SpeechAction(speech.Resume), _ => speech.Playback == PlaybackState.Paused);
         StopCommand = new(_ => SpeechAction(speech.Stop));
         AddWordCommand = new(_ => edit(null), _ => !IsBusy);
-        OpenSettingsCommand = new(_ => openSettings?.Invoke(), _ => !IsBusy && openSettings is not null);
         ToggleOptionsCommand = new(_ => { choosingOptions = !choosingOptions; NotifyState(); }, _ => HasMaterial && !IsBusy);
         var context = SynchronizationContext.Current;
         speech.PlaybackChanged += () => { if (context is null) NotifySpeech(); else context.Post(_ => NotifySpeech(), null); };
         PropertyChanged += (_, args) =>
         {
             if (args.PropertyName != nameof(IsBusy)) return;
-            ReadingCommand.NotifyCanExecuteChanged(); ListeningCommand.NotifyCanExecuteChanged(); AddWordCommand.NotifyCanExecuteChanged(); OpenSettingsCommand.NotifyCanExecuteChanged(); ToggleOptionsCommand.NotifyCanExecuteChanged();
+            ReadingCommand.NotifyCanExecuteChanged(); ListeningCommand.NotifyCanExecuteChanged(); AddWordCommand.NotifyCanExecuteChanged(); ToggleOptionsCommand.NotifyCanExecuteChanged();
         };
     }
 
@@ -288,6 +287,8 @@ public sealed class PracticeViewModel : PageViewModel
     private async Task RefreshEligibility(CancellationToken token)
     {
         var states = await store.GetPracticeEligibilityAsync(exerciseId, clock.GetUtcNow(), settings.DailyNewLimit, token);
+        var summary = await study.GetDashboardAsync(clock.GetUtcNow(), token);
+        NewWordProgress = $"今日新詞：{summary.StartedToday} / {settings.DailyNewLimit} · 情境練習不受上限限制";
         var words = await study.GetVocabularyAsync(cancellationToken: token, includeArchived: true);
         foreach (var target in Targets)
         {

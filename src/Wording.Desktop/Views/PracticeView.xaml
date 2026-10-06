@@ -100,7 +100,8 @@
                             </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
                             <StackPanel Visibility="{Binding IsSubmitted, Converter={StaticResource BoolVisibility}}">
                                 <TextBlock Text="這些單字，你原本就懂嗎？" Style="{StaticResource SectionTitle}" />
-                                <TextBlock Text="請回想看解析前，你是否已理解這個詞義。只有你的個別評分會更新複習排程；未學新詞會使用今日新詞名額。" Margin="0,0,0,16" />
+                                <TextBlock Text="請回想看解析前，你是否已理解這個詞義。只有你的個別評分會更新複習排程；未學新詞會計入今日學習數量，可超過每日新詞上限。" Margin="0,0,0,8" />
+                                <TextBlock Text="{Binding NewWordProgress}" Style="{StaticResource MutedText}" Margin="0,0,0,16" AutomationProperties.AutomationId="PracticeNewWordProgress" />
                                 <ItemsControl ItemsSource="{Binding Targets}"><ItemsControl.ItemTemplate><DataTemplate>
                                     <Border Background="#F5F4FF" CornerRadius="10" Padding="14" Margin="0,0,0,12"><StackPanel>
                                         <TextBlock Text="{Binding Word.Headword}" FontSize="19" FontWeight="SemiBold" /><TextBlock Text="{Binding Usage.Meaning}" Margin="0,6" />
@@ -110,7 +111,6 @@
                                             <Button Content="1 · 沒想起來" Command="{Binding AgainCommand}" AutomationProperties.AutomationId="PracticeRateAgain" /><Button Content="3 · 原本就懂" Command="{Binding GoodCommand}" AutomationProperties.AutomationId="PracticeRateGood" />
                                         </WrapPanel>
                                         <Expander Header="更細的評分" Visibility="{Binding CanOfferRating, Converter={StaticResource BoolVisibility}}"><WrapPanel Margin="0,8"><Button Content="2 · 勉強想起" Command="{Binding HardCommand}" /><Button Content="4 · 輕鬆理解" Command="{Binding EasyCommand}" /></WrapPanel></Expander>
-                                        <Button Content="查看每日新詞設定" Command="{Binding DataContext.OpenSettingsCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" HorizontalAlignment="Left" Margin="0,12,0,0" Visibility="{Binding IsNewLimitBlocked, Converter={StaticResource BoolVisibility}}" />
                                         <WrapPanel Margin="0,12,0,0"><Button Style="{StaticResource StarButton}" Tag="{Binding Eligibility.IsStarred}" Command="{Binding StarCommand}" Margin="0,0,6,8" /><TextBlock Text="{Binding StarText}" VerticalAlignment="Center" Margin="0,0,16,8" /><Button Content="編輯這個詞義" Command="{Binding EditCommand}" /></WrapPanel>
                                     </StackPanel></Border>
                                 </DataTemplate></ItemsControl.ItemTemplate></ItemsControl>

@@ -49,7 +49,7 @@ public sealed class MainViewModel : ObservableObject
         Library = new(store, OpenEditor);
         Review = new(store, speech, settings);
         if (store is IPracticeStore practiceStore && generator is IPracticeGenerator practiceGenerator && speech is IPracticeSpeech practiceSpeech)
-            Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor, openSettings: () => Navigate("settings"));
+            Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor);
         Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => { Review.EndSession(); Practice?.Reset(); }, store);
         currentPage = Dashboard;
         NavigateCommand = new(parameter => Navigate(parameter as string ?? "today"));

@@ -44,7 +44,7 @@ public sealed record PracticeMaterial(string Title, string Passage, string Trans
 public sealed record PracticeCompletion(Guid Id, DateTimeOffset CompletedAt, PracticeMode Mode,
     string[] Topics, Guid[] TargetIds);
 public sealed record PracticeEligibility(Guid SenseId, long Version, bool CanRate, string Message,
-    bool IsStarred, Guid? AppliedOperation, bool IsNewLimitBlocked = false);
+    bool IsStarred, Guid? AppliedOperation);
 
 public interface IPracticeStore
 {

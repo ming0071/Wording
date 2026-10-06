@@ -10,7 +10,7 @@
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="每日學習" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Text="每天最多開始幾個新詞" Style="{StaticResource FieldLabel}" />
+                    <TextBlock Text="複習頁每日新詞上限" Style="{StaticResource FieldLabel}" />
                     <TextBox Text="{Binding DailyNewLimit, UpdateSourceTrigger=PropertyChanged}" MinWidth="180" HorizontalAlignment="Left" AutomationProperties.Name="每日新詞上限" AutomationProperties.AutomationId="DailyNewLimit" />
                     <TextBlock Text="{Binding DailyNewLimitHelp}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,10,0,0" />
                 </StackPanel>

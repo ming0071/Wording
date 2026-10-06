@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Wording.Core;
@@ -289,38 +290,45 @@ public sealed partial class DesktopWorkflowTests
     }
 
     [Fact]
-    public async Task PracticeNewWordRatingsRemainVisibleWithQuotaReasonAndReenableAfterLimitChange()
+    public async Task PracticeNewWordRatingsRemainEnabledAboveLimitAndShowActualProgress()
     {
         using var data = new StudyTestData(); await data.Store.InitializeAsync();
         await data.AddWordAsync(); await data.Store.SaveVocabularyAsync(StudyTestData.Word("office", "辦公室"));
         await OffscreenWpf.InvokeAsync(async () =>
         {
             var settings = new AppSettings { DailyNewLimit = 1 };
-            var openedSettings = false;
             var vm = new PracticeViewModel(data.Store, data.Store, new PracticeFixtures.Generator(), new PracticeFixtures.Speech(), settings,
-                () => { }, _ => { }, () => true, data.Clock, () => openedSettings = true);
+                () => { }, _ => { }, () => true, data.Clock);
             await vm.LoadAsync(); await vm.GenerateCommand.ExecuteAsync();
             foreach (var question in vm.Questions) question.SelectedIndex = 0;
             await vm.SubmitCommand.ExecuteAsync(); Assert.Empty(vm.Error);
             Assert.All(vm.Targets, x => Assert.True(x.GoodCommand.CanExecute(null)));
             var first = vm.Targets[0]; var second = vm.Targets[1];
             await first.GoodCommand.ExecuteAsync(); Assert.Empty(vm.Error);
-            Assert.True(second.IsNewLimitBlocked); Assert.True(second.CanOfferRating);
-            Assert.Contains("已開始 1 個／今日上限 1 個", second.Status);
-            Assert.False(second.GoodCommand.CanExecute(null));
+            Assert.True(second.CanOfferRating);
+            Assert.Contains("不受每日上限限制", second.Status);
+            Assert.Contains("1 / 1", vm.NewWordProgress);
+            Assert.True(second.GoodCommand.CanExecute(null));
             var view = new PracticeView { DataContext = vm, FontSize = 14, Background = new SolidColorBrush(Color.FromRgb(245, 247, 251)), Foreground = (Brush)Application.Current.Resources["InkBrush"], FontFamily = new("Segoe UI, Microsoft JhengHei UI") };
             Layout(view, 959, 710);
             var button = Descendants(view).OfType<Button>().Single(x => x.DataContext == second && x.Content as string == "3 · 原本就懂");
-            Assert.True(IsShown(button)); Assert.False(button.IsEnabled);
-            var link = Descendants(view).OfType<Button>().Single(x => x.DataContext == second && x.Content as string == "查看每日新詞設定");
-            link.Command.Execute(null); Assert.True(openedSettings);
+            Assert.True(IsShown(button)); Assert.True(button.IsEnabled);
+            Assert.DoesNotContain(Descendants(view).OfType<Button>(), x => x.Content as string == "查看每日新詞設定");
             var status = Descendants(view).OfType<TextBlock>().Single(x => x.DataContext == second && x.Text == second.Status);
             status.BringIntoView(); Layout(view, 959, 710);
-            ((ScrollViewer)view.FindName("QuestionScroll")).ScrollToBottom(); Layout(view, 959, 710); Render(view, "practice-new-word-quota.png");
+            ((ScrollViewer)view.FindName("QuestionScroll")).ScrollToBottom(); Layout(view, 959, 710);
             Assert.All(Descendants(view).OfType<ScrollViewer>(), x => Assert.True(x.ScrollableWidth <= 0.1));
-            settings.DailyNewLimit = 2; await vm.RefreshCommand.ExecuteAsync(); Assert.Empty(vm.Error);
-            Assert.False(second.IsNewLimitBlocked); Assert.True(second.GoodCommand.CanExecute(null));
-            Layout(view, 959, 710); Assert.True(button.IsEnabled);
+            await second.GoodCommand.ExecuteAsync(); Assert.Empty(vm.Error);
+            Assert.Equal(2L, data.Scalar("SELECT COUNT(*) FROM new_starts;"));
+            Assert.Equal(1, settings.DailyNewLimit);
+            Assert.Contains("2 / 1", vm.NewWordProgress);
+            Layout(view, 959, 710);
+            var progress = Descendants(view).OfType<TextBlock>().Single(x => AutomationProperties.GetAutomationId(x) == "PracticeNewWordProgress");
+            Assert.Equal(vm.NewWordProgress, progress.Text);
+            progress.BringIntoView(); Layout(view, 959, 710); Render(view, "practice-v046-new-word-progress.png");
+            await vm.UndoCommand.ExecuteAsync(); Assert.Empty(vm.Error);
+            Assert.Contains("2 / 1", vm.NewWordProgress);
+            Assert.True(second.GoodCommand.CanExecute(null));
             await second.GoodCommand.ExecuteAsync(); Assert.Empty(vm.Error);
             Assert.Equal(2L, data.Scalar("SELECT COUNT(*) FROM new_starts;"));
         });

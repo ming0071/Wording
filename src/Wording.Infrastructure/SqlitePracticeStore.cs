@@ -70,28 +70,6 @@ public sealed partial class SqliteStudyStore
             using var transaction = connection.BeginTransaction();
             var exercise = ReadPractice(connection, transaction, exerciseId);
             if (exercise is null) return [];
-            // Inspect quota without freezing today's adaptive limit until an actual rating/regular review.
-            var day = LocalDay(now);
-            var exists = Scalar(connection, transaction, "SELECT 1 FROM daily_limits WHERE local_day=$day;", ("$day", day)) is not null;
-            BigInteger quota = dailyLimit;
-            int? adaptiveLimit = null;
-            if (exists)
-            {
-                var adaptive = Scalar(connection, transaction, "SELECT adaptive_limit FROM daily_limits WHERE local_day=$day;", ("$day", day));
-                if (adaptive is not null and not DBNull) adaptiveLimit = Convert.ToInt32(adaptive);
-            }
-            else
-            {
-                var due = DueCount(connection, transaction, now);
-                adaptiveLimit = ApplicationConfiguration.Current.Review.AdaptiveNewLimit(due);
-            }
-            if (adaptiveLimit is { } adaptiveQuota) quota = BigInteger.Min(quota, adaptiveQuota);
-            var startedToday = StartedCount(connection, transaction, day);
-            var hasSpace = startedToday < quota;
-            var quotaMessage = $"未學新詞 · 今日新詞名額已用完（已開始 {startedToday} 個／今日上限 {quota} 個）。" +
-                (adaptiveLimit is { } cap && cap < dailyLimit
-                    ? "到期複習較多，今天的新詞名額已減少；可先標星，明天再評分。"
-                    : "可先標星，明天再評分，或到設定調整每日新詞上限。");
             var result = new List<PracticeEligibility>();
             foreach (var sense in exercise.TargetIds)
             {
@@ -100,16 +78,13 @@ public sealed partial class SqliteStudyStore
                 var (schedule, version) = ReadSchedule(connection, transaction, sense);
                 var operation = Scalar(connection, transaction, "SELECT operation_id FROM practice_ratings WHERE exercise_id=$e AND sense_id=$s;",
                     ("$e", Id(exerciseId)), ("$s", Id(sense))) as string;
-                var started = Scalar(connection, transaction, "SELECT 1 FROM new_starts WHERE sense_id=$s;", ("$s", Id(sense))) is not null;
                 var message = operation is not null ? $"已更新本次評分 · 下次複習：{schedule.DueAt.ToLocalTime():MM/dd HH:mm}" :
                     word.IsPaused || word.IsArchived || word.Enrollment == Enrollment.Skipped ? "此詞義已暫停或封存" :
-                    schedule.LastReviewAt is null ? hasSpace || started ? $"未學新詞 · 評分後開始學習（今日已開始 {startedToday} 個／上限 {quota} 個）" : quotaMessage :
+                    schedule.LastReviewAt is null ? "未學新詞 · 評分後開始學習，計入今日新詞數量，不受每日上限限制" :
                     schedule.DueAt > now ? $"下次複習：{schedule.DueAt.ToLocalTime():MM/dd HH:mm}" : "已到期 · 可以評分";
                 var canRate = operation is null && !word.IsPaused && !word.IsArchived && word.Enrollment != Enrollment.Skipped &&
-                    (schedule.LastReviewAt is null ? hasSpace || started : schedule.DueAt <= now);
-                var newLimitBlocked = operation is null && !word.IsPaused && !word.IsArchived && word.Enrollment != Enrollment.Skipped &&
-                    schedule.LastReviewAt is null && !hasSpace && !started;
-                result.Add(new(sense, version, canRate, message, word.IsStarred, operation is null ? null : Guid.Parse(operation), newLimitBlocked));
+                    (schedule.LastReviewAt is null || schedule.DueAt <= now);
+                result.Add(new(sense, version, canRate, message, word.IsStarred, operation is null ? null : Guid.Parse(operation)));
             }
             return result;
         }, token);

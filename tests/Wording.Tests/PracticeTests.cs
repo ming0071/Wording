@@ -33,7 +33,7 @@ public sealed class PracticeTests
     }
 
     [Fact]
-    public async Task BacklogRestrictionExplainsWhyUnlearnedWordCannotBeRated()
+    public async Task PracticeCanStartNewWordsDespiteAdaptiveBacklogRestriction()
     {
         using var data = new StudyTestData(); await data.Store.InitializeAsync();
         var learned = Enumerable.Range(0, 20).Select(i => StudyTestData.Word($"learned{i}")).ToArray();
@@ -46,14 +46,16 @@ public sealed class PracticeTests
         var completion = new PracticeCompletion(Guid.NewGuid(), data.Clock.Now, PracticeMode.Reading, ["商業"], [unlearned.Id]);
         await data.Store.CompletePracticeAsync(completion);
         var eligibility = Assert.Single(await data.Store.GetPracticeEligibilityAsync(completion.Id, data.Clock.Now, 30));
-        Assert.True(eligibility.IsNewLimitBlocked); Assert.False(eligibility.CanRate);
-        Assert.Contains("今日上限 0 個", eligibility.Message); Assert.Contains("到期複習較多", eligibility.Message);
-        await Assert.ThrowsAsync<ReviewConflictException>(() => data.Store.RatePracticeAsync(completion.Id,
-            new(unlearned.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), eligibility.Version), 30));
+        Assert.True(eligibility.CanRate);
+        Assert.Contains("不受每日上限限制", eligibility.Message);
+        await data.Store.RatePracticeAsync(completion.Id,
+            new(unlearned.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), eligibility.Version), 30);
+        Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Equal(0L, data.Scalar("SELECT adaptive_limit FROM daily_limits ORDER BY local_day DESC LIMIT 1;"));
     }
 
     [Fact]
-    public async Task CompletionIsIdempotentAndRatingsShareQuotaWithoutEarlyOrDuplicateReviews()
+    public async Task CompletionIsIdempotentAndRatingsExceedQuotaWithoutEarlyOrDuplicateReviews()
     {
         using var data = new StudyTestData(); await data.Store.InitializeAsync();
         var first = await data.AddWordAsync(); var second = await data.AddWordAsync("invoice");
@@ -70,10 +72,13 @@ public sealed class PracticeTests
         Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
         Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
         var after = await data.Store.GetPracticeEligibilityAsync(exercise.Id, data.Clock.Now, 1);
-        Assert.All(after, x => Assert.False(x.CanRate));
-        Assert.Contains("名額", after.Single(x => x.SenseId == second.Id).Message);
+        Assert.False(after.Single(x => x.SenseId == first.Id).CanRate);
+        Assert.True(after.Single(x => x.SenseId == second.Id).CanRate);
+        await data.Store.RatePracticeAsync(exercise.Id,
+            new(second.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), 0), 1);
+        Assert.Equal(2, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
         await Assert.ThrowsAsync<ReviewConflictException>(() => data.Store.RatePracticeAsync(exercise.Id,
-            new(second.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), 0), 1));
+            review with { OperationId = Guid.NewGuid(), ExpectedScheduleVersion = 1 }, 1));
         var next = exercise with { Id = Guid.NewGuid() };
         await data.Store.CompletePracticeAsync(next);
         await Assert.ThrowsAsync<ReviewConflictException>(() => data.Store.RatePracticeAsync(next.Id, review, 1));
@@ -82,7 +87,8 @@ public sealed class PracticeTests
         data.Clock.Now = result.DueAt;
         Assert.True((await data.Store.GetPracticeEligibilityAsync(next.Id, data.Clock.Now, 1)).Single(x => x.SenseId == first.Id).CanRate);
         await data.Store.RatePracticeAsync(next.Id, review with { OperationId = Guid.NewGuid(), ExpectedScheduleVersion = 1, ReviewedAt = data.Clock.Now }, 1);
-        Assert.Equal(2L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        Assert.Equal(3L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        Assert.Equal(2, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
     }
 
     [Fact]
