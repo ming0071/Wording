@@ -56,7 +56,7 @@ public sealed class SettingsViewModel : PageViewModel
     public bool AutoSpeakExamples { get => autoSpeakExamples; set => SetProperty(ref autoSpeakExamples, value); }
     public string DataDirectory { get; }
     public string SpeechStatus { get; }
-    public string DailyNewLimitHelp => $"預設 {ApplicationConfiguration.Current.Review.DailyNewLimit} 個，可填入任意非負整數，沒有固定數量上限；0 代表複習頁只提供已開始的卡。到期少於 {ApplicationConfiguration.Current.Review.ReduceNewAtDueCount} 張時依你設定；{ApplicationConfiguration.Current.Review.ReduceNewAtDueCount}–{ApplicationConfiguration.Current.Review.PauseNewAtDueCount - 1} 張時最多 {ApplicationConfiguration.Current.Review.ReducedNewLimit} 個，{ApplicationConfiguration.Current.Review.PauseNewAtDueCount} 張以上先不加新詞。所有主題共用每日名額；情境練習評分的新詞仍計入今日數量，但可超過上限。";
+    public string DailyNewLimitHelp => $"預設 {ApplicationConfiguration.Current.Review.DailyNewLimit} 個，可填入任意非負整數，沒有固定數量上限；0 代表複習頁只提供已開始的卡。到期詞優先，再依設定的每日上限提供新詞，不因到期數量自動減量；可隨時停止學習。所有主題共用每日名額；情境練習評分的新詞仍計入今日數量，但可超過上限。";
     public string DailyGenerationLimitHelp => $"每日上限（0–{ApplicationConfiguration.Current.Ai.MaximumDailyGenerations} 次）";
     public string DailyNewLimit { get => dailyNewLimit; set => SetProperty(ref dailyNewLimit, value); }
     public string DailyGenerationLimit { get => dailyGenerationLimit; set => SetProperty(ref dailyGenerationLimit, value); }

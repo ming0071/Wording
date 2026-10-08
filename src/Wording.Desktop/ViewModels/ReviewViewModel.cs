@@ -216,11 +216,19 @@ public sealed class ReviewViewModel : PageViewModel
             var nextDueText = summary.NextDue is { } due && due > now
                 ? $"下一張在 {due.ToLocalTime():MM/dd HH:mm} 到期，再按「重新檢查」即可。" : "";
             EmptyText = summary.NewCount > 0
-                ? "這個範圍今天的新詞名額已用完、新詞上限設為 0，或因到期複習量而減量。可在設定查看每日上限，或明天繼續。" + nextDueText
+                ? NewWordLimitText(summary) + nextDueText
                 : nextDueText.Length > 0 ? "這個範圍目前沒有可複習的卡片。" + nextDueText
                     : "這個範圍目前沒有到期卡或未學新詞。可以切換主題，或到單字庫新增詞義。";
         }
         else if (settings.AutoSpeakWord) Speak();
+    }
+
+    private string NewWordLimitText(DashboardSummary summary)
+    {
+        var progress = $"今天已開始 {summary.StartedToday} 個新詞。";
+        if (settings.DailyNewLimit.IsZero)
+            return "設定中的每日新詞上限為 0，複習頁只提供已開始的卡。" + progress + "可在設定調整每日上限。";
+        return $"今天的新詞名額已用完：已開始 {summary.StartedToday} 個，每日上限 {settings.DailyNewLimit} 個。可在設定調整每日上限，或明天繼續。";
     }
 
     private bool CanRate() => Current is not null && IsAnswerVisible && !isSubmitting;

@@ -243,11 +243,10 @@ public sealed partial class SqliteStudyStore
     private void EnsureDay(SqliteConnection connection, SqliteTransaction transaction,
         DateTimeOffset now, BigInteger? configuredLimit)
     {
-        var due = DueCount(connection, transaction, now);
-        int? adaptive = ApplicationConfiguration.Current.Review.AdaptiveNewLimit(due);
+        // Keep the legacy adaptive_limit column for database/backup compatibility; new quotas use only the configured limit.
         Execute(connection, transaction,
-            "INSERT OR IGNORE INTO daily_limits(local_day,adaptive_limit,configured_limit) VALUES($day,$adaptive,$configured);",
-            ("$day", LocalDay(now)), ("$adaptive", adaptive),
+            "INSERT OR IGNORE INTO daily_limits(local_day,adaptive_limit,configured_limit) VALUES($day,NULL,$configured);",
+            ("$day", LocalDay(now)),
             ("$configured", (configuredLimit ?? BigInteger.Parse(ApplicationConfiguration.Current.Review.DailyNewLimit, CultureInfo.InvariantCulture)).ToString(CultureInfo.InvariantCulture)));
         if (configuredLimit is { } limit)
             Execute(connection, transaction, "UPDATE daily_limits SET configured_limit=$limit WHERE local_day=$day;",
@@ -257,11 +256,11 @@ public sealed partial class SqliteStudyStore
     private static BigInteger DailyQuota(SqliteConnection connection, SqliteTransaction transaction, string day)
     {
         using var command = Command(connection, transaction,
-            "SELECT adaptive_limit,configured_limit FROM daily_limits WHERE local_day=$day;", ("$day", day));
+            "SELECT configured_limit FROM daily_limits WHERE local_day=$day;", ("$day", day));
         using var reader = command.ExecuteReader();
         if (!reader.Read()) throw new StudyDataException("缺少今日新詞設定。");
-        var configured = BigInteger.Parse(reader.GetString(1), CultureInfo.InvariantCulture);
-        return reader.IsDBNull(0) ? configured : BigInteger.Min(configured, reader.GetInt32(0));
+        // Old rows may contain 0 or 2 from automatic reduction. Ignore them immediately, including today and restored backups.
+        return BigInteger.Parse(reader.GetString(0), CultureInfo.InvariantCulture);
     }
 
     private static int StartedCount(SqliteConnection connection, SqliteTransaction? transaction, string day) =>

@@ -23,7 +23,7 @@ Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.
 | [選用教材](../tests/Wording.Tests/OptionalVocabularyTests.cs) | 四份教材／範例能匯入；補充片語時保留既有情境分類、星號及其他單字，新增另一組意思的詞條重設為未學習，其餘排程保留；重複匯入保留 ID 與學習進度；作者的學習紀錄不會帶入 |
 | [同詞多義](../tests/Wording.Tests/WordGroupingTests.cs) | 同名資料真正合併為一個詞條／星號／複習卡，合併前備份、失敗完整回退、受影響詞條重設為未學習、巢狀解釋可編輯與複習、舊 JSON 重匯不再新增重複資料 |
 | [卡片筆記清理](../tests/Wording.Tests/VocabularyNotesTests.cs) | 只清除教材重複聲明、保留用法與個人筆記；先備份、失敗回退、原卡片／星號／排程保留，舊檔重匯不帶回聲明 |
-| [設定與輸入法](../tests/Wording.Tests/ApplicationConfigurationTests.cs) | 新預設與已保存偏好分開、JSON 格式與範圍檢查、減量門檻邊界、台灣輸入法英文模式、無台灣輸入法時不切換、頁內焦點與離開時還原 |
+| [設定與輸入法](../tests/Wording.Tests/ApplicationConfigurationTests.cs) | 新預設與已保存偏好分開、JSON 格式與範圍檢查、台灣輸入法英文模式、無台灣輸入法時不切換、頁內焦點與離開時還原 |
 | [Codex 模型清單](../tests/Wording.Tests/CodexModelCatalogTests.cs)、[模型選單](../tests/Wording.Tests/ModelPickerTests.cs) | 初始化順序、分頁、新模型與未知欄位、隱藏／非文字模型、ChatGPT 登入、錯誤輸出遮蔽、查詢失敗、舊路徑晚到回應及選擇保存 |
 | [發行包](../scripts/verify-package.py) | SHA-256、必要檔案、Windows x64 EXE、.NET／WPF 自包含 runtime、三個專案版本、提示詞、授權；排除重複路徑、使用者資料與暫存檔 |
 | [發行驗證器測試](../scripts/tests/test_verify_package.py) | 缺提示詞／授權、錯誤校驗碼、錯版本、非自包含包、錯誤 EXE、非法路徑、重複項目、損毀 ZIP 都應失敗 |

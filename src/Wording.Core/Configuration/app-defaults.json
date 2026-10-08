@@ -1,10 +1,7 @@
 {
   "Review": {
     "DailyNewLimit": "25",
-    "PreferredInputLanguage": "zh-TW",
-    "ReduceNewAtDueCount": 10,
-    "ReducedNewLimit": 2,
-    "PauseNewAtDueCount": 20
+    "PreferredInputLanguage": "zh-TW"
   },
   "Shortcuts": {
     "Flip": "Space", "Again": "1", "Hard": "2", "Good": "3", "Easy": "4",

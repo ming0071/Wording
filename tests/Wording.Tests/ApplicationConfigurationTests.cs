@@ -57,20 +57,6 @@ public sealed class ApplicationConfigurationTests
     }
 
     [Fact]
-    public void CustomAdaptiveThresholdsPreserveBoundaryMeaning()
-    {
-        var json = Defaults();
-        json["Review"]!["ReduceNewAtDueCount"] = 12;
-        json["Review"]!["PauseNewAtDueCount"] = 24;
-        json["Review"]!["ReducedNewLimit"] = 4;
-        var config = ApplicationConfiguration.Parse(json.ToJsonString());
-        Assert.Null(config.Review.AdaptiveNewLimit(11));
-        Assert.Equal(4, config.Review.AdaptiveNewLimit(12));
-        Assert.Equal(4, config.Review.AdaptiveNewLimit(23));
-        Assert.Equal(0, config.Review.AdaptiveNewLimit(24));
-    }
-
-    [Fact]
     public void ReviewSelectsOnlyInstalledTaiwaneseInputLanguage()
     {
         var chinese = CultureInfo.GetCultureInfo("zh-TW");

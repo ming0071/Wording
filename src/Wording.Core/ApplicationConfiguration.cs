@@ -40,8 +40,7 @@ public sealed record ApplicationConfiguration
             throw new ArgumentException("設定區塊不能為空。");
         if (!BigInteger.TryParse(Review.DailyNewLimit, NumberStyles.None, CultureInfo.InvariantCulture, out _) ||
             string.IsNullOrWhiteSpace(Review.PreferredInputLanguage) ||
-            CultureInfo.GetCultureInfo(Review.PreferredInputLanguage).Name != "zh-TW" ||
-            Review.ReduceNewAtDueCount < 1 || Review.PauseNewAtDueCount <= Review.ReduceNewAtDueCount || Review.ReducedNewLimit < 0)
+            CultureInfo.GetCultureInfo(Review.PreferredInputLanguage).Name != "zh-TW")
             throw new ArgumentException("複習預設無效。");
         var keys = new[] { Shortcuts.Flip, Shortcuts.Again, Shortcuts.Hard, Shortcuts.Good, Shortcuts.Easy, Shortcuts.Speak, Shortcuts.SpeakExample };
         if (keys.Any(key => !ShortcutDefaults.AvailableKeys.Contains(key)) || keys.Distinct().Count() != keys.Length)
@@ -74,10 +73,6 @@ public sealed record ReviewDefaults
 {
     public required string DailyNewLimit { get; init; }
     public required string PreferredInputLanguage { get; init; }
-    public required int ReduceNewAtDueCount { get; init; }
-    public required int ReducedNewLimit { get; init; }
-    public required int PauseNewAtDueCount { get; init; }
-    public int? AdaptiveNewLimit(int dueCount) => dueCount >= PauseNewAtDueCount ? 0 : dueCount >= ReduceNewAtDueCount ? ReducedNewLimit : null;
 }
 public sealed record ShortcutDefaults
 {

@@ -243,22 +243,69 @@ public sealed class SqliteStudyStoreTests
         Assert.Equal(1L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
     }
 
-    [Fact]
-    public async Task DueCardsArePrioritizedAndAdaptiveQuotaIsPersisted()
+    [Theory]
+    [InlineData(10)]
+    [InlineData(19)]
+    [InlineData(20)]
+    [InlineData(50)]
+    public async Task DueCardsArePrioritizedWithoutReducingConfiguredQuota(int dueCount)
     {
         using var data = new StudyTestData();
         await data.Store.InitializeAsync();
-        for (var index = 0; index < 12; index++) await data.AddWordAsync("word" + index);
+        for (var index = 0; index < dueCount + 4; index++) await data.AddWordAsync("word" + index);
         var now = data.Clock.Now.ToUnixTimeMilliseconds();
-        // Fixture creates ten already learned/due cards; no fabricated review actions in production.
+        // Fixture creates already learned/due cards; no fabricated review actions in production.
         data.Execute($"UPDATE cards SET last_review_ms={now - 86400000},due_ms={now},state=2,step=NULL,stability=2,difficulty=5 " +
-            "WHERE sense_id IN (SELECT id FROM senses ORDER BY rowid LIMIT 10);");
-        var due = (await data.Store.GetNextReviewAsync(data.Clock.Now, 5))!;
-        Assert.False(due.IsNew);
-        Assert.Equal(2L, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
-        await data.Store.SubmitReviewAsync(new(due.Word.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), due.ScheduleVersion));
-        await data.NewStore().GetNextReviewAsync(data.Clock.Now, 5);
-        Assert.Equal(2L, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
+            $"WHERE sense_id IN (SELECT id FROM senses ORDER BY rowid LIMIT {dueCount});");
+        for (var index = 0; index < dueCount; index++)
+        {
+            var due = (await data.NewStore().GetNextReviewAsync(data.Clock.Now, 3))!;
+            Assert.False(due.IsNew);
+            Assert.Equal(0, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+            await data.Store.SubmitReviewAsync(new(due.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), due.ScheduleVersion));
+        }
+        for (var index = 0; index < 3; index++)
+        {
+            var card = (await data.NewStore().GetNextReviewAsync(data.Clock.Now, 3))!;
+            Assert.True(card.IsNew);
+            await data.Store.SubmitReviewAsync(new(card.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), card.ScheduleVersion));
+        }
+        Assert.Null(await data.NewStore().GetNextReviewAsync(data.Clock.Now, 3));
+        Assert.Equal(3, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Equal(DBNull.Value, data.Scalar("SELECT adaptive_limit FROM daily_limits;"));
+        Assert.Equal("3", data.Scalar("SELECT configured_limit FROM daily_limits;"));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    public async Task PreviouslyFrozenQuotaIsIgnoredImmediatelyWithoutResettingProgress(int oldAdaptiveLimit)
+    {
+        using var data = new StudyTestData();
+        await data.Store.InitializeAsync();
+        var words = new List<VocabularyItem>();
+        for (var index = 0; index < 5; index++) words.Add(await data.AddWordAsync("word" + index));
+        var first = (await data.Store.GetNextReviewAsync(data.Clock.Now, 3))!;
+        await data.Store.SubmitReviewAsync(new(first.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), first.ScheduleVersion));
+        data.Execute($"UPDATE daily_limits SET adaptive_limit={oldAdaptiveLimit};");
+
+        var restarted = data.NewStore();
+        await restarted.InitializeAsync();
+        // The submission gate must ignore the old limit even without fetching another card first.
+        await restarted.SubmitReviewAsync(new(words[1].Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), 0));
+        var third = (await restarted.GetNextReviewAsync(data.Clock.Now, 3))!;
+        Assert.True(third.IsNew);
+        await restarted.SubmitReviewAsync(new(third.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), third.ScheduleVersion));
+        Assert.Null(await restarted.GetNextReviewAsync(data.Clock.Now, 3));
+        Assert.Equal(3, (await restarted.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Equal(3L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+
+        // A same-day setting change is still applied immediately after the upgrade.
+        var fourth = (await data.NewStore().GetNextReviewAsync(data.Clock.Now, 4))!;
+        Assert.True(fourth.IsNew);
+        await data.Store.SubmitReviewAsync(new(fourth.Word.Id, ReviewRating.Easy, data.Clock.Now, Guid.NewGuid(), fourth.ScheduleVersion));
+        Assert.Equal(4, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
+        Assert.Null(await data.Store.GetNextReviewAsync(data.Clock.Now, 4));
     }
 
     [Fact]

@@ -33,7 +33,7 @@ public sealed class PracticeTests
     }
 
     [Fact]
-    public async Task PracticeCanStartNewWordsDespiteAdaptiveBacklogRestriction()
+    public async Task PracticeCanStartNewWordsWithManyDueCards()
     {
         using var data = new StudyTestData(); await data.Store.InitializeAsync();
         var learned = Enumerable.Range(0, 20).Select(i => StudyTestData.Word($"learned{i}")).ToArray();
@@ -51,7 +51,7 @@ public sealed class PracticeTests
         await data.Store.RatePracticeAsync(completion.Id,
             new(unlearned.Id, ReviewRating.Good, data.Clock.Now, Guid.NewGuid(), eligibility.Version), 30);
         Assert.Equal(1, (await data.Store.GetDashboardAsync(data.Clock.Now)).StartedToday);
-        Assert.Equal(0L, data.Scalar("SELECT adaptive_limit FROM daily_limits ORDER BY local_day DESC LIMIT 1;"));
+        Assert.Equal(DBNull.Value, data.Scalar("SELECT adaptive_limit FROM daily_limits ORDER BY local_day DESC LIMIT 1;"));
     }
 
     [Fact]
