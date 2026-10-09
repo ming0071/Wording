@@ -206,7 +206,7 @@ public sealed class PracticeViewModel : PageViewModel
     {
         var firstLoad = Topics.Choices.Count == 1;
         var candidates = await store.GetPracticeCandidatesAsync(cancellationToken);
-        Topics.SetAvailable(candidates.SelectMany(x => x.Word.Categories).Order());
+        Topics.SetAvailable(candidates.SelectMany(x => x.Word.Categories).Where(PracticeTopics.IsScenarioTopic).Order());
         if (firstLoad) Topics.SetSelected(settings.Practice.Topics);
         await RefreshHistory(cancellationToken);
         if (submitted) await RefreshEligibility(cancellationToken);

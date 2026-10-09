@@ -20,6 +20,7 @@ public sealed record PracticeTopicActivity(string Name, int ReadingCount, int Li
             .GroupBy(x => x.topic, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(x => x.Key, x => x.Select(y => y.completion).ToArray(), StringComparer.OrdinalIgnoreCase);
         var topics = availableTopics.Concat(byTopic.Keys).Select(x => x.Trim()).Where(x => x.Length > 0)
+            .Where(PracticeTopics.IsScenarioTopic)
             .Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase);
         var result = topics.Select(topic =>
         {

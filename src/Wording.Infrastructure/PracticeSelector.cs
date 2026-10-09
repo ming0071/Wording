@@ -12,17 +12,19 @@ public sealed class PracticeSelector(Random? random = null)
         options.Validate();
         var config = ApplicationConfiguration.Current.Practice;
         var eligible = candidates.Where(x => !x.Word.IsArchived && !x.Word.IsPaused && x.Word.Enrollment != Enrollment.Skipped).ToArray();
-        var topics = options.Topics;
-        if (topics.Length == 0)
+        var topics = options.Topics.Where(PracticeTopics.IsScenarioTopic).ToArray();
+        var autoSelect = topics.Length == 0;
+        if (autoSelect)
         {
-            var available = eligible.SelectMany(x => x.Word.Categories).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            var available = eligible.SelectMany(x => x.Word.Categories).Where(PracticeTopics.IsScenarioTopic)
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
             if (available.Length > 0)
                 topics = [Draw(available, topic => 1.0 / (1 + history.Where(x => x.CompletedAt > now.AddDays(-config.TopicLookbackDays))
                     .Count(x => x.Topics.Contains(topic, StringComparer.OrdinalIgnoreCase))))];
             else topics = ["自由情境"];
         }
         var pool = eligible.Where(x => x.Word.Categories.Any(c => topics.Contains(c, StringComparer.OrdinalIgnoreCase)) ||
-            options.Topics.Length == 0 && topics.SequenceEqual(new[] { "自由情境" })).ToArray();
+            autoSelect && topics.SequenceEqual(new[] { "自由情境" })).ToArray();
         if (pool.Length == 0) throw new InvalidOperationException("這些主題沒有可用詞彙，請選其他主題或先新增單字。");
         var count = Math.Min(pool.Length, config.Lengths[options.Length].TargetWords + (int)options.Density * config.DensityWordIncrement);
         var exposures = history.SelectMany(x => x.TargetIds.Select(id => (Id: id, At: x.CompletedAt)))

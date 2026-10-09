@@ -20,6 +20,7 @@ Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.
 | --- | --- |
 | [練習可靠性](../tests/Wording.Tests/PracticeReliabilityTests.cs) | 取消後晚回傳不能覆蓋答案、重按不會重複生成、取消後能重新操作、相同 ID 的不同完成紀錄不能覆寫、三個月保存邊界、無效設定不能覆蓋舊檔 |
 | [情境練習新詞計數](../tests/Wording.Tests/PracticeNewWordLimitTests.cs) | 閱讀／聽力可從 50 增至 55、一般複習仍受限、0 上限仍可評分、撤銷與重試不重複計數 |
+| [情境主題分類](../tests/Wording.Tests/PracticeTopicFilteringTests.cs) | 動詞片語不作情境主題、舊選擇與歷史仍可用、隨機選題與自由情境保留片語、詞庫分類不變 |
 | [選用教材](../tests/Wording.Tests/OptionalVocabularyTests.cs) | 四份教材／範例能匯入；補充片語時保留既有情境分類、星號及其他單字，新增另一組意思的詞條重設為未學習，其餘排程保留；重複匯入保留 ID 與學習進度；作者的學習紀錄不會帶入 |
 | [同詞多義](../tests/Wording.Tests/WordGroupingTests.cs) | 同名資料真正合併為一個詞條／星號／複習卡，合併前備份、失敗完整回退、受影響詞條重設為未學習、巢狀解釋可編輯與複習、舊 JSON 重匯不再新增重複資料 |
 | [卡片筆記清理](../tests/Wording.Tests/VocabularyNotesTests.cs) | 只清除教材重複聲明、保留用法與個人筆記；先備份、失敗回退、原卡片／星號／排程保留，舊檔重匯不帶回聲明 |
