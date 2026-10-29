@@ -141,7 +141,7 @@ public sealed partial class DesktopWorkflowTests
             var visible = Descendants(view).OfType<TextBlock>().Where(IsShown).ToArray();
             Assert.Contains(visible, x => x.Text == "financial institution");
             Assert.Contains(visible, x => x.Text == word.Notes);
-            var head = visible.Single(x => x.Text == word.Headword).TransformToAncestor(view).Transform(new Point());
+            var head = Descendants(view).OfType<TextBox>().Single(x => x.Text == word.Headword).TransformToAncestor(view).Transform(new Point());
             var meaning = visible.Single(x => x.Text == word.Meaning).TransformToAncestor(view).Transform(new Point());
             var synonyms = visible.Single(x => x.Text == "financial institution").TransformToAncestor(view).Transform(new Point());
             Assert.True(head.Y < meaning.Y && meaning.Y < synonyms.Y);

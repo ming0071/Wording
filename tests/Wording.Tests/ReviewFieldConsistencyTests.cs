@@ -78,7 +78,7 @@ public sealed partial class DesktopWorkflowTests
                 Assert.Equal("尚未提供英文解釋", definitions[0].Text);
                 Assert.Equal(word.AdditionalSenses[0].EnglishDefinition, definitions[1].Text);
                 Assert.Equal(word.AdditionalSenses[1].EnglishDefinition, definitions[2].Text);
-                Assert.All(definitions, definition => { Assert.Equal(15, definition.FontSize); Assert.Equal(TextAlignment.Center, definition.TextAlignment); });
+                Assert.All(definitions, definition => { Assert.Equal(17, definition.FontSize); Assert.Equal(TextAlignment.Center, definition.TextAlignment); });
                 Assert.Equal(word.Cue, Assert.Single(Descendants(view).OfType<TextBlock>(), x =>
                     IsShown(x) && AutomationProperties.GetAutomationId(x) == "ReviewCue").Text);
                 Assert.All(Descendants(view).OfType<TextBlock>().Where(IsShown), block => AssertFitsReviewContent(view, block));

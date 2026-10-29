@@ -31,7 +31,7 @@ public static class ReviewKeyboard
     {
         while (element is not null)
         {
-            if (element is TextBoxBase or PasswordBox or ComboBoxItem ||
+            if (element is TextBoxBase { IsReadOnly: false } or PasswordBox or ComboBoxItem ||
                 element is ComboBox { IsDropDownOpen: true } or ComboBox { IsEditable: true }) return true;
             element = element is Visual or System.Windows.Media.Media3D.Visual3D
                 ? VisualTreeHelper.GetParent(element) : LogicalTreeHelper.GetParent(element);

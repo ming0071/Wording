@@ -18,6 +18,7 @@ Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.
 
 | 檢查 | 保護的情境 |
 | --- | --- |
+| [複習詞條選取](../tests/Wording.Tests/ReviewTextSelectionTests.cs) | 翻卡前後雙擊選取完整單字與片語、原生複製內容、唯讀與快捷鍵相容；檢查複製資料時保留使用者剪貼簿 |
 | [練習可靠性](../tests/Wording.Tests/PracticeReliabilityTests.cs) | 取消後晚回傳不能覆蓋答案、重按不會重複生成、取消後能重新操作、相同 ID 的不同完成紀錄不能覆寫、三個月保存邊界、無效設定不能覆蓋舊檔 |
 | [情境練習新詞計數](../tests/Wording.Tests/PracticeNewWordLimitTests.cs) | 閱讀／聽力可從 50 增至 55、一般複習仍受限、0 上限仍可評分、撤銷與重試不重複計數 |
 | [情境主題分類](../tests/Wording.Tests/PracticeTopicFilteringTests.cs) | 動詞片語不作情境主題、舊選擇與歷史仍可用、隨機選題與自由情境保留片語、詞庫分類不變 |

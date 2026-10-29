@@ -44,6 +44,13 @@ public partial class ReviewView : UserControl
         if (DataContext is ReviewViewModel review)
             review.UpdateDefinitionWidth(DefinitionScroll.ViewportWidth > 0 ? DefinitionScroll.ViewportWidth : DefinitionScroll.ActualWidth);
     }
+    private void OnHeadwordDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        HeadwordText.Focus();
+        HeadwordText.SelectAll();
+        e.Handled = true;
+    }
     private void RequestKeyboardFocus() => Dispatcher.BeginInvoke(DispatcherPriority.Input, new Action(() =>
     {
         // The dashboard's clicked button has been removed. Restore a live keyboard route to the window.

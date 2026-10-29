@@ -49,6 +49,9 @@ public sealed partial class DesktopWorkflowTests
                         string.Join(" · ", definition.Collocations), string.Join("、", definition.Synonyms) })
                         Assert.Contains(texts, x => x.Text == text);
                     Assert.All(texts, text => AssertFitsReviewContent(view, text));
+                    foreach (var id in new[] { "ReviewCue", "ReviewCollocations", "ReviewSynonyms", "ReviewEnglishDefinition" })
+                        Assert.Equal(17, Assert.Single(texts, x => AutomationProperties.GetAutomationId(x) == id).FontSize);
+                    Assert.Equal(16, Assert.Single(texts, x => AutomationProperties.GetAutomationId(x) == "ReviewNotes").FontSize);
                     var meaning = Assert.Single(texts, x => x.Text == definition.Meaning);
                     Assert.Equal(22, meaning.FontSize);
                     Assert.Equal(FontWeights.SemiBold, meaning.FontWeight);
