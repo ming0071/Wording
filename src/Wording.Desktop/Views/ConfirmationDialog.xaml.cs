@@ -11,6 +11,9 @@ public sealed record ConfirmationContent(string Title, string Context, string He
     public static ConfirmationContent ReplacePractice { get; } = new("開始新的練習", "尚未提交的練習", "要取代當次練習嗎？",
         "切換閱讀／聽力或生成新的練習，會取代當次尚未提交的文章與答案。你也可以留在這裡，繼續完成作答。", "取代並繼續", "繼續作答");
 
+    public static ConfirmationContent UpdatePractice { get; } = new("安裝新版本", "尚未提交的練習", "要結束本次練習並更新嗎？",
+        "更新會關閉並重新開啟 Wording，本次尚未提交的文章與答案不會保存。已保存的詞庫與學習紀錄會保留。", "結束練習並更新", "繼續作答");
+
     public static ConfirmationContent RestoreBackup(string path) => new("還原整個單字庫", "資料與備份", "要還原這份備份嗎？",
         $"將用以下備份替換目前整個單字庫與複習紀錄：\n{path}\n\n程式會先保存現有資料的復原備份。", "還原備份", "保留目前資料");
 }

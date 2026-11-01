@@ -7,6 +7,7 @@
             </DockPanel>
             <TextBlock Text="調整每日學習量，照顧好你的單字與進度。" Style="{StaticResource MutedText}" Margin="0,0,0,22" />
             <views:StatusBanner />
+            <views:UpdatePanel DataContext="{Binding Updates}" />
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="每日學習" Style="{StaticResource SectionTitle}" />
@@ -67,6 +68,10 @@
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="資料與備份" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="隨附教材" Style="{StaticResource FieldLabel}" />
+                    <ComboBox ItemsSource="{Binding BundledVocabulary}" SelectedItem="{Binding SelectedBundledVocabulary}" DisplayMemberPath="Name" AutomationProperties.AutomationId="BundledVocabulary" />
+                    <WrapPanel Margin="0,8,0,0"><Button Content="匯入所選教材" Command="{Binding ImportBundledCommand}" AutomationProperties.AutomationId="ImportBundledVocabulary" /></WrapPanel>
+                    <TextBlock Text="教材已隨程式提供。請選擇需要的一份；只有按下匯入才更新詞庫，程式升級不會自動匯入。完整詞庫已包含片語補充。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,0,0,12" />
                     <TextBlock Text="單字與複習進度存放於下方資料目錄的 wording.db。JSON 可交給 AI 編輯，再匯入更新；既有 ID 的複習進度會保留。" Style="{StaticResource MutedText}" Margin="0,0,0,12" />
                     <WrapPanel Margin="0,0,0,12"><Button Content="匯出單字 JSON" Command="{Binding ExportVocabularyCommand}" /><Button Content="匯入單字 JSON…" Command="{Binding ImportVocabularyCommand}" /></WrapPanel>
                     <TextBlock Text="備份包含單字、分類與複習進度。還原會替換整個單字庫，並先保存目前資料；不會合併兩份內容。" Style="{StaticResource MutedText}" />

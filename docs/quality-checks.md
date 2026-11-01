@@ -11,6 +11,7 @@ python -m unittest discover -s scripts/tests -v
 python scripts/validate-content.py
 .\scripts\build.ps1 -LockedRestore
 .\scripts\publish.ps1 -LockedRestore
+.\scripts\test-installer.ps1
 python scripts/verify-package.py
 ```
 
@@ -27,12 +28,14 @@ Python 僅用於開發驗證，Windows App 不需要 Python。`validate-content.
 | [卡片筆記清理](../tests/Wording.Tests/VocabularyNotesTests.cs) | 只清除教材重複聲明、保留用法與個人筆記；先備份、失敗回退、原卡片／星號／排程保留，舊檔重匯不帶回聲明 |
 | [設定與輸入法](../tests/Wording.Tests/ApplicationConfigurationTests.cs) | 新預設與已保存偏好分開、JSON 格式與範圍檢查、台灣輸入法英文模式、無台灣輸入法時不切換、頁內焦點與離開時還原 |
 | [Codex 模型清單](../tests/Wording.Tests/CodexModelCatalogTests.cs)、[模型選單](../tests/Wording.Tests/ModelPickerTests.cs) | 初始化順序、分頁、新模型與未知欄位、隱藏／非文字模型、ChatGPT 登入、錯誤輸出遮蔽、查詢失敗、舊路徑晚到回應及選擇保存 |
-| [發行包](../scripts/verify-package.py) | SHA-256、必要檔案、Windows x64 EXE、.NET／WPF 自包含 runtime、三個專案版本、提示詞、授權；排除重複路徑、使用者資料與暫存檔 |
-| [發行驗證器測試](../scripts/tests/test_verify_package.py) | 缺提示詞／授權、錯誤校驗碼、錯版本、非自包含包、錯誤 EXE、非法路徑、重複項目、損毀 ZIP 都應失敗 |
+| [發行包](../scripts/verify-package.py) | Windows x64 安裝 EXE、SHA-256、實際安裝證據、完整教材、提示詞、授權、自包含 runtime、三個專案版本與已安裝檔案清單；排除使用者資料 |
+| [發行驗證器測試](../scripts/tests/test_verify_package.py) | 缺教材／提示詞／授權、錯誤校驗碼、錯版本、錯誤架構、非法清單路徑、內容遭修改、缺少安裝升級或資料保留證據均失敗 |
+| [真實安裝與升級](../scripts/test-installer.ps1) | 只用 artifacts 中的獨立測試資料；安裝測試舊版、升級、用安裝後程式讀取自訂詞庫、核對排程與設定、解除安裝後仍保留資料 |
+| [程式內更新](../tests/Wording.Tests/ApplicationUpdateTests.cs) | 數值版本比較、正式版限定、來源與 SHA-256、取消與失敗重試、未完成操作延後重啟、備份後才安裝、跳過版本與離線使用 |
 
 版本以 `Directory.Build.props` 為準，側欄由組件版本顯示，打包腳本預設讀取同一版本。共同的 `RuntimeIdentifiers` 同時涵蓋一般建置與 win-x64 發行，避免兩種還原改寫不同的套件鎖定檔。更新版本或套件後先正常還原並提交新的 lock files，再以 `-LockedRestore` 驗證。
 
-CI 使用固定 SHA 的官方 Actions、一般建置的唯讀權限與 NuGet 快取。分支上的重複工作會取消，版本 tag 的工作則完整執行。ZIP 與驗證證據保留 14 天；已壓縮的 ZIP 不再重複壓縮。建置、測試與打包之後會驗證套件鎖定檔沒有變動，並在 Actions summary 顯示測試與發行包結果。
+CI 使用固定 SHA 的官方 Actions、一般建置的唯讀權限與 NuGet 快取。分支上的重複工作會取消，版本 tag 的工作則完整執行。安裝 EXE 與驗證證據保留 14 天，artifact 不額外壓縮。建置、測試與打包後驗證套件鎖定檔沒有變動，並在 Actions summary 顯示結果。
 
 版本 tag 推送後，獨立 Release 工作取得同一次驗證的三個固定附件，以草稿上傳並核對 SHA-256，再公開。只有 Release 工作擁有寫入權限，已發布版本不會被覆寫。使用方式見 [版本發布](releases/README.md)，失敗與重試情境由 [發布器測試](../scripts/tests/test_release.py) 驗證。
 

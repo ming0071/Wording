@@ -1,6 +1,6 @@
 # Vocabulary Packs
 
-Wording 新安裝從空白詞庫開始。這個目錄的檔案隨原始碼提供，但不自動載入，也不打包進程式 ZIP。需要時到 App「設定與備份」選擇單字 JSON 匯入。
+Wording 新安裝從空白詞庫開始。從 5.0 起，整個目錄隨 EXE 安裝包提供，但不自動載入。到 App「設定與備份」選擇隨附教材並匯入，也可以手動選擇單字 JSON。程式升級不會自動匯入或覆寫個人詞庫。
 
 [回到主頁](../README.md#documentation) · [JSON 格式與檔案操作](../docs/vocabulary-files.md)
 

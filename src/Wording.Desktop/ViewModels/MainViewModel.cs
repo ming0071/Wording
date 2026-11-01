@@ -16,6 +16,7 @@ public sealed class MainViewModel : ObservableObject
     public ReviewViewModel Review { get; }
     public PracticeViewModel? Practice { get; }
     public SettingsViewModel Settings { get; }
+    public UpdateViewModel Updates { get; }
     public string AppVersion => typeof(MainViewModel).Assembly
         .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
         .OfType<System.Reflection.AssemblyInformationalVersionAttribute>().FirstOrDefault()?.InformationalVersion.Split('+')[0] ?? "";
@@ -31,6 +32,7 @@ public sealed class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(IsReviewSelected));
             OnPropertyChanged(nameof(IsSettingsSelected));
             OnPropertyChanged(nameof(IsPracticeSelected));
+            OnPropertyChanged(nameof(ShowUpdateBanner));
         }
     }
     public bool IsTodaySelected => CurrentSection == "今日學習";
@@ -38,10 +40,12 @@ public sealed class MainViewModel : ObservableObject
     public bool IsReviewSelected => CurrentSection == "複習";
     public bool IsSettingsSelected => CurrentSection == "設定與備份";
     public bool IsPracticeSelected => CurrentSection == "情境練習";
+    public bool ShowUpdateBanner => Updates.ShowBanner && !IsSettingsSelected;
     public RelayCommand NavigateCommand { get; }
 
     public MainViewModel(IStudyStore store, IBackupService backup, IContentGenerator generator,
-        IPronunciationService speech, AppSettings settings, AiSettings aiSettings, string dataDirectory)
+        IPronunciationService speech, AppSettings settings, AiSettings aiSettings, string dataDirectory,
+        IApplicationUpdateClient? updateClient = null, IUpdateInstaller? updateInstaller = null)
     {
         this.store = store;
         this.generator = generator;
@@ -52,6 +56,16 @@ public sealed class MainViewModel : ObservableObject
             Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor);
         Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => { Review.EndSession(); Practice?.Reset(); }, store);
         currentPage = Dashboard;
+        var version = typeof(MainViewModel).Assembly.GetName().Version!;
+        Updates = new(updateClient ?? new GitHubUpdateClient(), updateInstaller ?? new UpdateInstaller(), backup, settings,
+            new(version.Major, version.Minor, version.Build), dataDirectory, () => settings.Save(dataDirectory),
+            RestartBlockReason,
+            () => Application.Current.Shutdown());
+        Settings.Updates = Updates;
+        Updates.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(UpdateViewModel.ShowBanner)) OnPropertyChanged(nameof(ShowUpdateBanner));
+        };
         NavigateCommand = new(parameter => Navigate(parameter as string ?? "today"));
     }
 
@@ -71,7 +85,7 @@ public sealed class MainViewModel : ObservableObject
 
     private async void Navigate(string section)
     {
-        if (isNavigating) return;
+        if (isNavigating || !Updates.CanUseApplication) return;
         if (CurrentPage.IsBusy) { CurrentPage.Notice = "正在處理，完成或取消後即可切換畫面。"; return; }
         if (!ConfirmLeaveEditor()) return;
         isNavigating = true;
@@ -119,4 +133,13 @@ public sealed class MainViewModel : ObservableObject
 
     public bool ConfirmLeaveEditor() => CurrentPage is not EditorViewModel { IsDirty: true }
         || Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.LeaveEditor);
+
+    private string? RestartBlockReason()
+    {
+        if (CurrentPage.IsBusy) return "請等目前操作完成後再安裝更新。";
+        if (CurrentPage is EditorViewModel { IsDirty: true }) return "請先保存正在編輯的詞義，再安裝更新。";
+        if (Practice?.IsUnsubmitted == true && !Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.UpdatePractice))
+            return "已保留目前練習，可完成作答後再更新。";
+        return null;
+    }
 }

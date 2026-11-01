@@ -20,11 +20,13 @@ Windows 英文學習 App，把自己的詞庫、FSRS 間隔複習，以及 **Cod
 
 ## Installation
 
-### Windows 程式包
+### Windows 安裝檔
 
-使用 Windows 11 x64，從 [Releases](https://github.com/ming0071/Wording/releases) 下載 Windows x64 ZIP，完整解壓後執行 `Wording.exe`。程式包已包含 .NET，不需另外安裝。
+使用 Windows 11 x64，從 [Releases](https://github.com/ming0071/Wording/releases) 下載 `Wording-版本-win-x64-Setup.exe` 並安裝，可勾選建立桌面捷徑。安裝檔已包含 .NET 與完整教材，不需另外下載壓縮檔或教材。一般安裝與更新不要求管理員權限。
 
 內嵌字典需要 Microsoft Edge WebView2 Runtime。
+
+5.0 起會在程式內提示新版本，按「下載並更新」即可下載、校驗、安裝並重新開啟。個人資料仍沿用原目錄。首次從舊 ZIP 版轉換需手動安裝一次，詳見 [安裝與更新](docs/installation-and-updates.md)。
 
 <details>
 <summary>從原始碼執行</summary>
@@ -151,6 +153,7 @@ Wording/
 
 | 文件 | 內容 |
 | --- | --- |
+| [安裝與更新](docs/installation-and-updates.md) | 單一 EXE 安裝、隨附教材、程式內更新與資料保留 |
 | [評分與複習排程](docs/review-scheduling.md) | 1–4 評分、新詞學習步驟、長期複習與每日新詞名額 |
 | [設定與版本來源](docs/configuration.md) | JSON 預設值、個人設定、英文輸入法與版本號來源 |
 | [閱讀與聽力情境練習](docs/scenario-practice.md) | 生成選項、選字、中文解析、單字回饋與提示詞調整 |

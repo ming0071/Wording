@@ -47,7 +47,9 @@ jobs:
         run: ./scripts/build.ps1 -LockedRestore
       - name: Publish Windows package
         run: ./scripts/publish.ps1 -LockedRestore
-      - name: Verify Windows package and checksum
+      - name: Verify real install upgrade and data preservation
+        run: ./scripts/test-installer.ps1
+      - name: Verify Windows installer and checksum
         run: |
           python scripts/verify-package.py | Tee-Object artifacts/test-results/package-validation.txt
           if ($LASTEXITCODE -ne 0) { throw 'Package verification failed' }
@@ -60,8 +62,8 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           New-Item -ItemType Directory -Path artifacts/release -Force | Out-Null
-          $taskPackage = "artifacts/Wording-$env:RELEASE_VERSION-win-x64.zip"
-          Copy-Item -LiteralPath $taskPackage,"$taskPackage.sha256",content/toeic-vocabulary.json -Destination artifacts/release
+          $taskPackage = "artifacts/Wording-$env:RELEASE_VERSION-win-x64-Setup.exe"
+          Copy-Item -LiteralPath $taskPackage,"$taskPackage.sha256",artifacts/installer-validation.json -Destination artifacts/release
       - name: Verify release inputs before upload
         if: steps.release.outputs.release == 'true'
         run: python scripts/release.py check

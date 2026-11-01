@@ -11,9 +11,19 @@ namespace Wording.Desktop.ViewModels;
 
 public sealed record CodexModelChoice(string Model, string Label, string Description, bool IsAvailable);
 public sealed record CodexSpeedChoice(string Id, string Label, string Description, bool IsAvailable);
+public sealed record BundledVocabularyChoice(string Name, string Path);
 
 public sealed class SettingsViewModel : PageViewModel
 {
+    public UpdateViewModel? Updates { get; set; }
+    public BundledVocabularyChoice[] BundledVocabulary { get; } = new[]
+    {
+        new BundledVocabularyChoice("完整 TOEIC 詞庫，已包含片語補充", Path.Combine(AppContext.BaseDirectory, "content", "toeic-vocabulary.json")),
+        new BundledVocabularyChoice("動詞片語補充，供舊詞庫使用", Path.Combine(AppContext.BaseDirectory, "content", "toeic-phrasal-verbs.json")),
+        new BundledVocabularyChoice("AI 原創起始教材", Path.Combine(AppContext.BaseDirectory, "content", "toeic-starter.json"))
+    }.Where(x => File.Exists(x.Path)).ToArray();
+    public BundledVocabularyChoice? SelectedBundledVocabulary { get; set; }
+    public AsyncCommand ImportBundledCommand { get; }
     private readonly IBackupService backup;
     private readonly IContentGenerator generator;
     private readonly AppSettings settings;
@@ -141,6 +151,14 @@ public sealed class SettingsViewModel : PageViewModel
             await RefreshModelsAsync(token);
         });
         BackupCommand = Command(BackupAsync);
+        SelectedBundledVocabulary = BundledVocabulary.FirstOrDefault();
+        ImportBundledCommand = Command(async token =>
+        {
+            if (SelectedBundledVocabulary is not { } selected) return;
+            if (!BundledVocabulary.Contains(selected)) throw new InvalidOperationException("請選擇隨附教材。");
+            var count = await new VocabularyFileService(store!).ImportAsync(selected.Path, token);
+            Notice = $"已匯入 {count} 個詞條。教材內容已加入，沒有匯入其他人的學習紀錄。";
+        }, () => store is not null && BundledVocabulary.Length > 0);
         RestoreCommand = Command(RestoreAsync);
         ImportVocabularyCommand = Command(async token =>
         {
@@ -248,6 +266,7 @@ public sealed class SettingsViewModel : PageViewModel
             throw new InvalidOperationException("所選加速模式未出現在目前模型清單，請改選可用模式或標準。");
         var updated = new AppSettings
         {
+            SkippedUpdateVersion = settings.SkippedUpdateVersion, LastUpdateCheckUtc = settings.LastUpdateCheckUtc,
             Practice = settings.Practice, DailyNewLimit = newLimit, CodexExecutablePath = CodexPath.Trim(), CodexModel = CodexModel.Trim(),
             CodexServiceTier = CodexServiceTier,
             DailyGenerationLimit = generationLimit, FlipKey = FlipKey, AgainKey = AgainKey,

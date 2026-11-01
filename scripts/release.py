@@ -55,14 +55,13 @@ def prepare(root, artifact_directory, ref):
     info = metadata(root, ref)
     if info["release"] != "true":
         raise ValueError("Publishing requires a version tag ref.")
-    package = artifact_directory / f"Wording-{info['version']}-win-x64.zip"
+    package = artifact_directory / f"Wording-{info['version']}-win-x64-Setup.exe"
     errors = verify_package(package, info["version"])
     if errors:
         raise ValueError("Package verification failed: " + "; ".join(errors))
-    assets = [Asset(package), Asset(Path(str(package) + ".sha256")), Asset(artifact_directory / "toeic-vocabulary.json")]
-    expected = (root / "content/toeic-vocabulary.json").read_bytes()
-    if assets[2].path.read_bytes() != expected:
-        raise ValueError("Vocabulary attachment differs from the tested source.")
+    # Friends download one installer. Checksums and installation evidence remain CI inputs;
+    # the updater reads GitHub's server-side asset digest without another manual download.
+    assets = [Asset(package)]
     notes = (root / "docs/releases" / f"{info['version']}.md").read_text(encoding="utf-8-sig").strip()
     if not notes:
         raise ValueError("Release notes must not be empty.")

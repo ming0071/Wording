@@ -10,6 +10,8 @@ namespace Wording.Infrastructure;
 
 public sealed class AppSettings
 {
+    public string SkippedUpdateVersion { get; set; } = "";
+    public DateTimeOffset? LastUpdateCheckUtc { get; set; }
     public Wording.Core.PracticeOptions Practice { get; set; } = new();
     [JsonConverter(typeof(NewWordLimitConverter))]
     public BigInteger DailyNewLimit { get; set; } = BigInteger.Parse(ApplicationConfiguration.Current.Review.DailyNewLimit, CultureInfo.InvariantCulture);

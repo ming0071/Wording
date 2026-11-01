@@ -20,6 +20,19 @@ public partial class MainWindow : Window
 
     private void OnClosing(object? sender, CancelEventArgs e)
     {
+        if (DataContext is MainViewModel updating && updating.Updates.IsDownloading)
+        {
+            updating.Updates.CancelCommand.Execute(null);
+            updating.Updates.Notice = "正在取消下載，完成後即可關閉程式。";
+            e.Cancel = true;
+            return;
+        }
+        if (DataContext is MainViewModel savingUpdate && savingUpdate.Updates.Phase == Wording.Core.UpdatePhase.Installing && !savingUpdate.Updates.HasLaunchedInstaller)
+        {
+            savingUpdate.Updates.Notice = "正在備份學習資料，請稍候。";
+            e.Cancel = true;
+            return;
+        }
         if (DataContext is MainViewModel { CurrentPage.IsBusy: true } model)
         {
             model.CurrentPage.Notice = "正在保存或產生內容，請完成或取消後再關閉視窗。";

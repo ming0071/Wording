@@ -10,6 +10,9 @@ namespace Wording.Desktop;
 
 public partial class App : Application
 {
+    private Mutex? installationMutex;
+    private System.Windows.Threading.DispatcherTimer? updateTimer;
+    private readonly CancellationTokenSource updateLifetime = new();
     private IPronunciationService? speech;
     private Mutex? instanceMutex;
 
@@ -20,6 +23,7 @@ public partial class App : Application
         try
         {
             var dataDirectory = GetDataDirectory(e.Args);
+            installationMutex = new Mutex(false, @"Local\Wording.Installation");
             Directory.CreateDirectory(dataDirectory);
             AppDiagnostics.Initialize(dataDirectory);
             var identity = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(dataDirectory.ToUpperInvariant())))[..20];
@@ -55,6 +59,10 @@ public partial class App : Application
             ShutdownMode = ShutdownMode.OnMainWindowClose;
             window.Show();
             await viewModel.InitializeAsync();
+            _ = viewModel.Updates.CheckInBackgroundAsync(updateLifetime.Token);
+            updateTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromHours(6) };
+            updateTimer.Tick += async (_, _) => await viewModel.Updates.CheckInBackgroundAsync(updateLifetime.Token);
+            updateTimer.Start();
         }
         catch (Exception exception)
         {
@@ -83,6 +91,10 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        updateTimer?.Stop();
+        updateLifetime.Cancel();
+        updateLifetime.Dispose();
+        installationMutex?.Dispose();
         speech?.Dispose();
         if (instanceMutex is not null)
         {

@@ -1,0 +1,16 @@
+<UserControl x:Class="Wording.Desktop.Views.UpdateBanner" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Border Background="#EEEDFF" CornerRadius="10" Padding="12" Margin="0,0,0,12" AutomationProperties.AutomationId="UpdateBanner">
+        <StackPanel>
+            <TextBlock Text="{Binding Status}" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding Error}" Foreground="#A12F32" Margin="0,4,0,0" />
+            <TextBlock Text="{Binding Notice}" Foreground="#354A7B" Margin="0,4,0,0" />
+            <ProgressBar Value="{Binding Progress, Mode=OneWay}" Maximum="100" Height="5" Margin="0,8,0,4" Visibility="{Binding IsDownloading, Converter={StaticResource BoolVisibility}}" />
+            <WrapPanel Margin="0,6,0,0">
+                <Button Content="{Binding InstallButtonText}" Command="{Binding InstallCommand}" Style="{StaticResource PrimaryButton}" Padding="10,6" />
+                <Button Content="查看更新內容 ↗" Command="{Binding ViewReleaseCommand}" Padding="10,6" />
+                <Button Content="稍後" Command="{Binding LaterCommand}" Padding="10,6" />
+                <Button Content="取消下載" Command="{Binding CancelCommand}" Padding="10,6" Visibility="{Binding IsDownloading, Converter={StaticResource BoolVisibility}}" />
+            </WrapPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

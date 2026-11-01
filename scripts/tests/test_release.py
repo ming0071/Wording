@@ -94,15 +94,17 @@ class ReleaseTests(unittest.TestCase):
     def test_preflight_requires_tag_and_verified_package(self):
         with self.assertRaises(ValueError):
             release.prepare(self.root, self.root, "refs/heads/main")
-        self.assets[0].path.write_bytes(b"broken zip")
+        self.assets[0].path.write_bytes(b"broken installer")
         with self.assertRaisesRegex(ValueError, "Package verification failed"):
             release.prepare(self.root, self.root, "refs/tags/v0.3.0")
 
-    def test_vocabulary_and_notes_must_match_reviewed_source(self):
-        self.assets[2].path.write_bytes(b"wrong vocabulary")
-        with self.assertRaisesRegex(ValueError, "differs from the tested source"):
+    def test_install_evidence_and_notes_must_match_reviewed_source(self):
+        evidence = self.root / "installer-validation.json"
+        original = evidence.read_bytes()
+        evidence.write_text('{}')
+        with self.assertRaisesRegex(ValueError, "Package verification failed"):
             release.prepare(self.root, self.root, "refs/tags/v0.3.0")
-        self.assets[2].path.write_bytes((self.root / "content/toeic-vocabulary.json").read_bytes())
+        evidence.write_bytes(original)
         (self.root / "docs/releases/0.3.0.md").write_text(" ")
         with self.assertRaisesRegex(ValueError, "must not be empty"):
             release.prepare(self.root, self.root, "refs/tags/v0.3.0")

@@ -5,106 +5,106 @@ from pathlib import Path
 import struct
 import tempfile
 import unittest
-import warnings
-import zipfile
 
-
-spec = importlib.util.spec_from_file_location("verify_package", Path(__file__).resolve().parents[1] / "verify-package.py")
+spec = importlib.util.spec_from_file_location('verify_package', Path(__file__).resolve().parents[1]/'verify-package.py')
 verifier = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(verifier)
-
 
 class PackageVerificationTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
-        self.path = Path(self.directory.name) / "Wording-0.3.0-win-x64.zip"
+        self.root = Path(self.directory.name)
+        self.path = self.root/'Wording-0.3.0-win-x64-Setup.exe'
         executable = bytearray(128)
-        executable[:2] = b"MZ"
-        struct.pack_into("<I", executable, 0x3C, 64)
-        executable[64:68] = b"PE\0\0"
-        struct.pack_into("<H", executable, 68, 0x8664)
-        self.files = {name: b"fixture" for name in verifier.REQUIRED}
-        self.files["Configuration/app-defaults.json"] = json.dumps({key: {} for key in ("Review", "Shortcuts", "Speech", "Ai", "Practice")})
-        self.files["Wording.exe"] = bytes(executable)
-        self.files["Wording.runtimeconfig.json"] = json.dumps({"runtimeOptions": {"includedFrameworks": [
-            {"name": "Microsoft.NETCore.App"}, {"name": "Microsoft.WindowsDesktop.App"}]}})
-        self.files["Wording.deps.json"] = json.dumps({"runtimeTarget": {"name": "net10.0/win-x64"},
-            "libraries": {name + "/0.3.0": {} for name in ("Wording", "Wording.Core", "Wording.Infrastructure")}})
+        executable[:2] = b'MZ'
+        struct.pack_into('<I', executable, 0x3c, 64)
+        executable[64:68] = b'PE\0\0'
+        struct.pack_into('<H', executable, 68, 0x8664)
+        self.executable = bytes(executable)
 
-    def write_package(self, extra=None):
-        with zipfile.ZipFile(self.path, "w") as archive:
-            for name, content in self.files.items():
-                archive.writestr(name, content)
-            if extra:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore", UserWarning)
-                    archive.writestr(*extra)
-        digest = hashlib.sha256(self.path.read_bytes()).hexdigest()
-        Path(str(self.path) + ".sha256").write_text(f"{digest}  {self.path.name}\n", encoding="ascii")
+    def write_package(self):
+        self.path.write_bytes(self.executable)
+        checksum = hashlib.sha256(self.executable).hexdigest()
+        Path(str(self.path)+'.sha256').write_text(f'{checksum}  {self.path.name}\n', encoding='ascii')
+        self.evidence = dict(version='0.3.0', installerSha256=checksum, installed=True, upgraded=True,
+            uninstalled=True, dataPreserved=True, filesVerified=len(verifier.REQUIRED))
+        self.write_evidence()
 
-    def test_complete_self_contained_package_passes(self):
+    def write_evidence(self):
+        (self.root/'installer-validation.json').write_text(json.dumps(self.evidence), encoding='utf-8')
+
+    def payload(self):
+        directory = self.root/'payload'
+        for name in verifier.REQUIRED:
+            file = directory/name
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_bytes(b'fixture')
+        (directory/'Wording.exe').write_bytes(self.executable)
+        (directory/'Configuration/app-defaults.json').write_text(json.dumps({key:{} for key in ('Review','Shortcuts','Speech','Ai','Practice')}))
+        (directory/'Wording.runtimeconfig.json').write_text(json.dumps({'runtimeOptions':{'includedFrameworks':[
+            {'name':'Microsoft.NETCore.App'},{'name':'Microsoft.WindowsDesktop.App'}]}}))
+        (directory/'Wording.deps.json').write_text(json.dumps({'runtimeTarget':{'name':'net10.0/win-x64'},
+            'libraries':{name+'/0.3.0':{} for name in ('Wording','Wording.Core','Wording.Infrastructure')}}))
+        return directory
+
+    def test_verified_installer_passes(self):
         self.write_package()
-        self.assertEqual([], verifier.verify_package(self.path, "0.3.0"))
+        self.assertEqual([],verifier.verify_package(self.path,'0.3.0'))
 
-    def test_missing_prompt_or_license_fails(self):
-        for name in ("Prompts/practice-reading.txt", "docs/licenses/WebView2-LICENSE.txt", "Configuration/app-defaults.json"):
-            with self.subTest(name=name):
-                content = self.files.pop(name)
+    def test_checksum_and_name_must_match(self):
+        self.write_package()
+        Path(str(self.path)+'.sha256').write_text('0'*64+'  other.exe')
+        self.assertTrue(any('SHA-256' in error for error in verifier.verify_package(self.path,'0.3.0')))
+
+    def test_invalid_executable_architecture_or_version_fails(self):
+        self.write_package()
+        self.assertTrue(verifier.verify_package(self.path,'0.4.0'))
+        self.path.write_bytes(b'not an exe')
+        self.assertTrue(verifier.verify_package(self.path,'0.3.0'))
+        changed = bytearray(self.executable)
+        struct.pack_into('<H',changed,68,0x14c)
+        self.path.write_bytes(changed)
+        self.assertTrue(verifier.verify_package(self.path,'0.3.0'))
+
+    def test_all_real_install_checks_are_required_for_these_exact_bytes(self):
+        for field in ('installed','upgraded','uninstalled','dataPreserved','installerSha256','version','filesVerified'):
+            with self.subTest(field=field):
                 self.write_package()
-                self.assertTrue(any(name in error for error in verifier.verify_package(self.path, "0.3.0")))
-                self.files[name] = content
+                self.evidence.pop(field)
+                self.write_evidence()
+                self.assertTrue(verifier.verify_package(self.path,'0.3.0'))
 
-    def test_invalid_product_defaults_fail_before_release(self):
-        for config in ("broken json", "[]", '{"Review":{}}'):
-            with self.subTest(config=config):
-                self.files["Configuration/app-defaults.json"] = config
-                self.write_package()
-                self.assertTrue(verifier.verify_package(self.path, "0.3.0"))
+    def test_payload_contains_all_materials_and_detects_changes(self):
+        directory = self.payload()
+        self.assertEqual([],verifier.verify_payload(directory,'0.3.0',True))
+        self.assertEqual([],verifier.verify_payload(directory,'0.3.0'))
+        (directory/'content/toeic-starter.json').write_text('changed')
+        self.assertTrue(any('content mismatch' in error for error in verifier.verify_payload(directory,'0.3.0')))
 
-    def test_wrong_hash_and_filename_fail(self):
-        self.write_package()
-        sidecar = Path(str(self.path) + ".sha256")
-        sidecar.write_text("0" * 64 + f"  {self.path.name}\n", encoding="ascii")
-        self.assertTrue(any("SHA-256" in e for e in verifier.verify_package(self.path, "0.3.0")))
-        sidecar.write_text("0" * 64 + "  another.zip\n", encoding="ascii")
-        self.assertTrue(any("name this ZIP" in e for e in verifier.verify_package(self.path, "0.3.0")))
-
-    def test_user_data_and_unsafe_paths_fail(self):
-        for name in ("wording.db", "wording.db-wal", "settings.json", "auth.json", ".env", "../outside.txt", "C:/outside.txt"):
+    def test_payload_requires_licenses_materials_and_no_private_data(self):
+        directory = self.payload()
+        (directory/'content/README.md').unlink()
+        self.assertTrue(any('missing required' in error for error in verifier.verify_payload(directory,'0.3.0',True)))
+        (directory/'content/README.md').write_text('restored')
+        for name in ('wording.db','wording.db-wal','settings.json','auth.json','.env','diagnostics.log'):
             with self.subTest(name=name):
-                self.write_package((name, b"fixture"))
-                self.assertNotEqual([], verifier.verify_package(self.path, "0.3.0"))
+                file=directory/name
+                file.write_text('private')
+                self.assertTrue(any('user data' in error for error in verifier.verify_payload(directory,'0.3.0',True)))
+                file.unlink()
 
-    def test_stale_version_and_duplicate_entries_fail(self):
-        self.write_package()
-        self.assertTrue(any("version must match" in e for e in verifier.verify_package(self.path, "0.4.0")))
-        self.write_package(("Wording.dll", b"duplicate"))
-        self.assertTrue(any("duplicate" in e for e in verifier.verify_package(self.path, "0.3.0")))
+    def test_payload_rejects_bad_runtime_version_and_manifest_paths(self):
+        directory = self.payload()
+        self.assertTrue(verifier.verify_payload(directory,'0.4.0',True))
+        self.assertEqual([],verifier.verify_payload(directory,'0.3.0',True))
+        manifest = directory/verifier.MANIFEST
+        value=json.loads(manifest.read_text())
+        value['files']['../outside']='0'*64
+        manifest.write_text(json.dumps(value))
+        self.assertTrue(verifier.verify_payload(directory,'0.3.0'))
+        (directory/'Wording.runtimeconfig.json').write_text('{broken')
+        self.assertTrue(verifier.verify_payload(directory,'0.3.0',True))
 
-    def test_framework_dependent_or_wrong_architecture_fails(self):
-        self.files["Wording.runtimeconfig.json"] = json.dumps({"runtimeOptions": {"framework": {"name": "Microsoft.NETCore.App"}}})
-        self.files["Wording.exe"] = b"not an executable"
-        self.write_package()
-        errors = verifier.verify_package(self.path, "0.3.0")
-        self.assertTrue(any("include .NET" in e for e in errors))
-        self.assertTrue(any("Windows executable" in e for e in errors))
-
-    def test_invalid_json_and_corrupt_zip_are_reported(self):
-        self.files["Wording.deps.json"] = "{invalid"
-        self.write_package()
-        self.assertNotEqual([], verifier.verify_package(self.path, "0.3.0"))
-        self.path.write_bytes(b"corrupt archive")
-        self.assertNotEqual([], verifier.verify_package(self.path, "0.3.0"))
-
-    def test_non_x64_executable_and_runtime_target_fail(self):
-        executable = bytearray(self.files["Wording.exe"])
-        struct.pack_into("<H", executable, 68, 0x14C)  # A valid PE header for x86, rather than x64.
-        self.files["Wording.exe"] = bytes(executable)
-        dependencies = json.loads(self.files["Wording.deps.json"])
-        dependencies["runtimeTarget"]["name"] = "net10.0/linux-x64"
-        self.files["Wording.deps.json"] = json.dumps(dependencies)
-        self.write_package()
-        errors = verifier.verify_package(self.path, "0.3.0")
-        self.assertTrue(any("must target Windows x64" in e for e in errors))
-        self.assertTrue(any("must be win-x64" in e for e in errors))
+if __name__ == '__main__':
+    unittest.main()
