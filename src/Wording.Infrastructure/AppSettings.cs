@@ -22,6 +22,8 @@ public sealed class AppSettings
     public string EasyKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Easy;
     public string SpeakKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.Speak;
     public string SpeakExampleKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.SpeakExample;
+    public string RecordReadingKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.RecordReading;
+    public string ReplayReadingKey { get; set; } = ApplicationConfiguration.Current.Shortcuts.ReplayReading;
     public bool AutoSpeakWord { get; set; } = ApplicationConfiguration.Current.Speech.AutoSpeakWord;
     public bool AutoSpeakExamples { get; set; } = ApplicationConfiguration.Current.Speech.AutoSpeakExamples;
     public static IReadOnlyList<string> ShortcutKeys => ShortcutDefaults.AvailableKeys;
@@ -47,6 +49,15 @@ public sealed class AppSettings
         used.Add(settings.SpeakKey);
         if (!document.RootElement.TryGetProperty(nameof(SpeakExampleKey), out _))
             settings.SpeakExampleKey = used.Add(settings.SpeakExampleKey) ? settings.SpeakExampleKey : ShortcutKeys.First(x => !used.Contains(x));
+        // Reading actions run only on the answer side, so they may share the question-side flip key.
+        var answerKeys = new HashSet<string>([settings.AgainKey, settings.HardKey, settings.GoodKey, settings.EasyKey, settings.SpeakKey, settings.SpeakExampleKey]);
+        if (document.RootElement.TryGetProperty(nameof(RecordReadingKey), out _)) answerKeys.Add(settings.RecordReadingKey);
+        if (document.RootElement.TryGetProperty(nameof(ReplayReadingKey), out _)) answerKeys.Add(settings.ReplayReadingKey);
+        if (!document.RootElement.TryGetProperty(nameof(RecordReadingKey), out _))
+            settings.RecordReadingKey = answerKeys.Add(settings.RecordReadingKey) ? settings.RecordReadingKey : ShortcutKeys.First(x => !answerKeys.Contains(x));
+        answerKeys.Add(settings.RecordReadingKey);
+        if (!document.RootElement.TryGetProperty(nameof(ReplayReadingKey), out _))
+            settings.ReplayReadingKey = answerKeys.Add(settings.ReplayReadingKey) ? settings.ReplayReadingKey : ShortcutKeys.First(x => !answerKeys.Contains(x));
         settings.Validate();
         return settings;
     }
@@ -71,6 +82,7 @@ public sealed class AppSettings
         var keys = new[] { FlipKey, AgainKey, HardKey, GoodKey, EasyKey, SpeakKey, SpeakExampleKey };
         if (keys.Any(key => !ShortcutKeys.Contains(key)) || keys.Distinct().Count() != keys.Length)
             throw new ArgumentException("翻卡、評分與朗讀請選擇不同的快捷鍵。");
+        ShortcutDefaults.ValidateReadingKeys(RecordReadingKey, ReplayReadingKey, keys.Skip(1));
     }
 }
 

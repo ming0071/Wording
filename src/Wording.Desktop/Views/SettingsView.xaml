@@ -21,7 +21,7 @@
                     <TextBlock Text="複習快捷鍵" Style="{StaticResource SectionTitle}" />
                     <CheckBox Content="每張複習卡開啟時，自動朗讀單字" IsChecked="{Binding AutoSpeakWord}" Margin="0,8,0,14" />
                     <CheckBox Content="翻卡顯示答案後，自動朗讀英文例句" IsChecked="{Binding AutoSpeakExamples}" Margin="0,0,0,14" />
-                    <TextBlock Text="各操作請選擇不同的按鍵。Space 是空白鍵，數字鍵同時支援鍵盤上排與數字鍵盤。" Style="{StaticResource MutedText}" FontSize="12" />
+                    <TextBlock Text="Space 是空白鍵，數字鍵支援上排與數字鍵盤。翻卡可與錄音或回聽共用按鍵，依正反面分工；其他操作請選不同按鍵。" Style="{StaticResource MutedText}" FontSize="12" />
                     <UniformGrid Columns="5" Margin="0,12,0,0">
                         <StackPanel Margin="0,0,10,0"><TextBlock Text="翻卡" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding FlipKey}" AutomationProperties.Name="翻卡快捷鍵" /></StackPanel>
                         <StackPanel Margin="0,0,10,0"><TextBlock Text="重來" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding AgainKey}" AutomationProperties.Name="重來快捷鍵" /></StackPanel>
@@ -32,6 +32,10 @@
                     <UniformGrid Columns="2" Margin="0,8,0,0" MaxWidth="420" HorizontalAlignment="Left">
                         <StackPanel Margin="0,0,16,0"><TextBlock Text="朗讀單字" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding SpeakKey}" AutomationProperties.Name="朗讀單字快捷鍵" /></StackPanel>
                         <StackPanel><TextBlock Text="朗讀例句" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding SpeakExampleKey}" AutomationProperties.Name="朗讀例句快捷鍵" /></StackPanel>
+                    </UniformGrid>
+                    <UniformGrid Columns="2" Margin="0,8,0,0" MaxWidth="420" HorizontalAlignment="Left">
+                        <StackPanel Margin="0,0,16,0"><TextBlock Text="開始／結束錄音" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding RecordReadingKey}" AutomationProperties.Name="開始結束錄音快捷鍵" AutomationProperties.AutomationId="RecordReadingKey" /></StackPanel>
+                        <StackPanel><TextBlock Text="回聽錄音" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding ReplayReadingKey}" AutomationProperties.Name="回聽錄音快捷鍵" AutomationProperties.AutomationId="ReplayReadingKey" /></StackPanel>
                     </UniformGrid>
                 </StackPanel>
             </Border>

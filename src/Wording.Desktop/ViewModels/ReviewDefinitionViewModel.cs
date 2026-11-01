@@ -2,7 +2,7 @@ using Wording.Core;
 
 namespace Wording.Desktop.ViewModels;
 
-public sealed class ReviewDefinitionViewModel(VocabularyDefinition definition)
+public sealed class ReviewDefinitionViewModel(VocabularyDefinition definition, ReadingPracticeViewModel? reading = null)
 {
     public string PartOfSpeech => PartOfSpeechDisplay.Chinese(definition.PartOfSpeech);
     public string Cue => definition.Cue;
@@ -12,7 +12,7 @@ public sealed class ReviewDefinitionViewModel(VocabularyDefinition definition)
     public string CollocationsText => string.Join(" · ", definition.Collocations);
     public string SynonymsText => string.Join("、", definition.Synonyms);
     public string Notes => definition.Notes;
-    public IReadOnlyList<ExampleSentence> Examples => definition.Examples;
+    public IReadOnlyList<ReviewExampleViewModel> Examples { get; } = definition.Examples.Select(x => new ReviewExampleViewModel(x, reading)).ToArray();
     public bool HasCue => !string.IsNullOrWhiteSpace(Cue);
     public bool HasEnglishDefinition => !string.IsNullOrWhiteSpace(EnglishDefinition);
     public bool HasCollocations => definition.Collocations.Length > 0;

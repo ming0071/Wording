@@ -1,6 +1,6 @@
 # Releases
 
-目前開發版本為 [0.5.2](0.5.2.md)，已更新本機固定入口，本次不建立 tag 或 GitHub Release。最新公開發行仍為 [0.5.0](0.5.0.md)。改以單一 Windows EXE 安裝包發布，內含完整教材，支援程式內版本通知與下載更新。舊 Release 0.2.0、0.3.0、0.4.8 保留；0.4.0 與 0.3.7 的 Release 已移除，更新說明與 Git tag 保留。
+目前開發版本為 [0.5.3](0.5.3.md)，已更新本機固定入口，本次不建立 tag 或 GitHub Release。最新公開發行仍為 [0.5.0](0.5.0.md)。改以單一 Windows EXE 安裝包發布，內含完整教材，支援程式內版本通知與下載更新。舊 Release 0.2.0、0.3.0、0.4.8 保留；0.4.0 與 0.3.7 的 Release 已移除，更新說明與 Git tag 保留。
 
 [回到主頁](../../README.md#documentation) · [品質檢查與維護](../quality-checks.md)
 

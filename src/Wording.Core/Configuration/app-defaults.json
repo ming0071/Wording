@@ -5,7 +5,7 @@
   },
   "Shortcuts": {
     "Flip": "Space", "Again": "1", "Hard": "2", "Good": "3", "Easy": "4",
-    "Speak": "S", "SpeakExample": "E"
+    "Speak": "S", "SpeakExample": "E", "RecordReading": "Space", "ReplayReading": "R"
   },
   "Speech": { "AutoSpeakWord": true, "AutoSpeakExamples": true },
   "Ai": {

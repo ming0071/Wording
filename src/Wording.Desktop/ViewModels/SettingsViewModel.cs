@@ -54,6 +54,8 @@ public sealed class SettingsViewModel : PageViewModel
     private string easyKey;
     private string speakKey;
     private string speakExampleKey;
+    private string recordReadingKey;
+    private string replayReadingKey;
     private bool autoSpeakWord;
     public bool AutoSpeakWord { get => autoSpeakWord; set => SetProperty(ref autoSpeakWord, value); }
     private bool autoSpeakExamples;
@@ -104,6 +106,8 @@ public sealed class SettingsViewModel : PageViewModel
     public string EasyKey { get => easyKey; set => SetProperty(ref easyKey, value); }
     public string SpeakKey { get => speakKey; set => SetProperty(ref speakKey, value); }
     public string SpeakExampleKey { get => speakExampleKey; set => SetProperty(ref speakExampleKey, value); }
+    public string RecordReadingKey { get => recordReadingKey; set => SetProperty(ref recordReadingKey, value); }
+    public string ReplayReadingKey { get => replayReadingKey; set => SetProperty(ref replayReadingKey, value); }
     public AsyncCommand SaveCommand { get; }
     public AsyncCommand CheckAiCommand { get; }
     public AsyncCommand RefreshModelsCommand { get; }
@@ -139,6 +143,8 @@ public sealed class SettingsViewModel : PageViewModel
         easyKey = settings.EasyKey;
         speakKey = settings.SpeakKey;
         speakExampleKey = settings.SpeakExampleKey;
+        recordReadingKey = settings.RecordReadingKey;
+        replayReadingKey = settings.ReplayReadingKey;
         autoSpeakWord = settings.AutoSpeakWord;
         autoSpeakExamples = settings.AutoSpeakExamples;
         SaveCommand = Command(SaveAsync);
@@ -271,6 +277,7 @@ public sealed class SettingsViewModel : PageViewModel
             CodexServiceTier = CodexServiceTier,
             DailyGenerationLimit = generationLimit, FlipKey = FlipKey, AgainKey = AgainKey,
             HardKey = HardKey, GoodKey = GoodKey, EasyKey = EasyKey, SpeakKey = SpeakKey, SpeakExampleKey = SpeakExampleKey,
+            RecordReadingKey = RecordReadingKey, ReplayReadingKey = ReplayReadingKey,
             AutoSpeakWord = AutoSpeakWord, AutoSpeakExamples = AutoSpeakExamples
         };
         updated.Save(DataDirectory);
@@ -286,6 +293,8 @@ public sealed class SettingsViewModel : PageViewModel
         settings.EasyKey = updated.EasyKey;
         settings.SpeakKey = updated.SpeakKey;
         settings.SpeakExampleKey = updated.SpeakExampleKey;
+        settings.RecordReadingKey = updated.RecordReadingKey;
+        settings.ReplayReadingKey = updated.ReplayReadingKey;
         settings.AutoSpeakWord = updated.AutoSpeakWord;
         settings.AutoSpeakExamples = updated.AutoSpeakExamples;
         aiSettings.ExecutablePath = settings.CodexExecutablePath;

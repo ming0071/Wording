@@ -12,7 +12,23 @@ public static class ReviewKeyboard
     public static bool Handle(ReviewViewModel review, Key key, ModifierKeys modifiers, bool isRepeat,
         DependencyObject? focusedElement = null)
     {
-        if (modifiers != ModifierKeys.None || IsEditing(focusedElement)) return false;
+        if (IsEditing(focusedElement)) return false;
+        if (review.IsAnswerVisible && review.Reading is { } reading)
+        {
+            var readingCommand = (modifiers, key) switch
+            {
+                (ModifierKeys.Control, Key.Up) => reading.PreviousCommand,
+                (ModifierKeys.Control, Key.Down) => reading.NextCommand,
+                (ModifierKeys.None, Key.Escape) when reading.CancelCommand.CanExecute(null) => reading.CancelCommand,
+                _ => null
+            };
+            if (readingCommand is not null)
+            {
+                if (!isRepeat) readingCommand.Execute(null);
+                return true;
+            }
+        }
+        if (modifiers != ModifierKeys.None) return false;
         var shortcut = key switch
         {
             Key.Return => "Enter",

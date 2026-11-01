@@ -6,6 +6,26 @@ namespace Wording.Tests;
 public sealed class AppSettingsTests
 {
     [Fact]
+    public void ReadingShortcutsMigrateConflictsAndRoundTripWithoutOverwritingOldKeys()
+    {
+        using var data = new StudyTestData();
+        var initial = AppSettings.Load(data.DirectoryPath);
+        Assert.Equal("Space", initial.RecordReadingKey); Assert.Equal("R", initial.ReplayReadingKey);
+        initial.Validate(); // Space deliberately shares the question-side flip action.
+        File.WriteAllText(Path.Combine(data.DirectoryPath, "settings.json"), "{\"GoodKey\":\"Space\",\"FlipKey\":\"F1\",\"SpeakKey\":\"R\"}");
+        var migrated = AppSettings.Load(data.DirectoryPath);
+        Assert.Equal("Space", migrated.GoodKey); Assert.Equal("R", migrated.SpeakKey);
+        Assert.NotEqual("Space", migrated.RecordReadingKey); Assert.NotEqual("R", migrated.ReplayReadingKey);
+        Assert.NotEqual(migrated.RecordReadingKey, migrated.ReplayReadingKey);
+        migrated.RecordReadingKey = "F7"; migrated.ReplayReadingKey = "F8"; migrated.Save(data.DirectoryPath);
+        var saved = AppSettings.Load(data.DirectoryPath);
+        Assert.Equal("F7", saved.RecordReadingKey); Assert.Equal("F8", saved.ReplayReadingKey);
+        saved.RecordReadingKey = saved.GoodKey; Assert.Throws<ArgumentException>(() => saved.Save(data.DirectoryPath));
+        saved.RecordReadingKey = saved.ReplayReadingKey; Assert.Throws<ArgumentException>(() => saved.Validate());
+        saved.RecordReadingKey = "Ctrl+R"; Assert.Throws<ArgumentException>(() => saved.Validate());
+    }
+
+    [Fact]
     public void LegacyShortcutMappingsGetUnusedSpeechKeysAndNewSpeechSettingsRoundTrip()
     {
         using var data = new StudyTestData();

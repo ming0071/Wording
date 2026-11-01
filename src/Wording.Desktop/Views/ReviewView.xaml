@@ -5,6 +5,7 @@
             <StackPanel>
                 <TextBlock Text="一步一步，記得更牢" FontSize="26" FontWeight="SemiBold" />
                 <TextBlock Text="{Binding ProgressText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,4,0,0" />
+                <TextBlock Text="{Binding Reading.Status}" Style="{StaticResource MutedText}" FontSize="11" Margin="0,3,0,0" Visibility="{Binding HasReading, Converter={StaticResource BoolVisibility}}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Content="重新檢查" Command="{Binding RefreshCommand}" /><Button Content="撤銷上次" Command="{Binding UndoCommand}" AutomationProperties.AutomationId="UndoReview" />
@@ -101,6 +102,7 @@
                                                             <StackPanel>
                                                                 <TextBlock Text="{Binding English}" FontSize="23" AutomationProperties.AutomationId="ReviewExampleEnglish" TextWrapping="Wrap" />
                                                                 <TextBlock Text="{Binding Chinese}" Style="{StaticResource MutedText}" FontSize="18" Margin="0,4,0,0" AutomationProperties.AutomationId="ReviewExampleChinese" />
+                                                                <views:ReadingPracticePanel />
                                                             </StackPanel>
                                                         </Border>
                                                     </DataTemplate>
@@ -132,5 +134,6 @@
             </UniformGrid>
             <TextBlock Text="{Binding KeyboardHint}" Style="{StaticResource MutedText}" FontSize="11" TextAlignment="Center" Margin="0,7,0,0" />
         </StackPanel>
+        <views:ReadingBrowserHost Grid.Row="4" DataContext="{Binding Reading}" />
     </Grid>
 </UserControl>

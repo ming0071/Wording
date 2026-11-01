@@ -36,7 +36,8 @@ public sealed class ReviewViewModel : PageViewModel
         private set
         {
             SetProperty(ref current, value);
-            definitions = value?.Word.Definitions.Select(x => new ReviewDefinitionViewModel(x)).ToArray() ?? [];
+            definitions = value?.Word.Definitions.Select(x => new ReviewDefinitionViewModel(x, Reading)).ToArray() ?? [];
+            Reading?.SetExamples(definitions.SelectMany(x => x.Examples).ToArray());
             OnPropertyChanged(nameof(HasCard));
             OnPropertyChanged(nameof(Definitions));
             OnPropertyChanged(nameof(PartOfSpeechText));
@@ -55,7 +56,7 @@ public sealed class ReviewViewModel : PageViewModel
         }
     }
     public bool HasCard => Current is not null;
-    public bool IsAnswerVisible { get => isAnswerVisible; private set { SetProperty(ref isAnswerVisible, value); OnPropertyChanged(nameof(IsQuestionVisible)); NotifyCommands(); } }
+    public bool IsAnswerVisible { get => isAnswerVisible; private set { SetProperty(ref isAnswerVisible, value); Reading?.SetAnswerVisible(value); OnPropertyChanged(nameof(IsQuestionVisible)); OnPropertyChanged(nameof(KeyboardHint)); NotifyCommands(); } }
     public bool IsQuestionVisible => !IsAnswerVisible;
     private static string KeyLabel(string key) => key == "Space" ? "空白鍵" : key;
     public string FlipButtonText => $"顯示答案 · {KeyLabel(settings.FlipKey)}";
@@ -90,8 +91,11 @@ public sealed class ReviewViewModel : PageViewModel
     public string SenseContext => Current is { } card && card.Word.Definitions.Count > 1
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
         : "";
-    public string KeyboardHint => $"{KeyLabel(settings.FlipKey)} 翻卡 · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
-    public ICommand? CommandForShortcut(string key) => key == settings.FlipKey ? FlipCommand :
+    public string KeyboardHint => (IsAnswerVisible && Reading is not null
+        ? $"{KeyLabel(settings.RecordReadingKey)} 錄音／結束 · {KeyLabel(settings.ReplayReadingKey)} 回聽"
+        : $"{KeyLabel(settings.FlipKey)} 翻卡") + $" · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
+    public ICommand? CommandForShortcut(string key) => IsAnswerVisible && Reading is not null && key == settings.RecordReadingKey ? Reading.RecordCommand :
+        IsAnswerVisible && Reading is not null && key == settings.ReplayReadingKey ? Reading.ReplayCommand : key == settings.FlipKey ? FlipCommand :
         key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :
         key == settings.GoodKey ? GoodCommand : key == settings.EasyKey ? EasyCommand :
         key == settings.SpeakKey ? SpeakCommand : key == settings.SpeakExampleKey ? SpeakExampleCommand : null;
@@ -112,13 +116,16 @@ public sealed class ReviewViewModel : PageViewModel
     public RelayCommand StopSpeechCommand { get; }
     public RelayCommand SpeakExampleCommand { get; }
     public RelayCommand DictionaryCommand { get; }
+    public ReadingPracticeViewModel? Reading { get; }
+    public bool HasReading => Reading is not null;
     private AsyncCommand[] RatingCommands => [AgainCommand, HardCommand, GoodCommand, EasyCommand];
 
-    public ReviewViewModel(IStudyStore store, IPronunciationService speech, AppSettings settings)
+    public ReviewViewModel(IStudyStore store, IPronunciationService speech, AppSettings settings, ReadingPracticeViewModel? reading = null)
     {
         this.store = store;
         this.speech = speech;
         this.settings = settings;
+        Reading = reading;
         StarCommand = Command(async token =>
         {
             if (Current is not { } card) return;
@@ -170,6 +177,7 @@ public sealed class ReviewViewModel : PageViewModel
 
     public void EndSession()
     {
+        Reading?.SetAnswerVisible(false);
         speech.Stop();
         lastOperationId = null;
         NotifyCommands();

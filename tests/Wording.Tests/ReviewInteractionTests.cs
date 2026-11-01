@@ -102,12 +102,16 @@ public sealed partial class DesktopWorkflowTests
         viewModel.GoodKey = "J";
         viewModel.SpeakKey = "F7";
         viewModel.SpeakExampleKey = "F8";
+        viewModel.RecordReadingKey = "F9";
+        viewModel.ReplayReadingKey = "F10";
         await viewModel.SaveCommand.ExecuteAsync();
         Assert.Equal("", viewModel.Error);
         Assert.Equal(viewModel.DailyNewLimit, settings.DailyNewLimit.ToString());
         Assert.Equal("F1", AppSettings.Load(data.DirectoryPath).FlipKey);
         Assert.Equal("F7", settings.SpeakKey);
         Assert.Equal("F8", AppSettings.Load(data.DirectoryPath).SpeakExampleKey);
+        Assert.Equal("F9", settings.RecordReadingKey);
+        Assert.Equal("F10", AppSettings.Load(data.DirectoryPath).ReplayReadingKey);
         var savedPractice = AppSettings.Load(data.DirectoryPath).Practice;
         Assert.Equal(PracticeMode.Listening, savedPractice.Mode);
         Assert.Equal(PracticeLevel.Hard, savedPractice.Level);

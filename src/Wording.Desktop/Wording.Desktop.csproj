@@ -10,6 +10,7 @@
     <AssemblyName>Wording</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Reading/*" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\..\content\**\*" Link="content\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4258.31" />
     <Resource Include="Assets\Wording.ico" />
