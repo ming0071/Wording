@@ -8,7 +8,7 @@ $taskProbeRoot = Join-Path $taskArtifacts ('.installer-test-' + [Guid]::NewGuid(
 $taskInstalled = Join-Path $taskProbeRoot 'installed'
 $taskData = Join-Path $taskProbeRoot 'personal-data'
 $taskFixture = Join-Path $taskProbeRoot 'fixture'
-$taskPreviousVersion = '4.99.0'
+$taskPreviousVersion = '0.4.9'
 $taskUninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{FC92DC0A-522D-41CD-88A7-267A81C00AC7}_is1'
 if (Test-Path -LiteralPath $taskUninstallKey) { throw 'Run installer verification in a clean Windows account; an installed Wording will not be changed.' }
 if (-not (Test-Path -LiteralPath $taskInstaller)) { throw 'Build the installer first.' }

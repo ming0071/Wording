@@ -22,6 +22,8 @@ public sealed class ApplicationUpdateTests
     [Fact]
     public void VersionComparisonIsNumericAndNeverOffersOldOrPrereleaseVersions()
     {
+        Assert.Equal(new Version(0, 5, 0), GitHubUpdateClient.ParseRelease(Metadata("0.5.0"), new(0, 4, 9))!.Version);
+        Assert.Null(GitHubUpdateClient.ParseRelease(Metadata("0.5.0"), new(5, 0, 0)));
         Assert.Equal(new Version(5, 0, 10), GitHubUpdateClient.ParseRelease(Metadata(), new(5, 0, 9))!.Version);
         Assert.Null(GitHubUpdateClient.ParseRelease(Metadata(), new(5, 0, 10)));
         Assert.Null(GitHubUpdateClient.ParseRelease(Metadata("5.0.2"), new(5, 0, 9)));

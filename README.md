@@ -26,7 +26,7 @@ Windows 英文學習 App，把自己的詞庫、FSRS 間隔複習，以及 **Cod
 
 內嵌字典需要 Microsoft Edge WebView2 Runtime。
 
-5.0 起會在程式內提示新版本，按「下載並更新」即可下載、校驗、安裝並重新開啟。個人資料仍沿用原目錄。首次從舊 ZIP 版轉換需手動安裝一次，詳見 [安裝與更新](docs/installation-and-updates.md)。
+0.5.0 起會在程式內提示新版本，按「下載並更新」即可下載、校驗、安裝並重新開啟。個人資料仍沿用原目錄。首次從舊 ZIP 版轉換需手動安裝一次，詳見 [安裝與更新](docs/installation-and-updates.md)。
 
 <details>
 <summary>從原始碼執行</summary>

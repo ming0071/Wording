@@ -18,7 +18,7 @@ public sealed partial class DesktopWorkflowTests
         await OffscreenWpf.InvokeAsync(async () =>
         {
             var vm = new UpdateViewModel(new UpdateUiClient(), new UpdateUiInstaller(), new UpdateUiBackup(), new(),
-                new(5, 0, 0), data.DirectoryPath, () => { }, () => null, () => { });
+                new(0, 5, 0), data.DirectoryPath, () => { }, () => null, () => { });
             await vm.CheckCommand.ExecuteAsync();
             foreach (var width in new[] { 715, 959 })
             {
@@ -32,11 +32,11 @@ public sealed partial class DesktopWorkflowTests
                     Assert.InRange(bounds.Right, 0, panel.ActualWidth + 0.1);
                     Assert.InRange(bounds.Bottom, 0, panel.ActualHeight + 0.1);
                 }
-                Render(panel, $"update-v500-settings-{width}.png");
+                Render(panel, $"update-v050-settings-{width}.png");
                 var banner = new UpdateBanner { DataContext = vm, FontSize = 14 };
                 Layout(banner, width, 180);
                 Assert.Contains(Descendants(banner).OfType<Button>(), x => Equals(x.Content, "下載並更新"));
-                Render(banner, $"update-v500-banner-{width}.png");
+                Render(banner, $"update-v050-banner-{width}.png");
             }
         });
     }
@@ -61,9 +61,9 @@ public sealed partial class DesktopWorkflowTests
     private sealed class UpdateUiClient : IApplicationUpdateClient
     {
         public Task<ApplicationRelease?> CheckAsync(Version current, CancellationToken token = default) =>
-            Task.FromResult<ApplicationRelease?>(new(new(5, 1, 0), "改善複習閱讀與教材選擇。\n更新後沿用既有詞庫與學習紀錄。",
-                new("https://github.com/ming0071/Wording/releases/tag/v5.1.0"),
-                new("https://github.com/ming0071/Wording/releases/download/v5.1.0/Wording-5.1.0-win-x64-Setup.exe"), new('a', 64), 100));
+            Task.FromResult<ApplicationRelease?>(new(new(0, 5, 1), "改善複習閱讀與教材選擇。\n更新後沿用既有詞庫與學習紀錄。",
+                new("https://github.com/ming0071/Wording/releases/tag/v0.5.1"),
+                new("https://github.com/ming0071/Wording/releases/download/v0.5.1/Wording-0.5.1-win-x64-Setup.exe"), new('a', 64), 100));
         public Task<DownloadedUpdate> DownloadAsync(ApplicationRelease release, string cache, IProgress<UpdateProgress>? progress = null, CancellationToken token = default) => throw new NotSupportedException();
     }
     private sealed class UpdateUiInstaller : IUpdateInstaller
