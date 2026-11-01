@@ -7,6 +7,7 @@
 | [評分與複習排程](review-scheduling.md) | 評分、複習間隔與每日新詞名額 |
 | [設定與版本來源](configuration.md) | JSON 預設值、個人設定、英文輸入法與版本號來源 |
 | [閱讀與聽力情境練習](scenario-practice.md) | 生成選項、選字、作答解析、單字回饋與提示詞 |
+| [中翻英練習](translation-practice.md) | 較不熟悉詞彙選字、文字作答、AI 批改與重答；不影響熟悉度 |
 | [JSON 格式與檔案操作](vocabulary-files.md) | 單字檔案與資料位置 |
 | [FSRS 參考驗證](FSRS_VERIFICATION.md) | 開發用排程參數與驗證方法 |
 | [品質檢查與維護](quality-checks.md) | 測試、CI、發行包與待評估優化 |

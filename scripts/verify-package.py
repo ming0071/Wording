@@ -14,6 +14,7 @@ REQUIRED = {
     'README.md', 'THIRD_PARTY_NOTICES.md', 'docs/scenario-practice.md', 'docs/configuration.md',
     'docs/licenses/WebView2-LICENSE.txt', 'docs/licenses/WebView2-NOTICE.txt',
     'Prompts/practice-common.txt', 'Prompts/practice-reading.txt', 'Prompts/practice-listening.txt',
+    'Prompts/translation-generate.txt', 'Prompts/translation-assess.txt', 'docs/translation-practice.md',
     'Configuration/app-defaults.json', 'content/README.md', 'content/verb-phrases.md',
     'content/toeic-vocabulary.json', 'content/toeic-phrasal-verbs.json',
     'content/toeic-starter.json', 'content/vocabulary-example.json',

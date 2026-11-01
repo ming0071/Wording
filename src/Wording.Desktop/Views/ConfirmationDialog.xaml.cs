@@ -14,6 +14,12 @@ public sealed record ConfirmationContent(string Title, string Context, string He
     public static ConfirmationContent UpdatePractice { get; } = new("安裝新版本", "尚未提交的練習", "要結束本次練習並更新嗎？",
         "更新會關閉並重新開啟 Wording，本次尚未提交的文章與答案不會保存。已保存的詞庫與學習紀錄會保留。", "結束練習並更新", "繼續作答");
 
+    public static ConfirmationContent ReplaceTranslation { get; } = new("開始新的中翻英練習", "尚未完成的中翻英", "要取代當次題目與答案嗎？",
+        "出新題目會取代當次尚未完成批改的中翻英練習。你也可以繼續完成作答。", "取代並出題", "繼續作答");
+
+    public static ConfirmationContent UpdateTranslation { get; } = new("安裝新版本", "尚未完成的中翻英", "要結束中翻英練習並更新嗎？",
+        "更新會關閉 Wording，當次中翻英題目與答案不會保存。你也可以先完成作答。", "結束練習並更新", "繼續作答");
+
     public static ConfirmationContent RestoreBackup(string path) => new("還原整個單字庫", "資料與備份", "要還原這份備份嗎？",
         $"將用以下備份替換目前整個單字庫與複習紀錄：\n{path}\n\n程式會先保存現有資料的復原備份。", "還原備份", "保留目前資料");
 }

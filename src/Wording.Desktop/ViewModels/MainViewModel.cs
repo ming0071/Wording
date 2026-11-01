@@ -15,6 +15,7 @@ public sealed class MainViewModel : ObservableObject
     public LibraryViewModel Library { get; }
     public ReviewViewModel Review { get; }
     public PracticeViewModel? Practice { get; }
+    public TranslationViewModel? Translation { get; }
     public SettingsViewModel Settings { get; }
     public UpdateViewModel Updates { get; }
     public string AppVersion => typeof(MainViewModel).Assembly
@@ -32,6 +33,7 @@ public sealed class MainViewModel : ObservableObject
             OnPropertyChanged(nameof(IsReviewSelected));
             OnPropertyChanged(nameof(IsSettingsSelected));
             OnPropertyChanged(nameof(IsPracticeSelected));
+            OnPropertyChanged(nameof(IsTranslationSelected));
             OnPropertyChanged(nameof(ShowUpdateBanner));
         }
     }
@@ -40,6 +42,7 @@ public sealed class MainViewModel : ObservableObject
     public bool IsReviewSelected => CurrentSection == "複習";
     public bool IsSettingsSelected => CurrentSection == "設定與備份";
     public bool IsPracticeSelected => CurrentSection == "情境練習";
+    public bool IsTranslationSelected => CurrentSection == "中翻英練習";
     public bool ShowUpdateBanner => Updates.ShowBanner && !IsSettingsSelected;
     public RelayCommand NavigateCommand { get; }
 
@@ -54,7 +57,9 @@ public sealed class MainViewModel : ObservableObject
         Review = new(store, speech, settings);
         if (store is IPracticeStore practiceStore && generator is IPracticeGenerator practiceGenerator && speech is IPracticeSpeech practiceSpeech)
             Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor);
-        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => { Review.EndSession(); Practice?.Reset(); }, store);
+        if (store is IPracticeStore translationStore && generator is ITranslationGenerator translationGenerator)
+            Translation = new(translationStore, translationGenerator);
+        Settings = new(backup, generator, speech, settings, aiSettings, dataDirectory, () => { Review.EndSession(); Practice?.Reset(); Translation?.Reset(); }, store);
         currentPage = Dashboard;
         var version = typeof(MainViewModel).Assembly.GetName().Version!;
         Updates = new(updateClient ?? new GitHubUpdateClient(), updateInstaller ?? new UpdateInstaller(), backup, settings,
@@ -99,11 +104,13 @@ public sealed class MainViewModel : ObservableObject
                 "review" => Review,
                 "settings" => Settings,
                 "practice" when Practice is not null => Practice,
+                "translation" when Translation is not null => Translation,
                 _ => Dashboard
             };
             CurrentSection = section switch
             {
-                "library" => "單字庫", "review" => "複習", "practice" when Practice is not null => "情境練習", "settings" => "設定與備份", _ => "今日學習"
+                "library" => "單字庫", "review" => "複習", "practice" when Practice is not null => "情境練習",
+                "translation" when Translation is not null => "中翻英練習", "settings" => "設定與備份", _ => "今日學習"
             };
             if (page == Review) Review.BeginSession();
             CurrentPage = page;
@@ -140,6 +147,8 @@ public sealed class MainViewModel : ObservableObject
         if (CurrentPage is EditorViewModel { IsDirty: true }) return "請先保存正在編輯的詞義，再安裝更新。";
         if (Practice?.IsUnsubmitted == true && !Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.UpdatePractice))
             return "已保留目前練習，可完成作答後再更新。";
+        if (Translation?.IsUnsubmitted == true && !Views.ConfirmationDialog.Confirm(Views.ConfirmationContent.UpdateTranslation))
+            return "已保留中翻英練習，可完成作答後再更新。";
         return null;
     }
 }

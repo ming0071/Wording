@@ -13,6 +13,7 @@ WPF 畫面與操作流程位於此專案。資料模型與服務契約在 `Wordi
 | 新增／編輯詞義 | [LibraryViewModel](ViewModels/LibraryViewModel.cs) → [EditorViewModel](ViewModels/EditorViewModel.cs) | 以 `SenseEditor` 收集多詞義草稿，再用單一交易保存 |
 | 複習 | [ReviewViewModel](ViewModels/ReviewViewModel.cs) | 依已套用的主題取卡；保存評分成功後換下一張 |
 | 情境練習 | [PracticeViewModel](ViewModels/PracticeViewModel.cs) | 共用閱讀／聽力、作答解析、單字評分與三個月活動紀錄；導航保留當次文章與答案 |
+| 中翻英練習 | [TranslationViewModel](ViewModels/TranslationViewModel.cs) | 獨立出題、文字批改與重答；只讀選字，不寫入排程與學習計數 |
 | 快捷鍵 | [ReviewKeyboard](ReviewKeyboard.cs) | 翻卡、1–4 評分、朗讀單字與全部例句；支援自訂單鍵與數字鍵盤 |
 | AI 內容 | [EditorViewModel](ViewModels/EditorViewModel.cs) | `GenerateCommand` 建立預覽，`ApplyPreviewCommand` 套用欄位，`SaveCommand` 保存 |
 | 設定與檔案 | [SettingsViewModel](ViewModels/SettingsViewModel.cs) | 保存設定、匯入／匯出 JSON、備份與還原確認 |
