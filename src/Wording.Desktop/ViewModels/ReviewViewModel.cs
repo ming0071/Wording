@@ -66,6 +66,7 @@ public sealed class ReviewViewModel : PageViewModel
     public string EasyButtonText => $"簡單 · {KeyLabel(settings.EasyKey)}";
     public string SpeakButtonText => $"朗讀單字 · {KeyLabel(settings.SpeakKey)}";
     public string SpeakExampleButtonText => $"朗讀例句 · {KeyLabel(settings.SpeakExampleKey)}";
+    public bool IsSpeaking => speech is IPracticeSpeech { Playback: not PlaybackState.Stopped };
     public string SynonymsText => string.Join("、", Current?.Word.Synonyms ?? []);
     public string CollocationsText => string.Join(" · ", Current?.Word.Collocations ?? []);
     public bool HasSynonyms => Current?.Word.Synonyms.Length > 0;
@@ -92,10 +93,11 @@ public sealed class ReviewViewModel : PageViewModel
         ? $"這個詞有 {card.Word.Definitions.Count} 組解釋 · 一起複習並評分"
         : "";
     public string KeyboardHint => (IsAnswerVisible && Reading is not null
-        ? $"{KeyLabel(settings.RecordReadingKey)} 錄音／結束 · {KeyLabel(settings.ReplayReadingKey)} 回聽"
+        ? $"{KeyLabel(settings.RecordReadingKey)} 錄音／結束 · {KeyLabel(settings.ReplayReadingKey)} 回聽 · {KeyLabel(settings.NextReadingKey)} 下一句（循環）"
         : $"{KeyLabel(settings.FlipKey)} 翻卡") + $" · {settings.AgainKey}／{settings.HardKey}／{settings.GoodKey}／{settings.EasyKey} 評分 · {settings.SpeakKey} 讀單字 · {settings.SpeakExampleKey} 讀例句";
     public ICommand? CommandForShortcut(string key) => IsAnswerVisible && Reading is not null && key == settings.RecordReadingKey ? Reading.RecordCommand :
-        IsAnswerVisible && Reading is not null && key == settings.ReplayReadingKey ? Reading.ReplayCommand : key == settings.FlipKey ? FlipCommand :
+        IsAnswerVisible && Reading is not null && key == settings.ReplayReadingKey ? Reading.ReplayCommand :
+        IsAnswerVisible && Reading is not null && key == settings.NextReadingKey ? Reading.NextCommand : key == settings.FlipKey ? FlipCommand :
         key == settings.AgainKey ? AgainCommand : key == settings.HardKey ? HardCommand :
         key == settings.GoodKey ? GoodCommand : key == settings.EasyKey ? EasyCommand :
         key == settings.SpeakKey ? SpeakCommand : key == settings.SpeakExampleKey ? SpeakExampleCommand : null;
@@ -291,7 +293,12 @@ public sealed class ReviewViewModel : PageViewModel
     private void SpeakText(string? text)
     {
         if (string.IsNullOrWhiteSpace(text)) return;
-        try { speech.Speak(text); }
+        try
+        {
+            if (Reading?.CancelCommand.CanExecute(null) == true) Reading.CancelCommand.Execute(null);
+            Reading?.PauseReplay();
+            speech.Speak(text);
+        }
         catch (Exception exception) { Error = exception.Message; }
     }
 

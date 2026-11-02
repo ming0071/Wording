@@ -54,7 +54,7 @@ public sealed class MainViewModel : ObservableObject
         this.generator = generator;
         Dashboard = new(store, () => Navigate("review"), () => Navigate("library"));
         Library = new(store, OpenEditor);
-        Review = new(store, speech, settings, new ReadingPracticeViewModel(aiSettings, dataDirectory, speech.Stop, settings));
+        Review = new(store, speech, settings, new ReadingPracticeViewModel(aiSettings, dataDirectory, speech.Stop, settings, speech));
         if (store is IPracticeStore practiceStore && generator is IPracticeGenerator practiceGenerator && speech is IPracticeSpeech practiceSpeech)
             Practice = new(store, practiceStore, practiceGenerator, practiceSpeech, settings, () => settings.Save(dataDirectory), OpenEditor);
         if (store is IPracticeStore translationStore && generator is ITranslationGenerator translationGenerator)

@@ -18,7 +18,8 @@
             </Border>
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
-                    <TextBlock Text="複習快捷鍵" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="發音與複習快捷鍵" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="單字、例句與情境聽力皆使用 Windows 本機英文語音。例句錄音辨識使用 Codex。" Style="{StaticResource MutedText}" FontSize="12" Margin="0,6,0,8" />
                     <CheckBox Content="每張複習卡開啟時，自動朗讀單字" IsChecked="{Binding AutoSpeakWord}" Margin="0,8,0,14" />
                     <CheckBox Content="翻卡顯示答案後，自動朗讀英文例句" IsChecked="{Binding AutoSpeakExamples}" Margin="0,0,0,14" />
                     <TextBlock Text="Space 是空白鍵，數字鍵支援上排與數字鍵盤。翻卡可與錄音或回聽共用按鍵，依正反面分工；其他操作請選不同按鍵。" Style="{StaticResource MutedText}" FontSize="12" />
@@ -35,7 +36,8 @@
                     </UniformGrid>
                     <UniformGrid Columns="2" Margin="0,8,0,0" MaxWidth="420" HorizontalAlignment="Left">
                         <StackPanel Margin="0,0,16,0"><TextBlock Text="開始／結束錄音" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding RecordReadingKey}" AutomationProperties.Name="開始結束錄音快捷鍵" AutomationProperties.AutomationId="RecordReadingKey" /></StackPanel>
-                        <StackPanel><TextBlock Text="回聽錄音" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding ReplayReadingKey}" AutomationProperties.Name="回聽錄音快捷鍵" AutomationProperties.AutomationId="ReplayReadingKey" /></StackPanel>
+                        <StackPanel Margin="0,0,16,0"><TextBlock Text="回聽錄音" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding ReplayReadingKey}" AutomationProperties.Name="回聽錄音快捷鍵" AutomationProperties.AutomationId="ReplayReadingKey" /></StackPanel>
+                        <StackPanel><TextBlock Text="下一個例句" Style="{StaticResource FieldLabel}" /><ComboBox ItemsSource="{Binding ShortcutKeys}" SelectedItem="{Binding NextReadingKey}" AutomationProperties.AutomationId="NextReadingKey" /></StackPanel>
                     </UniformGrid>
                 </StackPanel>
             </Border>

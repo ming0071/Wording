@@ -45,7 +45,7 @@ public sealed record ApplicationConfiguration
         var keys = new[] { Shortcuts.Flip, Shortcuts.Again, Shortcuts.Hard, Shortcuts.Good, Shortcuts.Easy, Shortcuts.Speak, Shortcuts.SpeakExample };
         if (keys.Any(key => !ShortcutDefaults.AvailableKeys.Contains(key)) || keys.Distinct().Count() != keys.Length)
             throw new ArgumentException("快捷鍵不能為空或重複。");
-        ShortcutDefaults.ValidateReadingKeys(Shortcuts.RecordReading, Shortcuts.ReplayReading, keys.Skip(1));
+        ShortcutDefaults.ValidateReadingKeys(Shortcuts.RecordReading, Shortcuts.ReplayReading, Shortcuts.NextReading, keys.Skip(1));
         if (string.IsNullOrWhiteSpace(Ai.ExecutablePath) || Ai.Model is null || !CodexServiceTier.IsValidId(Ai.ServiceTier) || Ai.MaximumDailyGenerations < 1 ||
             Ai.DailyGenerationLimit < 0 || Ai.DailyGenerationLimit > Ai.MaximumDailyGenerations ||
             Ai.MinimumTimeoutSeconds < 1 || Ai.MaximumTimeoutSeconds < Ai.MinimumTimeoutSeconds ||
@@ -90,12 +90,14 @@ public sealed record ShortcutDefaults
     public required string SpeakExample { get; init; }
     public required string RecordReading { get; init; }
     public required string ReplayReading { get; init; }
+    public string NextReading { get; init; } = "N";
 
-    public static void ValidateReadingKeys(string record, string replay, IEnumerable<string> answerKeys)
+    public static void ValidateReadingKeys(string record, string replay, string next, IEnumerable<string> answerKeys)
     {
-        if (!AvailableKeys.Contains(record) || !AvailableKeys.Contains(replay) || record == replay ||
+        if (!AvailableKeys.Contains(record) || !AvailableKeys.Contains(replay) || !AvailableKeys.Contains(next) ||
+            new[] { record, replay, next }.Distinct().Count() != 3 || answerKeys.Contains(next) ||
             answerKeys.Contains(record) || answerKeys.Contains(replay))
-            throw new ArgumentException("錄音與回聽須使用不同按鍵，且不能與評分、朗讀單字或朗讀例句重複；可與翻卡共用。");
+            throw new ArgumentException("錄音、回聽與切換例句須使用不同按鍵，且不能與評分、朗讀單字或朗讀例句重複；可與翻卡共用。");
     }
 }
 public sealed record SpeechDefaults
@@ -103,6 +105,7 @@ public sealed record SpeechDefaults
     public required bool AutoSpeakWord { get; init; }
     public required bool AutoSpeakExamples { get; init; }
 }
+
 public sealed record AiDefaults
 {
     public required string ExecutablePath { get; init; }

@@ -41,6 +41,7 @@
                             <Button Content="{Binding SpeakExampleButtonText}" Command="{Binding SpeakExampleCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakExamples" />
                             <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
                         </WrapPanel>
+                        <TextBlock Text="{Binding SpeechStatus}" Style="{StaticResource MutedText}" FontSize="11" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="520" Margin="0,0,0,5" Visibility="{Binding HasReading, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewSpeechStatus" />
                     </StackPanel>
                     <TextBlock Grid.Row="1" Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" TextWrapping="Wrap" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewRecallPrompt" />
                     <ScrollViewer x:Name="DefinitionScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitionScroll">

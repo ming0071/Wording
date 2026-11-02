@@ -100,6 +100,7 @@ window.chrome.webview.addEventListener('message', async ({data}) => {
   else if (data.type === 'reset') { run = data.run; clearPlayback(); }
   else if (data.type === 'finished' && data.run === run) finishing = false;
   else if (data.type === 'replay') playback.play().catch(() => host({type:'playbackError',run}));
+  else if (data.type === 'pause-playback') playback.pause();
 });
 window.addEventListener('beforeunload', close);
 host({type:'ready'});

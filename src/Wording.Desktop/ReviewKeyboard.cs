@@ -13,6 +13,11 @@ public static class ReviewKeyboard
         DependencyObject? focusedElement = null)
     {
         if (IsEditing(focusedElement)) return false;
+        if (modifiers == ModifierKeys.None && key == Key.Escape && review.IsSpeaking)
+        {
+            if (!isRepeat) review.StopSpeechCommand.Execute(null);
+            return true;
+        }
         if (review.IsAnswerVisible && review.Reading is { } reading)
         {
             var readingCommand = (modifiers, key) switch

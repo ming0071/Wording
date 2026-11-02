@@ -26,6 +26,8 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     private static string KeyLabel(string key) => key == "Space" ? "空白鍵" : key;
     public string RecordLabel => $"{(phase == ReadingPhase.Recording ? "結束並比對" : phase == ReadingPhase.Failed ? "重新連線" : "開始朗讀")} · {KeyLabel(shortcuts.RecordReadingKey)}";
     public string ReplayLabel => $"回聽 · {KeyLabel(shortcuts.ReplayReadingKey)}";
+    public string NextLabel => $"下一句 · {KeyLabel(shortcuts.NextReadingKey)} ↻";
+    public RelayCommand PronounceCommand { get; }
     public RelayCommand RecordCommand { get; }
     public RelayCommand CancelCommand { get; }
     public RelayCommand ReplayCommand { get; }
@@ -33,10 +35,16 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     public RelayCommand NextCommand { get; }
     public RelayCommand SelectCommand { get; }
 
-    public ReadingPracticeViewModel(AiSettings settings, string directory, Action stopSpeech, AppSettings shortcuts)
+    public ReadingPracticeViewModel(AiSettings settings, string directory, Action stopSpeech, AppSettings shortcuts, IPronunciationService? pronunciation = null)
     {
         this.shortcuts = shortcuts;
         Settings = settings; Directory = directory; this.stopSpeech = stopSpeech;
+        PronounceCommand = new(value =>
+        {
+            if (CancelCommand?.CanExecute(null) == true) CancelCommand.Execute(null);
+            PauseReplay();
+            pronunciation!.Speak((string)value!);
+        }, value => pronunciation is not null && IsAvailable && value is string { Length: > 0 });
         RecordCommand = new(_ =>
         {
             if (phase == ReadingPhase.Failed) { SetState(ReadingPhase.Connecting, "正在重新準備語音連線…"); Requested?.Invoke("warm", ++Run); }
@@ -88,6 +96,7 @@ public sealed class ReadingPracticeViewModel : ObservableObject
         selected?.Clear(); hasRecording = false;
         SetState(ReadingPhase.Finishing, "已取消，正在準備下一次朗讀…"); Requested?.Invoke("cancel", ++Run);
     }
+    public void PauseReplay() => Requested?.Invoke("pause-playback", Run);
     public void Connecting(string? message = null) { ++Run; hasRecording = false; connectionInterrupted = false; SetState(ReadingPhase.Connecting, message ?? "正在背景準備語音連線，可繼續複習…"); }
     public void ConnectionInterrupted(bool value) { connectionInterrupted = value; Notify(); }
     public void Ready() => SetState(ReadingPhase.Ready, "語音已就緒 · 按開始朗讀才會開啟麥克風");
@@ -105,8 +114,9 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     private void SetState(ReadingPhase value, string text) { phase = value; status = text; Notify(); }
     private void Notify()
     {
-        OnPropertyChanged(nameof(Phase)); OnPropertyChanged(nameof(Status)); OnPropertyChanged(nameof(RecordLabel)); OnPropertyChanged(nameof(ReplayLabel)); OnPropertyChanged(nameof(IsAvailable));
+        OnPropertyChanged(nameof(Phase)); OnPropertyChanged(nameof(Status)); OnPropertyChanged(nameof(RecordLabel)); OnPropertyChanged(nameof(ReplayLabel)); OnPropertyChanged(nameof(NextLabel)); OnPropertyChanged(nameof(IsAvailable));
         RecordCommand?.NotifyCanExecuteChanged(); CancelCommand?.NotifyCanExecuteChanged(); ReplayCommand?.NotifyCanExecuteChanged();
+        PronounceCommand?.NotifyCanExecuteChanged();
         SelectCommand?.NotifyCanExecuteChanged(); PreviousCommand?.NotifyCanExecuteChanged(); NextCommand?.NotifyCanExecuteChanged();
     }
 }
