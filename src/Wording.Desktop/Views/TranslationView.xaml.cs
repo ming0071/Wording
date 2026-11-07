@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using Wording.Desktop.ViewModels;
 
 namespace Wording.Desktop.Views;
@@ -30,6 +31,20 @@ public partial class TranslationView : UserControl
         {
             displayedQuestions = current.Questions;
             ExerciseScroll.ScrollToTop();
+        }
+        if (e.PropertyName == nameof(TranslationViewModel.FeedbackRevision) && sender is TranslationViewModel assessed)
+        {
+            var questions = assessed.Questions;
+            var revision = assessed.FeedbackRevision;
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+            {
+                if (DataContext != assessed || assessed.Questions != questions || assessed.FeedbackRevision != revision ||
+                    questions.FirstOrDefault()?.HasFeedback != true) return;
+                ExerciseScroll.UpdateLayout();
+                if (QuestionList.ItemContainerGenerator.ContainerFromIndex(0) is ContentPresenter presenter &&
+                    QuestionList.ItemTemplate.FindName("FeedbackPanel", presenter) is FrameworkElement feedback)
+                    ExerciseScroll.ScrollToVerticalOffset(Math.Max(0, feedback.TranslatePoint(new Point(), (UIElement)ExerciseScroll.Content).Y - 8));
+            }));
         }
     }
 }

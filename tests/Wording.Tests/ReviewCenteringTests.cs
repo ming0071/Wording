@@ -15,7 +15,7 @@ public sealed partial class DesktopWorkflowTests
     [InlineData(1)]
     [InlineData(2)]
     [InlineData(3)]
-    public void ReviewContentIsCenteredBeforeAndAfterFlippingWithoutShrinking(int count)
+    public void ReviewKeepsQuestionsCenteredAndTopAlignsSingleMeaningAnswersWithoutShrinking(int count)
     {
         OffscreenWpf.Invoke(() =>
         {
@@ -30,7 +30,7 @@ public sealed partial class DesktopWorkflowTests
                 store.NextReview = new(ReviewColumnWord(count), 0, true, null);
                 review.LoadAsync().GetAwaiter().GetResult();
                 Layout(view, width, height);
-                AssertCenteredReview(view);
+                AssertReviewPlacement(view, count, false);
                 AssertFits(view, "FlipCard");
                 var header = Assert.Single(Descendants(view).OfType<FrameworkElement>(), x => AutomationProperties.GetAutomationId(x) == "ReviewHeader");
                 var prompt = Assert.Single(Descendants(view).OfType<FrameworkElement>(), x => AutomationProperties.GetAutomationId(x) == "ReviewRecallPrompt");
@@ -42,7 +42,7 @@ public sealed partial class DesktopWorkflowTests
                 Render(view, $"review-v045-question-{count}-{width}.png");
                 review.FlipCommand.Execute(null);
                 Layout(view, width, height);
-                AssertCenteredReview(view);
+                AssertReviewPlacement(view, count, true);
                 var scroll = (ScrollViewer)view.FindName("DefinitionScroll");
                 if (width == 1850) Assert.True(scroll.ScrollableHeight <= 0.1);
                 if (width == 715 && count > 1) Assert.True(scroll.ScrollableHeight > 0);
@@ -60,13 +60,29 @@ public sealed partial class DesktopWorkflowTests
         });
     }
 
-    private static void AssertCenteredReview(ReviewView view)
+    private static void AssertReviewPlacement(ReviewView view, int count, bool answerVisible)
     {
         var content = (FrameworkElement)view.FindName("ContentHost");
         var card = (FrameworkElement)VisualTreeHelper.GetParent(content);
         var position = content.TranslatePoint(new Point(), card);
-        Assert.InRange(position.Y + content.ActualHeight / 2, card.ActualHeight / 2 - 1, card.ActualHeight / 2 + 1);
-        Assert.InRange(position.Y, 13, card.ActualHeight / 2);
+        if (count == 1)
+        {
+            Assert.InRange(card.ActualWidth, 1, 1040);
+            Assert.Equal(view.ActualWidth / 2, card.TranslatePoint(new Point(card.ActualWidth / 2, 0), view).X, 1);
+        }
+        if (count == 1 && answerVisible)
+        {
+            Assert.InRange(position.Y, 22, 24);
+            Assert.Equal(VerticalAlignment.Top, card.VerticalAlignment);
+            var grid = (Grid)VisualTreeHelper.GetParent(card);
+            Assert.InRange(card.TranslatePoint(new Point(), grid).Y, grid.RowDefinitions.Take(3).Sum(x => x.ActualHeight) - 1,
+                grid.RowDefinitions.Take(3).Sum(x => x.ActualHeight) + 1);
+        }
+        else
+        {
+            Assert.InRange(position.Y + content.ActualHeight / 2, card.ActualHeight / 2 - 1, card.ActualHeight / 2 + 1);
+            Assert.InRange(position.Y, 13, card.ActualHeight / 2);
+        }
         AssertFits(view, "ReviewHeadword");
         AssertFits(view, "SpeakWord");
     }

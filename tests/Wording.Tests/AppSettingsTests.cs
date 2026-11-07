@@ -5,6 +5,27 @@ namespace Wording.Tests;
 
 public sealed class AppSettingsTests
 {
+    [Theory]
+    [InlineData("FlipKey")]
+    [InlineData("GoodKey")]
+    [InlineData("SpeakKey")]
+    [InlineData("RecordReadingKey")]
+    [InlineData("ReplayReadingKey")]
+    [InlineData("NextReadingKey")]
+    public void LegacyFShortcutMigratesWithoutChangingOtherSettings(string property)
+    {
+        using var data = new StudyTestData();
+        var settings = new AppSettings();
+        typeof(AppSettings).GetProperty(property)!.SetValue(settings, "F");
+        File.WriteAllText(Path.Combine(data.DirectoryPath, "settings.json"), System.Text.Json.JsonSerializer.Serialize(settings));
+        var actual = AppSettings.Load(data.DirectoryPath);
+        Assert.NotEqual("F", typeof(AppSettings).GetProperty(property)!.GetValue(actual));
+        Assert.DoesNotContain("F", AppSettings.ShortcutKeys); Assert.Contains("F1", AppSettings.ShortcutKeys);
+        actual.Validate();
+        foreach (var other in new[] { "FlipKey", "AgainKey", "HardKey", "GoodKey", "EasyKey", "SpeakKey", "SpeakExampleKey", "RecordReadingKey", "ReplayReadingKey", "NextReadingKey" }.Where(name => name != property))
+            Assert.Equal(typeof(AppSettings).GetProperty(other)!.GetValue(settings), typeof(AppSettings).GetProperty(other)!.GetValue(actual));
+    }
+
     [Fact]
     public void ReadingShortcutsMigrateConflictsAndRoundTripWithoutOverwritingOldKeys()
     {

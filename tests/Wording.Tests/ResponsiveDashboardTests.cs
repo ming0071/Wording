@@ -29,6 +29,10 @@ public sealed partial class DesktopWorkflowTests
             {
                 Layout(view, width, 1050);
                 var start = Descendants(view).OfType<Button>().Single(x => AutomationProperties.GetAutomationId(x) == "StartReview");
+                var summary = Descendants(view).OfType<Border>().Single(x => AutomationProperties.GetAutomationId(x) == "TodayReviewSummary");
+                Assert.True(summary.IsAncestorOf(start));
+                Assert.True(summary.IsAncestorOf(Descendants(view).OfType<TextBlock>().Single(x => AutomationProperties.GetAutomationId(x) == "DueCount")));
+                AssertFits(view, "StartReview"); AssertFits(view, "DueCount");
                 Assert.True(start.TranslatePoint(new Point(), view).X < 440);
                 var heatmap = Assert.Single(Descendants(view).OfType<ActivityHeatmap>());
                 Assert.True(heatmap.ActualWidth > width - 100);

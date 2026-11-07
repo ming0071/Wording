@@ -71,6 +71,7 @@ public sealed class TranslationViewModel : PageViewModel
         set { if (QuestionCounts.Contains(value)) SetProperty(ref questionCount, value); }
     }
     public TranslationQuestionViewModel[] Questions { get; private set; } = [];
+    public int FeedbackRevision { get; private set; }
     public bool HasMaterial => Questions.Length > 0;
     public bool ShowEmptyState => !HasMaterial;
     public bool IsUnsubmitted => HasMaterial && Questions.Any(x => !x.HasFeedback);
@@ -128,6 +129,8 @@ public sealed class TranslationViewModel : PageViewModel
         hasSubmitted = true;
         Notice = "批改完成。AI 建議僅供練習，作答不影響單字熟悉度與複習排程。";
         NotifyState();
+        FeedbackRevision++;
+        OnPropertyChanged(nameof(FeedbackRevision));
     }
 
     public void Reset()

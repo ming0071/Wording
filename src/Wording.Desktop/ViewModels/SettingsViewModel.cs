@@ -15,6 +15,21 @@ public sealed record BundledVocabularyChoice(string Name, string Path);
 
 public sealed class SettingsViewModel : PageViewModel
 {
+    private bool focusCodexRequested;
+    public void RequestCodexFocus() => focusCodexRequested = true;
+    public bool TakeCodexFocusRequest() { var requested = focusCodexRequested; focusCodexRequested = false; return requested; }
+    private string[] savedForm = [];
+    private bool hasUnsavedChanges;
+    public bool HasUnsavedChanges => hasUnsavedChanges;
+    public string SaveStatus => HasUnsavedChanges ? "有尚未保存的變更" : "目前沒有未保存的變更";
+    private string[] FormValues() => [DailyNewLimit, DailyGenerationLimit, CodexPath, CodexModel, CodexServiceTier,
+        FlipKey, AgainKey, HardKey, GoodKey, EasyKey, SpeakKey, SpeakExampleKey, RecordReadingKey, ReplayReadingKey,
+        NextReadingKey, AutoSpeakWord.ToString(), AutoSpeakExamples.ToString()];
+    private void RefreshSaveState()
+    {
+        if (SetProperty(ref hasUnsavedChanges, !FormValues().SequenceEqual(savedForm), nameof(HasUnsavedChanges)))
+            OnPropertyChanged(nameof(SaveStatus));
+    }
     public UpdateViewModel? Updates { get; set; }
     public BundledVocabularyChoice[] BundledVocabulary { get; } = new[]
     {
@@ -194,6 +209,11 @@ public sealed class SettingsViewModel : PageViewModel
             var dialog = new OpenFileDialog { Title = "選擇 Codex 執行檔", Filter = "Codex 執行檔 (*.exe)|*.exe" };
             if (dialog.ShowDialog() == true) CodexPath = dialog.FileName;
         });
+        savedForm = FormValues();
+        PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName is not (nameof(HasUnsavedChanges) or nameof(SaveStatus))) RefreshSaveState();
+        };
     }
 
     public override Task LoadAsync(CancellationToken cancellationToken = default) =>
@@ -305,6 +325,8 @@ public sealed class SettingsViewModel : PageViewModel
         aiSettings.Model = settings.CodexModel;
         aiSettings.ServiceTier = settings.CodexServiceTier;
         aiSettings.DailyGenerationLimit = generationLimit;
+        savedForm = FormValues();
+        RefreshSaveState();
         Notice = "設定已保存。快捷鍵與新詞上限從下一次進入複習／取卡開始套用。";
         return Task.CompletedTask;
     }

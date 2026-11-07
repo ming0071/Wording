@@ -72,11 +72,28 @@ public sealed partial class DesktopWorkflowTests
             Render(view, "translation-questions-minimum.png");
             await vm.SubmitCommand.ExecuteAsync(); Assert.Empty(vm.Error);
             Layout(view, 715, 560);
+            var firstVerdict = Descendants(view).OfType<TextBlock>().First(x => AutomationProperties.GetAutomationId(x) == "TranslationVerdict");
+            var verdictTop = firstVerdict.TranslatePoint(new Point(), scroll).Y;
+            Assert.InRange(verdictTop, 0, scroll.ViewportHeight - firstVerdict.ActualHeight);
+            var firstSuggestion = Descendants(view).OfType<TextBlock>().First(x => AutomationProperties.GetAutomationId(x) == "TranslationSuggestion");
+            Assert.InRange(firstSuggestion.TranslatePoint(new Point(), scroll).Y, 0, scroll.ViewportHeight - firstSuggestion.ActualHeight);
+            Assert.True(scroll.VerticalOffset > 0);
+            Assert.Equal(1, vm.FeedbackRevision);
             Assert.Contains(Descendants(view).OfType<TextBlock>(), x => x.Text == "意思表達完整。" && IsShown(x));
             AssertFits(view, "SubmitTranslation");
             Assert.All(Descendants(view).OfType<ScrollViewer>(), x => Assert.True(x.ScrollableWidth <= 0.1));
             Render(view, "translation-feedback-minimum.png");
             Layout(view, 975, 700); Render(view, "translation-feedback-wide.png");
+            scroll.ScrollToBottom(); Layout(view, 715, 560);
+            var editedOffset = scroll.VerticalOffset;
+            vm.Questions[^1].Answer = "I changed the final answer.";
+            Layout(view, 715, 560);
+            Assert.Equal(Math.Min(editedOffset, scroll.ScrollableHeight), scroll.VerticalOffset);
+            Assert.Equal(1, vm.FeedbackRevision);
+            await vm.SubmitCommand.ExecuteAsync(); Assert.Empty(vm.Error);
+            Layout(view, 715, 560);
+            Assert.Equal(2, vm.FeedbackRevision);
+            Assert.InRange(firstVerdict.TranslatePoint(new Point(), scroll).Y, 0, scroll.ViewportHeight - firstVerdict.ActualHeight);
         });
     }
 }

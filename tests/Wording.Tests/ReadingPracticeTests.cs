@@ -6,6 +6,61 @@ namespace Wording.Tests;
 
 public sealed class ReadingPracticeTests
 {
+    [Fact]
+    public async Task ReadingFailureOffersCodexSettingsAndStatesRecoverWithoutChangingStudyProgress()
+    {
+        using var data = new StudyTestData(); await data.Store.InitializeAsync(); await data.AddWordAsync();
+        var main = new MainViewModel(data.Store, new BackupService(data.Store), new PracticeFixtures.Generator(),
+            new PracticeFixtures.Speech(), new() { AutoSpeakWord = false, AutoSpeakExamples = false }, new(), data.DirectoryPath);
+        main.NavigateCommand.Execute("review");
+        for (var i = 0; i < 100 && main.Review.Current is null; i++) await Task.Delay(10);
+        Assert.NotNull(main.Review.Current);
+        main.Review.FlipCommand.Execute(null);
+        var reading = main.Review.Reading!;
+        reading.Connecting(); Assert.Equal("連線中", reading.StateLabel);
+        Assert.False(reading.OpenSettingsCommand.CanExecute(null));
+        reading.Ready(); Assert.Equal("可錄音", reading.StateLabel);
+        reading.RecordCommand.Execute(null); Assert.Equal("開啟麥克風", reading.StateLabel);
+        reading.Recording(reading.Run); Assert.Equal("收音中", reading.StateLabel);
+        Assert.Equal("#B42335", reading.StateColor);
+        reading.RecordCommand.Execute(null); Assert.Equal("處理中", reading.StateLabel);
+        reading.Complete(reading.Run, main.Review.Definitions[0].Examples[0].English);
+        Assert.Equal("比對完成", reading.StateLabel);
+        reading.ConnectionInterrupted(true); Assert.Equal("等待恢復", reading.StateLabel);
+        Assert.False(reading.RecordCommand.CanExecute(null));
+        reading.ConnectionInterrupted(false);
+        reading.Fail("找不到設定的 Codex 執行檔。");
+        Assert.True(reading.HasError); Assert.Equal("需要處理", reading.StateLabel);
+        Assert.True(reading.OpenSettingsCommand.CanExecute(null));
+        reading.OpenSettingsCommand.Execute(null);
+        for (var i = 0; i < 100 && main.CurrentPage != main.Settings; i++) await Task.Delay(10);
+        Assert.Same(main.Settings, main.CurrentPage);
+        await OffscreenWpf.InvokeAsync(async () =>
+        {
+            var settingsView = new Wording.Desktop.Views.SettingsView { DataContext = main.Settings };
+            var window = new System.Windows.Window { Content = settingsView, Width = 840, Height = 700,
+                Left = -10000, Top = 0, ShowInTaskbar = false, ShowActivated = false,
+                WindowStartupLocation = System.Windows.WindowStartupLocation.Manual };
+            try
+            {
+                window.Show();
+                await System.Windows.Threading.Dispatcher.Yield(System.Windows.Threading.DispatcherPriority.Background);
+                settingsView.UpdateLayout();
+                var input = (System.Windows.Controls.TextBox)settingsView.FindName("CodexPathInput");
+                var scroll = (System.Windows.Controls.ScrollViewer)settingsView.FindName("SettingsScroll");
+                var top = input.TranslatePoint(new System.Windows.Point(), scroll).Y;
+                Assert.InRange(top, 0, scroll.ViewportHeight - input.ActualHeight);
+                Assert.True(scroll.VerticalOffset > 0);
+            }
+            finally { window.Close(); }
+        });
+        Assert.False(main.Settings.TakeCodexFocusRequest());
+        reading.Connecting(); reading.Ready(); Assert.False(reading.HasError);
+        Assert.False(reading.OpenSettingsCommand.CanExecute(null));
+        Assert.Equal(0L, data.Scalar("SELECT COUNT(*) FROM review_log;"));
+        Assert.Equal(0L, data.Scalar("SELECT COUNT(*) FROM new_starts;"));
+    }
+
     [Theory]
     [InlineData("Please confirm your appointment.", "please confirm your appointment")]
     [InlineData("I'm ready, and we don't need 9 tickets.", "I am ready and we do not need nine tickets")]

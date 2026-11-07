@@ -62,8 +62,28 @@ public sealed class AppSettings
         answerKeys.Add(settings.ReplayReadingKey);
         if (!document.RootElement.TryGetProperty(nameof(NextReadingKey), out _))
             settings.NextReadingKey = answerKeys.Add(settings.NextReadingKey) ? settings.NextReadingKey : ShortcutKeys.First(x => !answerKeys.Contains(x));
+        settings.MigrateWindowSizeShortcut();
         settings.Validate();
         return settings;
+    }
+
+    private void MigrateWindowSizeShortcut()
+    {
+        // F is now a window shortcut. Preserve legacy settings by moving only conflicting mappings to unused keys.
+        (Func<string> Get, Action<string> Set)[] mappings =
+        [
+            (() => FlipKey, value => FlipKey = value), (() => AgainKey, value => AgainKey = value),
+            (() => HardKey, value => HardKey = value), (() => GoodKey, value => GoodKey = value),
+            (() => EasyKey, value => EasyKey = value), (() => SpeakKey, value => SpeakKey = value),
+            (() => SpeakExampleKey, value => SpeakExampleKey = value), (() => RecordReadingKey, value => RecordReadingKey = value),
+            (() => ReplayReadingKey, value => ReplayReadingKey = value), (() => NextReadingKey, value => NextReadingKey = value)
+        ];
+        var used = mappings.Select(mapping => mapping.Get()).ToHashSet();
+        foreach (var mapping in mappings.Where(mapping => mapping.Get() == ShortcutDefaults.WindowSizeKey))
+        {
+            var replacement = ShortcutKeys.First(key => !used.Contains(key));
+            mapping.Set(replacement); used.Add(replacement);
+        }
     }
 
     public void Save(string dataDirectory)

@@ -1,29 +1,149 @@
-<UserControl x:Class="Wording.Desktop.Views.ReviewView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:Wording.Desktop.Views">
+<UserControl x:Class="Wording.Desktop.Views.ReviewView" x:Name="ReviewRoot" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:Wording.Desktop.Views">
+    <UserControl.Resources>
+        <Style x:Key="CompactOnly" TargetType="FrameworkElement">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="WideOnly" TargetType="FrameworkElement">
+            <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="ReviewActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Padding" Value="10,6" /><Setter Property="Margin" Value="0,0,8,0" />
+            <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                <Setter Property="FontSize" Value="12" /><Setter Property="MinHeight" Value="32" /><Setter Property="Padding" Value="9,5" />
+            </DataTrigger></Style.Triggers>
+        </Style>
+        <Style x:Key="ReviewPageActionButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                <Setter Property="MinHeight" Value="32" /><Setter Property="Padding" Value="10,5" /><Setter Property="Margin" Value="6,0,0,0" />
+            </DataTrigger></Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-        <Grid Margin="0,0,0,8">
-            <StackPanel>
+        <Grid>
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+            <Grid.Style><Style TargetType="Grid"><Setter Property="Margin" Value="0,0,0,8" />
+                <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Margin" Value="0,0,0,3" /></DataTrigger></Style.Triggers>
+            </Style></Grid.Style>
+            <StackPanel Style="{StaticResource WideOnly}">
                 <TextBlock Text="一步一步，記得更牢" FontSize="26" FontWeight="SemiBold" />
                 <TextBlock Text="{Binding ProgressText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,4,0,0" />
-                <TextBlock Text="{Binding Reading.Status}" Style="{StaticResource MutedText}" FontSize="11" Margin="0,3,0,0" Visibility="{Binding HasReading, Converter={StaticResource BoolVisibility}}" />
+                <TextBlock Text="{Binding Reading.Status}" FontSize="11" Margin="0,3,0,0">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding HasReading}" Value="True"><Setter Property="Visibility" Value="Visible" /></DataTrigger>
+                            <DataTrigger Binding="{Binding IsAnswerVisible}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+                        </Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Content="重新檢查" Command="{Binding RefreshCommand}" /><Button Content="撤銷上次" Command="{Binding UndoCommand}" AutomationProperties.AutomationId="UndoReview" />
+            <WrapPanel Style="{StaticResource CompactOnly}" VerticalAlignment="Center" AutomationProperties.AutomationId="CompactReviewToolbar">
+                <TextBlock Text="複習" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,12,0" />
+                <ToggleButton x:Name="ScopeToggle" IsChecked="{Binding IsOpen, ElementName=ScopePopup, Mode=TwoWay}" IsEnabled="{Binding CanChangeCategory}"
+                              Margin="0,0,10,0" Padding="9,4" MinHeight="32" FontSize="12" Cursor="Hand" AutomationProperties.AutomationId="ReviewScopeButton" AutomationProperties.Name="{Binding ScopeText}">
+                    <ToggleButton.Style><Style TargetType="ToggleButton">
+                        <Setter Property="Background" Value="White" /><Setter Property="BorderBrush" Value="#D7DEEA" /><Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Foreground" Value="{StaticResource InkBrush}" />
+                        <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ToggleButton">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}"><ContentPresenter VerticalAlignment="Center" /></Border>
+                        </ControlTemplate></Setter.Value></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsChecked" Value="True"><Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" /></Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True"><Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" /></Trigger>
+                            <Trigger Property="IsMouseOver" Value="True"><Setter Property="BorderBrush" Value="#A9A3F2" /></Trigger>
+                            <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.45" /></Trigger>
+                        </Style.Triggers>
+                    </Style></ToggleButton.Style>
+                    <DockPanel><TextBlock Text="⌄" DockPanel.Dock="Right" Margin="8,0,0,0" /><TextBlock Text="{Binding ScopeButtonText}" MaxWidth="180" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" /></DockPanel>
+                </ToggleButton>
+                <TextBlock FontSize="12" Style="{StaticResource MutedText}" VerticalAlignment="Center" AutomationProperties.AutomationId="CompactReviewCounts"><Run Text="{Binding CompactProgressText, Mode=OneWay}" /><Run Text=" · " /><Run Text="{Binding ScopeCountsText, Mode=OneWay}" /></TextBlock>
+            </WrapPanel>
+            <Popup x:Name="ScopePopup" PlacementTarget="{Binding ElementName=ScopeToggle}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" VerticalOffset="5" Closed="OnScopePopupClosed">
+                <Border Background="White" BorderBrush="#D7DEEA" BorderThickness="1" CornerRadius="10" Padding="14" Width="700" MaxWidth="{Binding ActualWidth, ElementName=ReviewRoot}" PreviewKeyDown="OnScopePopupKeyDown">
+                    <StackPanel>
+                        <TextBlock Text="選擇複習範圍，可複選" FontWeight="SemiBold" Margin="0,0,0,10" />
+                        <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                            <views:CategoryChips DataContext="{Binding CategoryScope}" ShowAllChoices="True" IsEnabled="{Binding DataContext.CanChangeCategory, ElementName=ReviewRoot}" AutomationProperties.AutomationId="CompactReviewCategory" />
+                        </ScrollViewer>
+                        <Button Content="完成" HorizontalAlignment="Right" Style="{StaticResource PrimaryButton}" Margin="0,8,0,0" Padding="12,6" Click="OnCloseScopePopup" AutomationProperties.AutomationId="CloseReviewScope" />
+                    </StackPanel>
+                </Border>
+            </Popup>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="重新檢查" Command="{Binding RefreshCommand}" Style="{StaticResource ReviewPageActionButton}" /><Button Content="撤銷上次" Command="{Binding UndoCommand}" Style="{StaticResource ReviewPageActionButton}" AutomationProperties.AutomationId="UndoReview" />
             </StackPanel>
         </Grid>
-        <Border Grid.Row="1" Style="{StaticResource Panel}" Padding="10,8,10,4" Margin="0,0,0,8">
+        <Border Grid.Row="1" Padding="10,8,10,4" Margin="0,0,0,8">
+            <Border.Style><Style TargetType="Border" BasedOn="{StaticResource Panel}"><Style.Triggers>
+                <DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Visibility" Value="Collapsed" /></DataTrigger>
+            </Style.Triggers></Style></Border.Style>
             <StackPanel>
                 <views:CategoryChips DataContext="{Binding CategoryScope}" IsEnabled="{Binding DataContext.CanChangeCategory, RelativeSource={RelativeSource AncestorType=UserControl}}" AutomationProperties.AutomationId="ReviewCategory" />
                 <TextBlock Text="{Binding ScopeText}" Style="{StaticResource MutedText}" FontSize="11" Margin="4,0,0,4" />
             </StackPanel>
         </Border>
-        <views:StatusBanner Grid.Row="2" />
-        <Border Grid.Row="3" Style="{StaticResource Panel}" Padding="18,14" Visibility="{Binding HasCard, Converter={StaticResource BoolVisibility}}">
-            <Grid x:Name="ContentHost" VerticalAlignment="Center">
+        <views:StatusBanner Grid.Row="2" IsCompact="{Binding IsCompactLayout, ElementName=ReviewRoot}" />
+        <Border x:Name="ReviewCard" Grid.Row="3" Visibility="{Binding HasCard, Converter={StaticResource BoolVisibility}}">
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource Panel}">
+                    <Setter Property="Padding" Value="18,14" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasOtherSenses}" Value="False">
+                            <Setter Property="MaxWidth" Value="1040" />
+                        </DataTrigger>
+                        <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                                <Condition Binding="{Binding HasOtherSenses}" Value="False" />
+                                <Condition Binding="{Binding IsAnswerVisible}" Value="True" />
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="VerticalAlignment" Value="Top" />
+                            <Setter Property="Padding" Value="28,22" />
+                        </MultiDataTrigger>
+                        <DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Padding" Value="14,12" /></DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <Grid x:Name="ContentHost">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding HasOtherSenses}" Value="False" />
+                                    <Condition Binding="{Binding IsAnswerVisible}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="VerticalAlignment" Value="Top" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions><Condition Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True" /><Condition Binding="{Binding IsAnswerVisible}" Value="True" /></MultiDataTrigger.Conditions>
+                                <Setter Property="VerticalAlignment" Value="Top" />
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
                 <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
-                    <StackPanel AutomationProperties.AutomationId="ReviewHeader">
-                        <DockPanel HorizontalAlignment="Center">
-                            <Button DockPanel.Dock="Right" Style="{StaticResource StarButton}" Tag="{Binding Current.Word.IsStarred}" Command="{Binding StarCommand}" Margin="12,0,0,0" />
+                    <Grid AutomationProperties.AutomationId="ReviewHeader">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Grid.Style><Style TargetType="Grid"><Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions><Condition Binding="{Binding HasOtherSenses}" Value="False" /><Condition Binding="{Binding IsAnswerVisible}" Value="True" /></MultiDataTrigger.Conditions>
+                                <Setter Property="Margin" Value="0,0,0,18" />
+                            </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True"><Setter Property="Margin" Value="0,0,0,10" /></DataTrigger>
+                        </Style.Triggers></Style></Grid.Style>
+                        <DockPanel>
+                            <DockPanel.Style><Style TargetType="DockPanel">
+                                <Setter Property="Grid.ColumnSpan" Value="2" /><Setter Property="HorizontalAlignment" Value="Center" />
+                                <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                                    <!-- Balance the star's 40px width and 12px gap so the word itself stays centered. -->
+                                    <Setter Property="Margin" Value="52,0,0,0" />
+                                </DataTrigger></Style.Triggers>
+                            </Style></DockPanel.Style>
+                            <Button DockPanel.Dock="Right" Style="{StaticResource StarButton}" Tag="{Binding Current.Word.IsStarred}" Command="{Binding StarCommand}" Margin="12,3,0,0" VerticalAlignment="Top" />
                             <TextBox x:Name="HeadwordText" Text="{Binding Current.Word.Headword, Mode=OneWay}" Style="{x:Null}"
                                      IsReadOnly="True" IsTabStop="False" BorderThickness="0" Background="Transparent" Padding="0" MinHeight="0"
                                      FontSize="30" FontWeight="SemiBold" Foreground="{StaticResource InkBrush}" TextWrapping="Wrap" TextAlignment="Center"
@@ -31,18 +151,38 @@
                                      PreviewMouseDoubleClick="OnHeadwordDoubleClick" AutomationProperties.HelpText="雙擊選取整個單字或片語，按 Ctrl+C 複製"
                                      AutomationProperties.AutomationId="ReviewHeadword" />
                         </DockPanel>
-                        <StackPanel Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}">
+                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}">
                             <TextBlock Text="{Binding PartOfSpeechText}" Foreground="{StaticResource AccentBrush}" FontSize="13" TextAlignment="Center" Margin="0,2,0,0" AutomationProperties.AutomationId="ReviewQuestionPartOfSpeech" />
                             <TextBlock Text="{Binding Current.Word.Cue}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,3,0,0" />
                         </StackPanel>
-                        <TextBlock Text="{Binding SenseContext}" Style="{StaticResource MutedText}" FontSize="12" TextAlignment="Center" Margin="0,6,0,0" Visibility="{Binding HasOtherSenses, Converter={StaticResource BoolVisibility}}" />
-                        <WrapPanel HorizontalAlignment="Center" Margin="0,7,0,5">
-                            <Button Content="{Binding SpeakButtonText}" Command="{Binding SpeakCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakWord" />
-                            <Button Content="{Binding SpeakExampleButtonText}" Command="{Binding SpeakExampleCommand}" Padding="10,6" Margin="0,0,8,0" AutomationProperties.AutomationId="SpeakExamples" />
-                            <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Padding="10,6" Margin="0" />
+                        <TextBlock Text="{Binding SenseContext}" TextAlignment="Center" Visibility="{Binding HasOtherSenses, Converter={StaticResource BoolVisibility}}">
+                            <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                                <Setter Property="Grid.Row" Value="2" /><Setter Property="Grid.ColumnSpan" Value="2" /><Setter Property="FontSize" Value="12" /><Setter Property="Margin" Value="0,6,0,0" />
+                                <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                                    <Setter Property="FontSize" Value="11" /><Setter Property="Margin" Value="0,3,0,0" />
+                                </DataTrigger></Style.Triggers>
+                            </Style></TextBlock.Style>
+                        </TextBlock>
+                        <WrapPanel>
+                            <WrapPanel.Style><Style TargetType="WrapPanel">
+                                <Setter Property="Grid.Row" Value="3" /><Setter Property="Grid.ColumnSpan" Value="2" /><Setter Property="HorizontalAlignment" Value="Center" /><Setter Property="Margin" Value="0,7,0,5" />
+                                <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                                    <Setter Property="Margin" Value="0,3,0,3" />
+                                </DataTrigger></Style.Triggers>
+                            </Style></WrapPanel.Style>
+                            <Button Content="{Binding SpeakButtonText}" Command="{Binding SpeakCommand}" Style="{StaticResource ReviewActionButton}" AutomationProperties.AutomationId="SpeakWord" />
+                            <Button Content="{Binding SpeakExampleButtonText}" Command="{Binding SpeakExampleCommand}" Style="{StaticResource ReviewActionButton}" AutomationProperties.AutomationId="SpeakExamples" />
+                            <Button Content="外部辭典 ↗" Command="{Binding DictionaryCommand}" Style="{StaticResource ReviewActionButton}" Margin="0" />
                         </WrapPanel>
-                        <TextBlock Text="{Binding SpeechStatus}" Style="{StaticResource MutedText}" FontSize="11" HorizontalAlignment="Center" TextWrapping="Wrap" MaxWidth="520" Margin="0,0,0,5" Visibility="{Binding HasReading, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewSpeechStatus" />
-                    </StackPanel>
+                        <TextBlock Text="{Binding SpeechStatus}" Visibility="{Binding HasReading, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewSpeechStatus">
+                            <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                                <Setter Property="Grid.Row" Value="4" /><Setter Property="Grid.ColumnSpan" Value="2" /><Setter Property="FontSize" Value="11" /><Setter Property="HorizontalAlignment" Value="Center" /><Setter Property="MaxWidth" Value="520" /><Setter Property="Margin" Value="0,0,0,5" />
+                                <Style.Triggers><DataTrigger Binding="{Binding IsCompactLayout, ElementName=ReviewRoot}" Value="True">
+                                    <Setter Property="Margin" Value="0" />
+                                </DataTrigger></Style.Triggers>
+                            </Style></TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
                     <TextBlock Grid.Row="1" Text="先回想這個詞的各組意思，再翻卡確認。" Style="{StaticResource MutedText}" FontSize="15" TextAlignment="Center" Margin="0,16,0,0" TextWrapping="Wrap" Visibility="{Binding IsQuestionVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewRecallPrompt" />
                     <ScrollViewer x:Name="DefinitionScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" Visibility="{Binding IsAnswerVisible, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewDefinitionScroll">
                         <ItemsControl ItemsSource="{Binding Definitions}" Grid.IsSharedSizeScope="{Binding HasParallelDefinitions}" AutomationProperties.AutomationId="ReviewDefinitions">
@@ -57,11 +197,13 @@
                                                 <Setter Property="Padding" Value="0" />
                                                 <Setter Property="Margin" Value="0" />
                                                 <Setter Property="BorderThickness" Value="0" />
+                                                <Setter Property="MaxWidth" Value="Infinity" />
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding DataContext.HasOtherSenses, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
                                                         <Setter Property="Padding" Value="12" />
                                                         <Setter Property="Margin" Value="6,6" />
                                                         <Setter Property="BorderThickness" Value="1" />
+                                                        <Setter Property="MaxWidth" Value="920" />
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -71,11 +213,8 @@
                                                 <RowDefinition Height="Auto" SharedSizeGroup="ReviewPartOfSpeechRow" />
                                                 <RowDefinition Height="Auto" SharedSizeGroup="ReviewMeaningRow" />
                                                 <RowDefinition Height="Auto" SharedSizeGroup="ReviewEnglishDefinitionRow" />
-                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewCueRow" />
-                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewCollocationsRow" />
-                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewSynonymsRow" />
+                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewStudyDetailsRow" />
                                                 <RowDefinition Height="Auto" SharedSizeGroup="ReviewExamplesRow" />
-                                                <RowDefinition Height="Auto" SharedSizeGroup="ReviewNotesRow" />
                                                 <RowDefinition Height="*" />
                                             </Grid.RowDefinitions>
                                             <TextBlock Text="{Binding PartOfSpeech}" Foreground="{StaticResource AccentBrush}" FontSize="15" TextAlignment="Center" Margin="0,2,0,0" AutomationProperties.AutomationId="ReviewPartOfSpeech" />
@@ -84,19 +223,33 @@
                                                 <TextBlock Text="英文解釋" FontSize="14" FontWeight="SemiBold" TextAlignment="Center" Margin="0,0,0,4" />
                                                 <TextBlock Text="{Binding EnglishDefinitionText}" FontSize="17" TextWrapping="Wrap" TextAlignment="Center" AutomationProperties.AutomationId="ReviewEnglishDefinition" />
                                             </StackPanel>
-                                            <DockPanel Grid.Row="3" VerticalAlignment="Top" Visibility="{Binding HasCue, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
-                                                <TextBlock Text="提示" FontSize="15" FontWeight="SemiBold" Width="82" VerticalAlignment="Center" />
-                                                <TextBlock Text="{Binding Cue}" Style="{StaticResource MutedText}" FontSize="17" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewCue" />
-                                            </DockPanel>
-                                            <DockPanel Grid.Row="4" VerticalAlignment="Top" Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
-                                                <TextBlock Text="常用搭配" FontSize="15" FontWeight="SemiBold" Width="82" VerticalAlignment="Center" />
-                                                <TextBlock Text="{Binding CollocationsText}" FontSize="17" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewCollocations" />
-                                            </DockPanel>
-                                            <DockPanel Grid.Row="5" VerticalAlignment="Top" Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,7">
-                                                <TextBlock Text="同義詞" FontSize="15" FontWeight="SemiBold" Width="82" VerticalAlignment="Center" />
-                                                <TextBlock Text="{Binding SynonymsText}" FontSize="17" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewSynonyms" />
-                                            </DockPanel>
-                                            <ItemsControl Grid.Row="6" VerticalAlignment="Top" ItemsSource="{Binding Examples}" AutomationProperties.AutomationId="ReviewExamples">
+                                            <Border Grid.Row="3" Background="#F8FAFC" CornerRadius="8" Padding="12" Margin="0,6,0,12" Visibility="{Binding HasStudyDetails, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="ReviewStudyDetails">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" SharedSizeGroup="ReviewCueRow" />
+                                                        <RowDefinition Height="Auto" SharedSizeGroup="ReviewCollocationsRow" />
+                                                        <RowDefinition Height="Auto" SharedSizeGroup="ReviewSynonymsRow" />
+                                                        <RowDefinition Height="Auto" SharedSizeGroup="ReviewNotesRow" />
+                                                    </Grid.RowDefinitions>
+                                                    <DockPanel Visibility="{Binding HasCue, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,6">
+                                                        <TextBlock Text="提示" FontSize="15" FontWeight="SemiBold" Width="82" />
+                                                        <TextBlock Text="{Binding Cue}" Style="{StaticResource MutedText}" FontSize="17" AutomationProperties.AutomationId="ReviewCue" />
+                                                    </DockPanel>
+                                                    <DockPanel Grid.Row="1" Visibility="{Binding HasCollocations, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,6">
+                                                        <TextBlock Text="常用搭配" FontSize="15" FontWeight="SemiBold" Width="82" />
+                                                        <TextBlock Text="{Binding CollocationsText}" FontSize="17" AutomationProperties.AutomationId="ReviewCollocations" />
+                                                    </DockPanel>
+                                                    <DockPanel Grid.Row="2" Visibility="{Binding HasSynonyms, Converter={StaticResource BoolVisibility}}" Margin="0,0,0,6">
+                                                        <TextBlock Text="同義詞" FontSize="15" FontWeight="SemiBold" Width="82" />
+                                                        <TextBlock Text="{Binding SynonymsText}" FontSize="17" AutomationProperties.AutomationId="ReviewSynonyms" />
+                                                    </DockPanel>
+                                                    <DockPanel Grid.Row="3" Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}">
+                                                        <TextBlock Text="我的筆記" FontSize="15" FontWeight="SemiBold" Width="82" />
+                                                        <TextBlock Text="{Binding Notes}" FontSize="16" AutomationProperties.AutomationId="ReviewNotes" />
+                                                    </DockPanel>
+                                                </Grid>
+                                            </Border>
+                                            <ItemsControl Grid.Row="4" VerticalAlignment="Top" ItemsSource="{Binding Examples}" AutomationProperties.AutomationId="ReviewExamples">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
                                                         <Border Background="#F5F7FB" CornerRadius="9" Padding="10,7" Margin="0,0,0,6">
@@ -109,10 +262,6 @@
                                                     </DataTemplate>
                                                 </ItemsControl.ItemTemplate>
                                             </ItemsControl>
-                                            <DockPanel Grid.Row="7" VerticalAlignment="Top" Visibility="{Binding HasNotes, Converter={StaticResource BoolVisibility}}" Margin="0,3,0,0">
-                                                <TextBlock Text="我的筆記" FontSize="15" FontWeight="SemiBold" Width="82" VerticalAlignment="Center" />
-                                                <TextBlock Text="{Binding Notes}" FontSize="16" TextWrapping="Wrap" AutomationProperties.AutomationId="ReviewNotes" />
-                                            </DockPanel>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -133,7 +282,12 @@
                 <Button Content="{Binding GoodButtonText}" Command="{Binding GoodCommand}" Style="{StaticResource PrimaryButton}" Margin="0,0,8,0" Padding="8,12" AutomationProperties.AutomationId="RateGood" />
                 <Button Content="{Binding EasyButtonText}" Command="{Binding EasyCommand}" Margin="0" Padding="8,12" AutomationProperties.AutomationId="RateEasy" />
             </UniformGrid>
-            <TextBlock Text="{Binding KeyboardHint}" Style="{StaticResource MutedText}" FontSize="11" TextAlignment="Center" Margin="0,7,0,0" />
+            <Grid Margin="0,7,0,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding KeyboardHint}" Style="{StaticResource MutedText}" FontSize="11" TextAlignment="Center" VerticalAlignment="Top" AutomationProperties.AutomationId="ReviewKeyboardHint" />
+                <TextBlock Grid.Column="1" Text="F 切換視窗大小" Style="{StaticResource MutedText}" FontSize="11"
+                           HorizontalAlignment="Right" VerticalAlignment="Top" Margin="12,0,0,0" IsHitTestVisible="False" AutomationProperties.AutomationId="WindowSizeHint" />
+            </Grid>
         </StackPanel>
         <views:ReadingBrowserHost Grid.Row="4" DataContext="{Binding Reading}" />
     </Grid>

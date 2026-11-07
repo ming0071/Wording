@@ -23,6 +23,23 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     public ReadingPhase Phase => phase;
     public string Status => connectionInterrupted ? "連線暫時不穩，正在等待恢復，最多 15 秒…" : status;
     public bool IsAvailable => answerVisible && selected is not null;
+    public bool HasError => phase == ReadingPhase.Failed;
+    public string StateLabel => connectionInterrupted ? "等待恢復" : phase switch
+    {
+        ReadingPhase.Connecting => "連線中", ReadingPhase.Ready => hasRecording ? "比對完成" : "可錄音",
+        ReadingPhase.Starting => "開啟麥克風", ReadingPhase.Recording => "收音中", ReadingPhase.Finishing => "處理中",
+        ReadingPhase.Failed => "需要處理", _ => "未連線"
+    };
+    public string StateColor => connectionInterrupted ? "#985300" : phase switch
+    {
+        ReadingPhase.Ready => "#167548", ReadingPhase.Recording or ReadingPhase.Failed => "#B42335",
+        ReadingPhase.Connecting or ReadingPhase.Starting => "#985300", ReadingPhase.Finishing => "#4F46E5", _ => "#65738A"
+    };
+    public string StateBackground => connectionInterrupted ? "#FFF6E5" : phase switch
+    {
+        ReadingPhase.Ready => "#EAF6EF", ReadingPhase.Recording or ReadingPhase.Failed => "#FFF1F0",
+        ReadingPhase.Connecting or ReadingPhase.Starting => "#FFF6E5", ReadingPhase.Finishing => "#EEEDFF", _ => "#F0F2F6"
+    };
     private static string KeyLabel(string key) => key == "Space" ? "空白鍵" : key;
     public string RecordLabel => $"{(phase == ReadingPhase.Recording ? "結束並比對" : phase == ReadingPhase.Failed ? "重新連線" : "開始朗讀")} · {KeyLabel(shortcuts.RecordReadingKey)}";
     public string ReplayLabel => $"回聽 · {KeyLabel(shortcuts.ReplayReadingKey)}";
@@ -34,11 +51,13 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     public RelayCommand PreviousCommand { get; }
     public RelayCommand NextCommand { get; }
     public RelayCommand SelectCommand { get; }
+    public RelayCommand OpenSettingsCommand { get; }
 
-    public ReadingPracticeViewModel(AiSettings settings, string directory, Action stopSpeech, AppSettings shortcuts, IPronunciationService? pronunciation = null)
+    public ReadingPracticeViewModel(AiSettings settings, string directory, Action stopSpeech, AppSettings shortcuts, IPronunciationService? pronunciation = null, Action? openSettings = null)
     {
         this.shortcuts = shortcuts;
         Settings = settings; Directory = directory; this.stopSpeech = stopSpeech;
+        OpenSettingsCommand = new(_ => openSettings!(), _ => HasError && openSettings is not null);
         PronounceCommand = new(value =>
         {
             if (CancelCommand?.CanExecute(null) == true) CancelCommand.Execute(null);
@@ -115,6 +134,8 @@ public sealed class ReadingPracticeViewModel : ObservableObject
     private void Notify()
     {
         OnPropertyChanged(nameof(Phase)); OnPropertyChanged(nameof(Status)); OnPropertyChanged(nameof(RecordLabel)); OnPropertyChanged(nameof(ReplayLabel)); OnPropertyChanged(nameof(NextLabel)); OnPropertyChanged(nameof(IsAvailable));
+        foreach (var name in new[] { nameof(HasError), nameof(StateLabel), nameof(StateColor), nameof(StateBackground) }) OnPropertyChanged(name);
+        OpenSettingsCommand?.NotifyCanExecuteChanged();
         RecordCommand?.NotifyCanExecuteChanged(); CancelCommand?.NotifyCanExecuteChanged(); ReplayCommand?.NotifyCanExecuteChanged();
         PronounceCommand?.NotifyCanExecuteChanged();
         SelectCommand?.NotifyCanExecuteChanged(); PreviousCommand?.NotifyCanExecuteChanged(); NextCommand?.NotifyCanExecuteChanged();

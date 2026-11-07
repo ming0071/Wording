@@ -28,6 +28,14 @@ public sealed class ReviewViewModel : PageViewModel
     public string SelectedCategory { get => CategoryScope.SelectedNames.FirstOrDefault() ?? "全部單字庫";
         set => CategoryScope.SetSelected(value == "全部單字庫" ? [] : [value]); }
     public string ScopeText { get => scopeText; private set => SetProperty(ref scopeText, value); }
+    private string scopeCountsText = "";
+    public string ScopeCountsText { get => scopeCountsText; private set => SetProperty(ref scopeCountsText, value); }
+    public string ScopeButtonText => reviewCategories.Length switch
+    {
+        0 => "全部單字庫",
+        1 => reviewCategories[0],
+        _ => $"{reviewCategories[0]} + {reviewCategories.Length - 1} 類"
+    };
     public bool CanChangeCategory => !IsBusy && !isSubmitting && pendingSubmission is null;
 
     public ReviewItem? Current
@@ -78,7 +86,7 @@ public sealed class ReviewViewModel : PageViewModel
     public IReadOnlyList<ReviewDefinitionViewModel> Definitions => definitions;
     public string PartOfSpeechText => Definitions.FirstOrDefault()?.PartOfSpeech ?? "";
     public int DefinitionColumns => Math.Min(Math.Clamp(Definitions.Count, 1, 3),
-        double.IsPositiveInfinity(definitionWidth) ? 3 : Math.Clamp((int)(definitionWidth / 360), 1, 3));
+        double.IsPositiveInfinity(definitionWidth) ? 3 : Math.Clamp((int)(definitionWidth / 420), 1, 3));
     public bool HasParallelDefinitions => DefinitionColumns > 1;
     public void UpdateDefinitionWidth(double width)
     {
@@ -102,6 +110,7 @@ public sealed class ReviewViewModel : PageViewModel
         key == settings.GoodKey ? GoodCommand : key == settings.EasyKey ? EasyCommand :
         key == settings.SpeakKey ? SpeakCommand : key == settings.SpeakExampleKey ? SpeakExampleCommand : null;
     public string ProgressText => $"這次已複習 {completed} 個詞義";
+    public string CompactProgressText => $"{completed} 已複習";
     public string EmptyText { get => emptyText; private set => SetProperty(ref emptyText, value); }
     public string SpeechStatus => speech.Status;
     public IReadOnlyList<ExampleSentence> Examples => Current?.Word.Examples ?? [];
@@ -174,6 +183,7 @@ public sealed class ReviewViewModel : PageViewModel
         Notice = "";
         Error = "";
         OnPropertyChanged(nameof(ProgressText));
+        OnPropertyChanged(nameof(CompactProgressText));
         NotifyCommands();
     }
 
@@ -212,6 +222,8 @@ public sealed class ReviewViewModel : PageViewModel
         var next = await store.GetNextReviewAsync(now, settings.DailyNewLimit, cancellationToken, category, categories);
         var summary = await store.GetDashboardAsync(now, cancellationToken, category, categories);
         reviewCategories = categories;
+        OnPropertyChanged(nameof(ScopeButtonText));
+        ScopeCountsText = $"{summary.DueCount} 到期 · {summary.NewCount} 新詞";
         ScopeText = $"{(categories.Length == 0 ? "全部單字庫" : string.Join("、", categories))} · {summary.DueCount} 個到期 · {summary.NewCount} 個未學新詞";
         Current = next;
         OnPropertyChanged(nameof(OtherSenses));
@@ -259,6 +271,7 @@ public sealed class ReviewViewModel : PageViewModel
             lastOperationId = result.OperationId;
             completed++;
             OnPropertyChanged(nameof(ProgressText));
+            OnPropertyChanged(nameof(CompactProgressText));
             Current = null;
             IsAnswerVisible = false;
             await LoadAsync(token);
@@ -278,6 +291,7 @@ public sealed class ReviewViewModel : PageViewModel
             lastOperationId = null;
             completed = Math.Max(0, completed - 1);
             OnPropertyChanged(nameof(ProgressText));
+            OnPropertyChanged(nameof(CompactProgressText));
             await LoadAsync(token);
             Notice = "已撤銷最後一次評分，今天已開始的新詞名額仍保留。";
         }

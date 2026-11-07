@@ -4,41 +4,41 @@
             <TextBlock Text="{Binding Greeting}" Style="{StaticResource PageTitle}" />
             <TextBlock Text="先複習到期的詞，再用一點餘裕認識新詞。每天 10–15 分鐘就好。" Style="{StaticResource MutedText}" Margin="0,0,0,26" />
             <views:StatusBanner />
-            <UniformGrid Columns="3" Margin="0,0,0,24">
-                <Border Style="{StaticResource Panel}" Margin="0,0,12,0">
-                    <StackPanel>
+            <Border Style="{StaticResource Panel}" Padding="22,18" Margin="0,0,0,16" AutomationProperties.AutomationId="TodayReviewSummary">
+                <WrapPanel VerticalAlignment="Center">
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,32,8">
                         <TextBlock Text="已學且到期" Style="{StaticResource MutedText}" />
-                        <TextBlock Text="{Binding Summary.DueCount}" FontSize="42" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" Margin="0,12,0,4" AutomationProperties.AutomationId="DueCount" />
-                        <TextBlock Text="優先複習" Foreground="#8893A5" FontSize="12" />
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <TextBlock Text="{Binding Summary.DueCount}" FontSize="42" FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}" AutomationProperties.AutomationId="DueCount" />
+                            <TextBlock Text="個詞義" Style="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="8,0,0,8" />
+                        </StackPanel>
                     </StackPanel>
-                </Border>
+                    <StackPanel VerticalAlignment="Center" Margin="0,0,0,8" MaxWidth="490">
+                        <TextBlock Text="今天，再前進一點" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding NextDueText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,6,0,12" />
+                        <WrapPanel>
+                            <Button Content="開始今天的複習 →" Style="{StaticResource PrimaryButton}" Command="{Binding StartReviewCommand}" AutomationProperties.AutomationId="StartReview" Margin="0,0,8,0" />
+                            <Button Content="瀏覽單字庫" Command="{Binding BrowseCommand}" Margin="0" />
+                        </WrapPanel>
+                    </StackPanel>
+                </WrapPanel>
+            </Border>
+            <UniformGrid Columns="2" Margin="0,0,0,20">
                 <Border Style="{StaticResource Panel}" Margin="0,0,12,0">
                     <StackPanel>
                         <TextBlock Text="未學的新詞" Style="{StaticResource MutedText}" />
-                        <TextBlock Text="{Binding Summary.NewCount}" FontSize="42" FontWeight="SemiBold" Margin="0,12,0,4" />
+                        <TextBlock Text="{Binding Summary.NewCount}" FontSize="28" FontWeight="SemiBold" Margin="0,8,0,4" />
                         <TextBlock Text="依每日名額開始" Foreground="#8893A5" FontSize="12" />
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Panel}">
                     <StackPanel>
                         <TextBlock Text="今日已複習" Style="{StaticResource MutedText}" />
-                        <TextBlock Text="{Binding Summary.ReviewedToday}" FontSize="42" FontWeight="SemiBold" Margin="0,12,0,4" />
+                        <TextBlock Text="{Binding Summary.ReviewedToday}" FontSize="28" FontWeight="SemiBold" Margin="0,8,0,4" />
                         <TextBlock Text="每一次回想都算數" Foreground="#8893A5" FontSize="12" />
                     </StackPanel>
                 </Border>
             </UniformGrid>
-            <Border Style="{StaticResource Panel}" Padding="20" Margin="0,0,0,20">
-                <WrapPanel VerticalAlignment="Center">
-                    <StackPanel VerticalAlignment="Center" Margin="0,0,28,10" MaxWidth="340">
-                        <TextBlock Text="今天，再前進一點" FontSize="20" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding NextDueText}" Style="{StaticResource MutedText}" FontSize="12" Margin="0,8,0,0" />
-                    </StackPanel>
-                    <WrapPanel VerticalAlignment="Center" Margin="0,0,0,10">
-                        <Button Content="開始今天的複習 →" Style="{StaticResource PrimaryButton}" Command="{Binding StartReviewCommand}" AutomationProperties.AutomationId="StartReview" />
-                        <Button Content="瀏覽單字庫" Command="{Binding BrowseCommand}" />
-                    </WrapPanel>
-                </WrapPanel>
-            </Border>
             <Border Style="{StaticResource Panel}" Padding="22" Margin="0,0,0,20" AutomationProperties.AutomationId="LearningActivity">
                 <StackPanel>
                     <TextBlock Text="每天留下的一點進步" FontSize="20" FontWeight="SemiBold" />
@@ -47,7 +47,7 @@
                     <DockPanel Margin="0,12,0,0">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                             <TextBlock Text="Less" FontSize="11" Foreground="#68758A" Margin="0,0,5,0" />
-                            <Border Width="12" Height="12" Background="#EDF0F5" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#C3E7D0" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#81CC9D" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#3AA66A" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#207448" CornerRadius="2" Margin="0,0,5,0" />
+                            <Border Width="12" Height="12" Background="#EDF0F5" ToolTip="0 個" AutomationProperties.Name="0 個" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#C3E7D0" ToolTip="1–19 個" AutomationProperties.Name="1–19 個" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#81CC9D" ToolTip="20–29 個" AutomationProperties.Name="20–29 個" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#3AA66A" ToolTip="30–39 個" AutomationProperties.Name="30–39 個" CornerRadius="2" Margin="0,0,3,0" /><Border Width="12" Height="12" Background="#207448" ToolTip="40 個以上" AutomationProperties.Name="40 個以上" CornerRadius="2" Margin="0,0,5,0" />
                             <TextBlock Text="More" FontSize="11" Foreground="#68758A" />
                         </StackPanel>
                         <TextBlock Text="{Binding SelectedDayText}" Style="{StaticResource MutedText}" FontSize="12" />

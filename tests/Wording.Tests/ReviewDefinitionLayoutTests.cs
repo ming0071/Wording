@@ -77,6 +77,48 @@ public sealed partial class DesktopWorkflowTests
         });
     }
 
+    [Theory]
+    [InlineData("outlet", 1)]
+    [InlineData("be responsible for keeping track of customer orders and delivery arrangements", 1)]
+    [InlineData("check out", 2)]
+    [InlineData("take advantage of", 3)]
+    [InlineData("carry out", 5)]
+    public void ReviewGroupsAllLearningDetailsBeforeExamplesAndWrapsPhrasesAtReadableWidths(string headword, int count)
+    {
+        OffscreenWpf.Invoke(() =>
+        {
+            var template = ReviewColumnWord(1);
+            var word = template with { Headword = headword,
+                AdditionalSenses = Enumerable.Range(1, count - 1).Select(i => template.Definitions[0] with
+                { Id = Guid.NewGuid(), Meaning = $"第 {i + 1} 組意思，保留完整解釋與學習資訊" }).ToArray() };
+            var store = new RecordingStore { NextReview = new(word, 0, true, null) };
+            var review = new ReviewViewModel(store, new SilentSpeech(), new AppSettings { AutoSpeakWord = false, AutoSpeakExamples = false });
+            review.LoadAsync().GetAwaiter().GetResult(); review.FlipCommand.Execute(null);
+            var view = new ReviewView { DataContext = review, FontSize = 14, FontFamily = new("Segoe UI, Microsoft JhengHei UI"),
+                Background = new SolidColorBrush(Color.FromRgb(245, 247, 251)), Foreground = (Brush)Application.Current.Resources["InkBrush"] };
+            foreach (var width in new[] { 715, 800, 959, 1850 })
+            {
+                Layout(view, width, width <= 800 ? 560 : 900);
+                Assert.Equal(Math.Min(count, width <= 800 ? 1 : width == 959 ? 2 : 3), review.DefinitionColumns);
+                var meanings = Descendants(view).OfType<Border>().Where(x => AutomationProperties.GetAutomationId(x) == "ReviewDefinition").ToArray();
+                Assert.Equal(count, meanings.Length);
+                foreach (var meaning in meanings)
+                {
+                    Assert.True(meaning.ActualWidth <= (count == 1 ? 984.1 : 920.1));
+                    var details = Descendants(meaning).OfType<Border>().Single(x => AutomationProperties.GetAutomationId(x) == "ReviewStudyDetails");
+                    Assert.True(IsShown(details));
+                    foreach (var id in new[] { "ReviewCue", "ReviewCollocations", "ReviewSynonyms", "ReviewNotes" })
+                        Assert.Single(Descendants(details).OfType<TextBlock>().Where(IsShown), x => AutomationProperties.GetAutomationId(x) == id);
+                    var examples = Descendants(meaning).OfType<ItemsControl>().Single(x => AutomationProperties.GetAutomationId(x) == "ReviewExamples");
+                    Assert.True(examples.TranslatePoint(new Point(), meaning).Y >= details.TranslatePoint(new Point(0, details.ActualHeight), meaning).Y);
+                    Assert.All(Descendants(meaning).OfType<TextBlock>().Where(IsShown), text => AssertFitsReviewContent(view, text));
+                }
+                AssertFits(view, "ReviewHeadword"); AssertFits(view, "RateGood");
+                Render(view, $"review-grouped-{count}-{headword.Length}-{width}.png");
+            }
+        });
+    }
+
     [Fact]
     public async Task ReviewColumnsRefreshAcrossCardsAndSpeechIncludesEveryMeaning()
     {

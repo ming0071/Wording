@@ -18,4 +18,5 @@ public sealed class ReviewDefinitionViewModel(VocabularyDefinition definition, R
     public bool HasCollocations => definition.Collocations.Length > 0;
     public bool HasSynonyms => definition.Synonyms.Length > 0;
     public bool HasNotes => !string.IsNullOrWhiteSpace(Notes);
+    public bool HasStudyDetails => HasCue || HasCollocations || HasSynonyms || HasNotes;
 }

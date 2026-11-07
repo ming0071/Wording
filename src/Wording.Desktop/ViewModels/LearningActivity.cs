@@ -8,7 +8,7 @@ public sealed record ActivityCell(DateOnly Day, int Count, bool InRange)
     public string Unit { get; init; } = "個詞義";
     public string Description => $"{Day:yyyy/MM/dd} · 完成 {Count} {Unit}";
     public string Color => !InRange ? "Transparent" : Count switch
-        { 0 => "#EDF0F5", < 5 => "#C3E7D0", < 10 => "#81CC9D", < 20 => "#3AA66A", _ => "#207448" };
+        { 0 => "#EDF0F5", < 20 => "#C3E7D0", < 30 => "#81CC9D", < 40 => "#3AA66A", _ => "#207448" };
 }
 public sealed record ActivityWeek(string MonthLabel, IReadOnlyList<ActivityCell> Days);
 public sealed record LearningActivity(IReadOnlyList<ActivityWeek> Weeks, int Total, int ActiveDays, int Streak)

@@ -28,7 +28,7 @@
                         <TextBlock Text="按「出一組新題目」，再用每題指定的單字翻譯中文句子。填完後提交，看看意思、用法和文法有哪些地方可以調整。" Style="{StaticResource MutedText}" />
                     </StackPanel>
                 </Border>
-                <ItemsControl ItemsSource="{Binding Questions}" AutomationProperties.AutomationId="TranslationQuestions">
+                <ItemsControl x:Name="QuestionList" ItemsSource="{Binding Questions}" AutomationProperties.AutomationId="TranslationQuestions">
                     <ItemsControl.ItemTemplate><DataTemplate>
                         <Border Style="{StaticResource Panel}" Padding="20" Margin="0,8,0,8">
                             <StackPanel>
@@ -45,13 +45,26 @@
                                     IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     AutomationProperties.AutomationId="TranslationAnswer" AutomationProperties.Name="{Binding Number}"
                                     SpellCheck.IsEnabled="True" Language="en-US" />
-                                <Border Background="#F5F7FB" CornerRadius="10" Padding="16" Margin="0,16,0,0" Visibility="{Binding HasFeedback, Converter={StaticResource BoolVisibility}}">
+                                <Border x:Name="FeedbackPanel" Background="#F5F7FB" CornerRadius="10" Padding="16" Margin="0,16,0,0" Visibility="{Binding HasFeedback, Converter={StaticResource BoolVisibility}}" AutomationProperties.AutomationId="TranslationFeedback">
                                     <StackPanel>
-                                        <TextBlock Text="{Binding VerdictText}" Foreground="{Binding VerdictColor}" FontWeight="SemiBold" FontSize="17" Margin="0,0,0,12" />
+                                        <DockPanel Margin="0,0,0,12">
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding VerdictText}" Foreground="{Binding VerdictColor}" FontWeight="SemiBold" FontSize="17" Margin="12,0,0,0" AutomationProperties.AutomationId="TranslationVerdict" AutomationProperties.LiveSetting="Polite" />
+                                            <TextBlock Text="{Binding Number, StringFormat={}{0} · 批改結果}" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+                                        </DockPanel>
+                                        <Grid Margin="0,0,0,16">
+                                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                            <StackPanel Margin="0,0,20,0">
+                                                <TextBlock Text="你的答案" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                                <TextBlock Text="{Binding Answer}" FontSize="16" AutomationProperties.AutomationId="TranslationSubmittedAnswer" />
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1">
+                                                <TextBlock Text="建議寫法" FontWeight="SemiBold" Margin="0,0,0,6" />
+                                                <TextBlock Text="{Binding SuggestedEnglish}" FontSize="16" AutomationProperties.AutomationId="TranslationSuggestion" />
+                                            </StackPanel>
+                                        </Grid>
                                         <TextBlock Text="意思表達" FontWeight="SemiBold" /><TextBlock Text="{Binding MeaningFeedback}" Margin="0,4,0,10" />
                                         <TextBlock Text="指定單字" FontWeight="SemiBold" /><TextBlock Text="{Binding TargetFeedback}" Margin="0,4,0,10" />
                                         <TextBlock Text="文法與自然度" FontWeight="SemiBold" /><TextBlock Text="{Binding GrammarFeedback}" Margin="0,4,0,10" />
-                                        <TextBlock Text="建議寫法" FontWeight="SemiBold" /><TextBlock Text="{Binding SuggestedEnglish}" FontSize="16" Margin="0,4,0,10" />
                                         <Expander Header="另一個參考譯句"><TextBlock Text="{Binding ReferenceEnglish}" Margin="0,8,0,0" /></Expander>
                                     </StackPanel>
                                 </Border>

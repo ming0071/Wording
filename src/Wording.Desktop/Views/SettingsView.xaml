@@ -1,12 +1,10 @@
 <UserControl x:Class="Wording.Desktop.Views.SettingsView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="clr-namespace:Wording.Desktop.Views">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <Grid>
+    <Grid.RowDefinitions><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+    <ScrollViewer x:Name="SettingsScroll" VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <DockPanel>
-                <Button DockPanel.Dock="Right" Content="保存設定" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" AutomationProperties.AutomationId="SaveSettings" />
-                <TextBlock Text="配合自己的步調" Style="{StaticResource PageTitle}" />
-            </DockPanel>
+            <TextBlock Text="配合自己的步調" Style="{StaticResource PageTitle}" />
             <TextBlock Text="調整每日學習量，照顧好你的單字與進度。" Style="{StaticResource MutedText}" Margin="0,0,0,22" />
-            <views:StatusBanner />
             <views:UpdatePanel DataContext="{Binding Updates}" />
             <Border Style="{StaticResource Panel}" Margin="0,0,0,18">
                 <StackPanel>
@@ -46,7 +44,7 @@
                     <TextBlock Text="本機 Codex 訂閱" Style="{StaticResource SectionTitle}" />
                     <TextBlock Text="使用官方 CLI 的既有 ChatGPT 登入。程式不要求 API key，也不會切換到付費 API。" Style="{StaticResource MutedText}" />
                     <TextBlock Text="Codex 執行檔路徑" Style="{StaticResource FieldLabel}" />
-                    <TextBox Text="{Binding CodexPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 執行檔路徑" AutomationProperties.AutomationId="CodexPath" />
+                    <TextBox x:Name="CodexPathInput" Text="{Binding CodexPath, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Codex 執行檔路徑" AutomationProperties.AutomationId="CodexPath" />
                     <WrapPanel Margin="0,8,0,0"><Button Content="自動尋找" Command="{Binding FindCodexCommand}" /><Button Content="選擇執行檔…" Command="{Binding BrowseCodexCommand}" /></WrapPanel>
                     <TextBlock Text="填入 codex 可在每次執行時自動尋找，支援 Codex 桌面版的版本目錄。也可以指定完整路徑。" Style="{StaticResource MutedText}" FontSize="11" Margin="0,5,0,0" />
                     <TextBlock Text="生成模型" Style="{StaticResource FieldLabel}" />
@@ -99,4 +97,19 @@
             </Border>
         </StackPanel>
     </ScrollViewer>
+    <Border Grid.Row="1" Background="White" BorderBrush="#E3E8F0" BorderThickness="0,1,0,0" Padding="12" Margin="0,12,0,0">
+        <StackPanel>
+            <views:StatusBanner />
+            <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding SaveStatus}" FontSize="13" VerticalAlignment="Center" Margin="0,0,12,0" AutomationProperties.AutomationId="SettingsSaveStatus">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}"><Style.Triggers>
+                        <DataTrigger Binding="{Binding HasUnsavedChanges}" Value="True"><Setter Property="Foreground" Value="#985300" /><Setter Property="FontWeight" Value="SemiBold" /></DataTrigger>
+                    </Style.Triggers></Style></TextBlock.Style>
+                </TextBlock>
+                <Button Grid.Column="1" Content="保存設定" Command="{Binding SaveCommand}" Style="{StaticResource PrimaryButton}" Margin="0" AutomationProperties.AutomationId="SaveSettings" />
+            </Grid>
+        </StackPanel>
+    </Border>
+    </Grid>
 </UserControl>

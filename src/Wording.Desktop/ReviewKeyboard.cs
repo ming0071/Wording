@@ -48,11 +48,11 @@ public static class ReviewKeyboard
         return true;
     }
 
-    private static bool IsEditing(DependencyObject? element)
+    internal static bool IsEditing(DependencyObject? element)
     {
         while (element is not null)
         {
-            if (element is TextBoxBase { IsReadOnly: false } or PasswordBox or ComboBoxItem ||
+            if (element is TextBoxBase { IsReadOnly: false } or PasswordBox or ComboBoxItem or ToggleButton ||
                 element is ComboBox { IsDropDownOpen: true } or ComboBox { IsEditable: true }) return true;
             element = element is Visual or System.Windows.Media.Media3D.Visual3D
                 ? VisualTreeHelper.GetParent(element) : LogicalTreeHelper.GetParent(element);

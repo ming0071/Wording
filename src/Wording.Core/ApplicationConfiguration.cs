@@ -77,10 +77,11 @@ public sealed record ReviewDefaults
 }
 public sealed record ShortcutDefaults
 {
+    public const string WindowSizeKey = "F";
     public static IReadOnlyList<string> AvailableKeys { get; } =
         new[] { "Space", "Enter" }.Concat(Enumerable.Range(0, 10).Select(x => x.ToString(CultureInfo.InvariantCulture)))
             .Concat(Enumerable.Range('A', 26).Select(x => ((char)x).ToString()))
-            .Concat(Enumerable.Range(1, 12).Select(x => $"F{x}")).ToArray();
+            .Concat(Enumerable.Range(1, 12).Select(x => $"F{x}")).Where(key => key != WindowSizeKey).ToArray();
     public required string Flip { get; init; }
     public required string Again { get; init; }
     public required string Hard { get; init; }
